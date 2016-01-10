@@ -97,6 +97,7 @@
 		7FB8E0B31C42FA3800B7848A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				CLASSPREFIX = RMS;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = 32BT;
 				TargetAttributes = {
@@ -245,7 +246,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = RMSAudioApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "-2BT.RMSAudioApp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.32BT.RMSAudioApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -257,7 +258,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = RMSAudioApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "-2BT.RMSAudioApp";
+				PRODUCT_BUNDLE_IDENTIFIER = com.32BT.RMSAudioApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
