@@ -156,7 +156,25 @@
 
 - (IBAction) didSelectMicButton:(NSButton *)button
 {
-	self.audioOutput.source = [RMSInput defaultInput];
+	RMSSource *source = [RMSInput defaultInput];
+	
+	/* 
+		RMSInput is initialized with the device sampleRate, 
+		which on iOS is simply the AVAudioSession sampleRate. 
+		
+		On OSX however, the samplerate may be different from the output, 
+		for this case it has a simple linear interpolating ringbuffer build-in.
+
+		If a more sophisticated algorithm is desired, the Varispeed audiounit
+		can be used instead.
+
+		// Attach Varispeed unit in between input and output
+		if (source.sampleRate != self.audioOutput.sampleRate)
+		{ source = [RMSAudioUnitVarispeed instanceWithSource:source]; }
+	*/
+	
+	// Attaching automatically sets the output sampleRate for source
+	self.audioOutput.source = source;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
