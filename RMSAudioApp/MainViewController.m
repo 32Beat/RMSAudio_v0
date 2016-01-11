@@ -48,6 +48,15 @@
 	self.audioOutput.monitor = self.levelsMonitor;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+/*
+	RMSTimer is a global timer to allow updates of UI elements with reasonable 
+	visual continuity (about 24x per second). 
+	By implementing globalRMSTimerDidFire an object can add itself as observer
+	and receive updates. It can be used to update level metering or controls.
+*/
 - (void) viewWillAppear
 {
 	[super viewWillAppear];
@@ -60,7 +69,6 @@
 	[super viewWillDisappear];
 }
 
-
 - (void) globalRMSTimerDidFire
 {
 	rmsresult_t resultL = self.levelsMonitor.resultLevelsL;
@@ -72,8 +80,18 @@
 	{ self.balanceControl.floatValue = self.autoPan.correctionBalance; }
 }
 
-
-
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+/*
+	The volume filter automatically does the right interpolation of values 
+	over buffer duration. For the speed of user control, this is likely 
+	sufficient in most cases.
+	It can be used to control any source consistently, which means that the code
+	for a generator source can concentrate on generating sound, and not have 
+	to worry about correct volume control. 
+	Simply attach an instance of RMSVolume as filter to the source.
+*/
 - (IBAction) didAdjustGainControl:(NSSlider *)slider
 {
 	float V = [slider floatValue];
@@ -92,6 +110,15 @@
 	self.volumeFilter.balance = V;
 }
 
+/*
+	RMSAutoPan is a kind of PID controller for keeping balance centered. 
+	Here we deactivate the balanceslider and add the AutoPan filter.
+	The correction balance value is reflected by the balanceslider in the
+	globalRMSTimerDidFire call. 
+	
+	Switching back is simply a matter of removing the filter. Removing a filter 
+	is guarded for existence in the audiothread, so we can set it to nil safely.
+*/
 - (IBAction) didSelectAutoPan:(NSButton *)button
 {
 	if (self.autoPan == nil)
@@ -110,6 +137,9 @@
 	}
 }
 
+/*
+	A pure sine wave for RMS power testing
+*/
 - (IBAction) didSelectTestSignal:(NSButton *)button
 {
 	// Protect our ears
@@ -122,6 +152,16 @@
 	// Start sinewave
 	self.audioOutput.source = [RMSSineWave instanceWithFrequency:440.0];
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+	Select a music file and play it. 
+	
+	Note that the RMSAudioUnitVarispeed is automatically attached if necessary.
+	
+	sampleRate always refers to the output samplerate of an RMSSource,
+	where appropriate, the input sampleRate should be set by a specific method.
+*/
 
 - (IBAction) didSelectButton:(NSButton *)button
 {
@@ -146,6 +186,7 @@
 	if (source.sampleRate != self.audioOutput.sampleRate)
 	source = [RMSAudioUnitVarispeed instanceWithSource:source];
 
+	// Attaching automatically sets the output sampleRate for source
 	[self.audioOutput setSource:source];
 }
 
