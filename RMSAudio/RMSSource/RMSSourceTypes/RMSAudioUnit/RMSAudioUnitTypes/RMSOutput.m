@@ -15,10 +15,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <mach/mach_time.h>
 
+
 @interface RMSOutput ()
-{
-	UInt64 mRenderIndex;
-}
 @end
 
 

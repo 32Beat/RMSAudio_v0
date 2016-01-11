@@ -117,6 +117,7 @@
 	self.volumeFilter.volume = 0.1;
 	self.gainControl.floatValue = 0.0;
 	self.volumeControl.floatValue = 0.1;
+	[NSThread sleepForTimeInterval:0.05];
 	
 	// Start sinewave
 	self.audioOutput.source = [RMSSineWave instanceWithFrequency:440.0];

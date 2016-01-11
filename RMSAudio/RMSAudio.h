@@ -39,7 +39,7 @@ CF_ENUM(AudioFormatFlags)
 
 static const AudioStreamBasicDescription RMSPreferredAudioFormat =
 {
-	.mSampleRate 		= 44100.0,
+	.mSampleRate 		= 0.0,
 	.mFormatID 			= kAudioFormatLinearPCM,
 	.mFormatFlags 		=
 		kAudioFormatFlagIsFloat | \
