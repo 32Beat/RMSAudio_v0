@@ -7,16 +7,22 @@
 //
 
 #import "AppDelegate.h"
+#import "MainViewController.h"
 
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
+
 @end
 
 @implementation AppDelegate
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
 	// Insert code here to initialize your application
+	self.window.contentViewController = [MainViewController new];
+	self.window.contentView = self.window.contentViewController.view;
+	
 }
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification {

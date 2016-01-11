@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9531" systemVersion="15C50" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="RMSMixerSourceController">
+            <connections>
+                <outlet property="balanceSlider" destination="2Lz-n1-Iqi" id="UFV-TF-74m"/>
+                <outlet property="playButton" destination="tzm-Nj-Q1Z" id="BX1-5Z-ZNO"/>
+                <outlet property="stereoView" destination="dWX-bs-O8t" id="7Yd-Kh-ay7"/>
+                <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
+                <outlet property="volumeSlider" destination="6s7-p1-0HQ" id="osw-mM-xdJ"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <customView id="Hz6-mo-xeY">
+            <rect key="frame" x="0.0" y="0.0" width="369" height="98"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+            <subviews>
+                <button verticalHuggingPriority="750" id="tzm-Nj-Q1Z">
+                    <rect key="frame" x="20" y="47" width="80" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="square" title="Play" bezelStyle="shadowlessSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="8Ne-Nh-zt5">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                </button>
+                <customView id="dWX-bs-O8t" customClass="RMSStereoView">
+                    <rect key="frame" x="108" y="52" width="200" height="21"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                </customView>
+                <customView id="WdQ-6D-xqW" customClass="RMSIndexView">
+                    <rect key="frame" x="108" y="73" width="200" height="5"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                </customView>
+                <customView id="gGn-f4-GkH" customClass="RMSIndexView">
+                    <rect key="frame" x="108" y="47" width="200" height="5"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                </customView>
+                <slider verticalHuggingPriority="750" id="6s7-p1-0HQ">
+                    <rect key="frame" x="18" y="19" width="292" height="27"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1.2" doubleValue="1" tickMarkPosition="below" numberOfTickMarks="7" sliderType="linear" id="zhm-Ua-6QN"/>
+                    <connections>
+                        <action selector="didAdjustSlider:" target="-2" id="NB6-jz-4AD"/>
+                    </connections>
+                </slider>
+                <slider horizontalHuggingPriority="750" verticalHuggingPriority="750" id="2Lz-n1-Iqi">
+                    <rect key="frame" x="323" y="47" width="28" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <sliderCell key="cell" continuous="YES" alignment="left" minValue="-1" maxValue="1" allowsTickMarkValuesOnly="YES" sliderType="circular" id="5Yv-UF-6HY"/>
+                </slider>
+            </subviews>
+            <point key="canvasLocation" x="297.5" y="249"/>
+        </customView>
+    </objects>
+</document>
