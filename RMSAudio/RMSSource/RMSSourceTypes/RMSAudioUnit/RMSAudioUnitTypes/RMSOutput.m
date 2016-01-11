@@ -24,6 +24,10 @@
 @implementation RMSOutput
 ////////////////////////////////////////////////////////////////////////////////
 
+#define RMS_REPORT_TIME 2
+
+#if RMS_REPORT_TIME
+
 static OSStatus notifyCallback(
 	void *							inRefCon,
 	AudioUnitRenderActionFlags *	ioActionFlags,
@@ -46,21 +50,37 @@ static OSStatus notifyCallback(
 		
 		double renderTime = RMSHostTimeToSeconds(finishTime - startTime);
 		
-		static double averageTime = 0;
-		averageTime += 0.1 * (renderTime - averageTime);
-
+		// Compute short term average time
+		static double avgTime = 0;
+		avgTime += 0.1 * (renderTime - avgTime);
+		
+		// Compute maximum time since last report
+		static double maxTime = 0;
+		if (maxTime < renderTime)
+		{ maxTime = renderTime; }
+		
+		// Check report frequency
 		static double lastTime = 0;
 		double time = RMSCurrentHostTimeInSeconds();
-		if (lastTime + 1.0 <= time)
+		if (lastTime + RMS_REPORT_TIME <= time)
 		{
 			lastTime = time;
+			double reportTime1 = avgTime;
+			double reportTime2 = maxTime;
 			dispatch_async(dispatch_get_main_queue(), \
-			^{ NSLog(@"Render time %lfs)", renderTime); });
+			^{
+				NSLog(@"Render time avg = %lfs)", reportTime1);
+				NSLog(@"Render time max = %lfs)", reportTime2);
+			});
+			
+			maxTime = 0;
 		}
 	}
 	
 	return noErr;
 }
+
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -192,8 +212,9 @@ static OSStatus renderCallback(
 {
 	OSStatus result = noErr;
 
+#if RMS_REPORT_TIME
 	AudioUnitAddRenderNotify(mAudioUnit, notifyCallback, nil);
-
+#endif
 /*
 	Use RunRMSSource as the render callback, so RMSOutput behaves 
 	exactly symmetrical in stand-alone mode, or as part of a rendertree.

@@ -64,7 +64,7 @@
                 <slider verticalHuggingPriority="750" id="SE4-C7-Agl">
                     <rect key="frame" x="18" y="158" width="444" height="21"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1.2" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="yBo-40-uVi"/>
+                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="yBo-40-uVi"/>
                     <connections>
                         <action selector="didAdjustVolumeControl:" target="-2" id="Rdy-Og-dt1"/>
                     </connections>
@@ -117,8 +117,19 @@
                         <action selector="didSelectTestSignal:" target="-2" id="7aq-Ly-k90"/>
                     </connections>
                 </button>
+                <button verticalHuggingPriority="750" id="MtJ-dn-Jmw">
+                    <rect key="frame" x="10" y="13" width="112" height="32"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <buttonCell key="cell" type="push" title="Microphone" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="O0H-UQ-E3E">
+                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="didSelectMicButton:" target="-2" id="2Hb-lg-VVN"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="219" y="247"/>
+            <point key="canvasLocation" x="28" y="244"/>
         </customView>
     </objects>
 </document>

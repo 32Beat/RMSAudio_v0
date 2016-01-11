@@ -59,7 +59,7 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (instancetype) init
-{ return [self initWithFrequency:440.0]; }
+{ return [self initWithFrequency:441.0]; }
 
 + (instancetype) instanceWithFrequency:(double)f
 { return [[self alloc] initWithFrequency:f]; }
@@ -82,7 +82,7 @@ static OSStatus renderCallback(
 - (void) setSampleRate:(Float64)sampleRate
 {
 	[super setSampleRate:sampleRate];
-	mStep = mFrequency * 2.0 * M_PI / (mSampleRate+1.0);
+	mStep = mSampleRate ? mFrequency * 2.0 * M_PI / mSampleRate : 0.0;
 	mX2PI = 0.5 * mStep;
 }
 

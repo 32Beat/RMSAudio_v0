@@ -11,7 +11,7 @@
 #import "RMSAudio.h"
 
 @interface MainViewController () <RMSTimerProtocol>
-@property (nonatomic) RMSInput *audioInput;
+
 @property (nonatomic) RMSOutput *audioOutput;
 
 @property (nonatomic) RMSVolume *volumeFilter;
@@ -37,9 +37,7 @@
 	
 	
 	self.audioOutput = [RMSOutput defaultOutput];
-	
-	self.audioInput = [RMSInput defaultInput];
-	self.audioOutput.source = self.audioInput;
+	self.audioOutput.source = [RMSInput defaultInput];
 	
 	self.volumeFilter = [RMSVolume new];
 	self.audioOutput.filter = self.volumeFilter;
@@ -110,6 +108,7 @@
 	self.volumeFilter.balance = V;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 /*
 	RMSAutoPan is a kind of PID controller for keeping balance centered. 
 	Here we deactivate the balanceslider and add the AutoPan filter.
@@ -150,7 +149,14 @@
 	[NSThread sleepForTimeInterval:0.05];
 	
 	// Start sinewave
-	self.audioOutput.source = [RMSSineWave instanceWithFrequency:440.0];
+	self.audioOutput.source = [RMSSineWave instanceWithFrequency:441.0];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectMicButton:(NSButton *)button
+{
+	self.audioOutput.source = [RMSInput defaultInput];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -159,8 +165,10 @@
 	
 	Note that the RMSAudioUnitVarispeed is automatically attached if necessary.
 	
-	sampleRate always refers to the output samplerate of an RMSSource,
-	where appropriate, the input sampleRate should be set by a specific method.
+	sampleRate always refers to the output samplerate of an RMSSource.
+	Where appropriate, the input sampleRate should be set by a specific method, 
+	unless the sampleRate is implicated: RMSInput only works properly if 
+	both the input and output samplerate are equal.
 */
 
 - (IBAction) didSelectButton:(NSButton *)button
@@ -182,9 +190,13 @@
 - (void) startFileWithURL:(NSURL *)url
 {
 	RMSSource *source = [RMSAudioUnitFilePlayer instanceWithURL:url];
-
-	if (source.sampleRate != self.audioOutput.sampleRate)
-	source = [RMSAudioUnitVarispeed instanceWithSource:source];
+	if (source != nil)
+	{
+		if (source.sampleRate != self.audioOutput.sampleRate)
+		{
+			source = [RMSAudioUnitVarispeed instanceWithSource:source];
+		}
+	}
 
 	// Attaching automatically sets the output sampleRate for source
 	[self.audioOutput setSource:source];
