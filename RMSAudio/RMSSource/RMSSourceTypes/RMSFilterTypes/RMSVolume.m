@@ -13,6 +13,8 @@
 
 @interface RMSVolume ()
 {
+	float mGain;
+	
 	float mLastVolume;
 	float mNextVolume;
 
@@ -81,7 +83,7 @@ static OSStatus renderCallback(
 	*/
 	
 	float lastVolume = rmsObject->mLastVolume;
-	float nextVolume = rmsObject->mNextVolume;
+	float nextVolume = rmsObject->mNextVolume * pow(10, 0.05*rmsObject->mGain);
 	if ((lastVolume != 1.0)||(nextVolume != 1.0))
 	{
 		PCM_ApplyVolume(lastVolume, nextVolume,
@@ -122,6 +124,14 @@ static OSStatus renderCallback(
 	
 	return self;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (float) gain
+{ return mGain; }
+
+- (void) setGain:(float)gain
+{ mGain = gain; }
 
 ////////////////////////////////////////////////////////////////////////////////
 

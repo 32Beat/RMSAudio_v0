@@ -27,6 +27,8 @@
 #include "RMSMixer.h"
 #include "RMSMixerSource.h"
 
+#include "RMSSineWave.h"
+
 #include "RMSTimer.h"
 #include "RMSStereoView.h"
 
