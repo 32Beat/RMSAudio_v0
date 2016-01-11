@@ -185,8 +185,7 @@
 	
 	sampleRate always refers to the output samplerate of an RMSSource.
 	Where appropriate, the input sampleRate should be set by a specific method, 
-	unless the sampleRate is implicated: RMSInput only works properly if 
-	both the input and output samplerate are equal.
+	unless the sampleRate is implicated.
 */
 
 - (IBAction) didSelectButton:(NSButton *)button
