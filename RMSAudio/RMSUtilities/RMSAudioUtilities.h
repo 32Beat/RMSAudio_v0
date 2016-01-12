@@ -23,6 +23,24 @@ static const OSStatus memFullErr = -108;
 double RMSCurrentHostTimeInSeconds(void);
 double RMSHostTimeToSeconds(double hostTime);
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// We only do non-interleaved 32bit float buffers
+
+AudioBufferList *AudioBufferListCreate32f(bool interleaved, UInt32 channelCount, UInt32 frameCount);
+void AudioBufferListRelease(AudioBufferList *bufferListPtr);
+
+OSStatus AudioBufferPrepare32f(AudioBuffer *bufferPtr, UInt32 channelCount, UInt32 frameCount);
+void AudioBufferReleaseMemory(AudioBuffer *bufferPtr);
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+	RMSStereoBufferList
+	-------------------
+	Structure to allow stackbased AudioBufferList
+	TODO: may need namingconvention to distinguish struct from object
+*/
 typedef struct RMSStereoBufferList
 {
     UInt32      bufferCount;
@@ -32,14 +50,7 @@ RMSStereoBufferList;
 
 typedef RMSStereoBufferList RMSStereoBufferList32f;
 
-static OSStatus AudioBufferPrepare32f(AudioBuffer *buffer, UInt32 channelCount, UInt32 frameCount)
-{
-	buffer->mNumberChannels = channelCount;
-	buffer->mDataByteSize = channelCount * frameCount * sizeof(Float32);
-	buffer->mData = malloc(buffer->mDataByteSize);
-	
-	return buffer->mData ? noErr : memFullErr;
-}
+////////////////////////////////////////////////////////////////////////////////
 
 static OSStatus RMSStereoBufferListPrepare32f(RMSStereoBufferList32f *stereoBuffer, UInt32 frameCount)
 {
@@ -49,96 +60,20 @@ static OSStatus RMSStereoBufferListPrepare32f(RMSStereoBufferList32f *stereoBuff
 	AudioBufferPrepare32f(&stereoBuffer->buffer[1], 1, frameCount);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
-static inline void AudioBufferList_ClearBuffers(AudioBufferList *bufferList)
-{
-	for (UInt32 n=bufferList->mNumberBuffers; n!=0; n--)
-	{ vDSP_vclr(bufferList->mBuffers[n-1].mData, 1, bufferList->mBuffers[n-1].mDataByteSize>>2); }
-}
+void AudioBufferList_ClearBuffers(AudioBufferList *bufferList);
 
-static inline void AudioBufferList_ClearFrames(AudioBufferList *bufferList, UInt32 frameCount)
-{
-	UInt32 n=bufferList->mNumberBuffers;
-	while (n != 0)
-	{
-		n -= 1;
-		bufferList->mBuffers[n].mDataByteSize = frameCount<<2;
-		vDSP_vclr(bufferList->mBuffers[n].mData, 1, frameCount);
-	}
-}
+/*
+	Following call is important: 
+	it sets frameCount frames to 0.0, and sets mDataByteSize accordingly
+	Some AudioUnits may adjust the AudioBuffer info, particularly the 
+	mDataByteSize field, which obviously doesn't go well with global 
+	bufferList pointers.
+*/
+void AudioBufferList_ClearFrames(AudioBufferList *bufferList, UInt32 frameCount);
 
-
-static inline void PCM_InterpolateStereo1(
-	float *srcPtrL, float *srcPtrR, double srcOffset, double srcStep,
-	float *dstPtrL, float *dstPtrR, UInt32 n)
-{
-	UInt32 srcIndex = srcOffset;
-	UInt32 dstIndex = 0;
-	
-	float L1 = srcPtrL[srcIndex];
-	float R1 = srcPtrR[srcIndex];
-	srcIndex += 1;
-	float L2 = srcPtrL[srcIndex];
-	float R2 = srcPtrR[srcIndex];
-	srcIndex += 1;
-
-	srcOffset -= srcIndex;
-	
-	while (n != 0)
-	{
-		n -= 1;
-
-		dstPtrL[dstIndex] = L1 + srcOffset * (L2 - L1);
-		dstPtrR[dstIndex] = R1 + srcOffset * (R2 - R1);
-		
-		srcOffset += srcStep;
-		if (srcOffset >= 1.0)
-		{
-			srcOffset -= 1.0;
-			L1 = L2;
-			R1 = R2;
-			L2 = srcPtrL[srcIndex];
-			R2 = srcPtrR[srcIndex];
-			srcIndex += 1;
-		}
-		dstIndex += 1;
-	}
-}
-
-
-
-static inline void PCM_InterpolateStereo(
-	float *srcPtrL, float *srcPtrR, double srcR,
-	float *dstPtrL, float *dstPtrR, double dstR, UInt32 n)
-{
-	double srcSum = 0;
-	double srcStep = srcR / dstR;
-	
-	UInt32 srcIndex = 0;
-	UInt32 dstIndex = 0;
-	
-	while (n != 0)
-	{
-		n -= 1;
-		dstPtrL[dstIndex] = srcPtrL[srcIndex];
-		dstPtrR[dstIndex] = srcPtrR[srcIndex];
-		
-		srcSum += srcStep;
-		if (srcSum >= 1.0)
-		{ srcIndex += 1; srcSum -= 1.0; }
-		dstIndex += 1;
-	}
-}
-
-static inline void AudioBufferList_InterpolateBuffers
-(const AudioBufferList *srcListPtr, double srcR,
-		AudioBufferList *dstListPtr, double dstR, UInt32 frameCount)
-{
-	PCM_InterpolateStereo(
-		srcListPtr->mBuffers[0].mData, srcListPtr->mBuffers[1].mData, srcR,
-		dstListPtr->mBuffers[0].mData, dstListPtr->mBuffers[1].mData, dstR, frameCount);
-}
-
+////////////////////////////////////////////////////////////////////////////////
 
 
 static inline void PCM_CopyStereo(
@@ -177,89 +112,8 @@ static inline OSStatus RunAURenderCallback(
 	ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, ioData);
 }
 
-/*
-static OSStatus AudioUnitEnableInput(AudioUnit audioUnit, UInt32 state)
-{
-	if (audioUnit == nil) return paramErr;
-	
-	AudioUnitElement inputBus = 1;
-
-	return AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
-	kAudioUnitScope_Input, inputBus, &state, sizeof(state));
-}
-
-static OSStatus AudioUnitEnableOutput(AudioUnit audioUnit, UInt32 state)
-{
-	if (audioUnit == nil) return paramErr;
-	
-	AudioUnitElement outputBus = 0;
-
-	return AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_EnableIO,
-	kAudioUnitScope_Output, outputBus, &state, sizeof(state));
-}
-
-
-static OSStatus AudioUnitSetInputDevice(AudioUnit audioUnit, AudioDeviceID deviceID)
-{
-	if (audioUnit == nil) return paramErr;
-
-
-	OSStatus result = noErr;
-	
-	static const AudioObjectPropertyAddress address = {
-		kAudioHardwarePropertyDefaultInputDevice,
-		kAudioObjectPropertyScopeGlobal,
-		kAudioObjectPropertyElementMaster };
-	
-	UInt32 size = sizeof(deviceID);
-	
-	if (deviceID == kAudioDeviceUnknown)
-	{
-		result = AudioObjectGetPropertyData(kAudioObjectSystemObject,
-		&address, 0, nil, &size, &deviceID);
-		if (result != noErr) return result;
-	}
-	
-	return AudioUnitSetProperty(audioUnit, kAudioOutputUnitProperty_CurrentDevice,
-	kAudioUnitScope_Global, 0, &deviceID, sizeof(deviceID));
-}
-
-
-static AudioUnit __NewAudioUnitWithDescription(AudioComponentDescription desc)
-{
-	AudioComponent component = AudioComponentFindNext(nil, &desc);
-	if (component != nil)
-	{
-		AudioComponentInstance instance = nil;
-		OSStatus result = AudioComponentInstanceNew(component, &instance);
-		if (result == noErr)
-		{
-			return instance;
-		}
-		else
-		NSLog(@"AudioComponentInstanceNew error: %d", result);
-	}
-	else
-	NSLog(@"%@", @"AudioComponent not found!");
-	
-	return nil;
-}
-
-
-static AudioUnit __NewAudioUnitHALInstance(void)
-{
-	// User selected output device
-	static const AudioComponentDescription info = {
-		.componentType = kAudioUnitType_Output,
-		.componentSubType = kAudioUnitSubType_HALOutput,
-		.componentManufacturer = kAudioUnitManufacturer_Apple,
-		.componentFlags = 0,
-		.componentFlagsMask = 0
-	};
-	
-	return NewAudioUnitWithDescription(info);
-}
-*/
-
-
 #endif /* RMSAudioUtilities_h */
+
+
+
+
