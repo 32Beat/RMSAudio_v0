@@ -39,6 +39,7 @@
 - (Float64) sampleRate;
 - (void) setSampleRate:(Float64)sampleRate;
 
+// Get the value of the corresponding objectpointers in an RMSSource
 void *RMSSourceGetSource(void *source);
 void *RMSSourceGetFilter(void *source);
 void *RMSSourceGetMonitor(void *source);
@@ -46,7 +47,14 @@ void *RMSSourceGetMonitor(void *source);
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
-
+/*
+	RunRMSSource
+	------------
+	Run the callback of an RMSSource variant, 
+	in AudioUnit parlance this would be the equivalent of AudioUnitRender
+	
+	Can be used in a rendercallback to produce audio from a source
+*/
 OSStatus RunRMSSource(
 	void 							*rmsObject,
 	AudioUnitRenderActionFlags 		*actionFlags,

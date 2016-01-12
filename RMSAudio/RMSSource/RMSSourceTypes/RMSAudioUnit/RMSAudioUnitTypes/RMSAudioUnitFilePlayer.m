@@ -73,7 +73,8 @@
 	
 	
 	[self setResultFormat:&RMSPreferredAudioFormat];
-	[self setSampleRate:mFileFormat.mSampleRate];
+	// self->setSampleRate does nothing, as it is determined by the file
+	[super setSampleRate:mFileFormat.mSampleRate];
 
 
 	result = [self initializeAudioUnit];
@@ -123,6 +124,17 @@
 {
 	if (mFileID != nil)
 	AudioFileClose(mFileID);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// self->setSampleRate does nothing, as it is determined by the file
+
+- (void) setSampleRate:(Float64)sampleRate
+{
+	if (mSampleRate != sampleRate)
+	{
+		NSLog(@"RMSAudioUnitFilePlayer: attempt to set incompatible sampleRate: %.1f", sampleRate);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
