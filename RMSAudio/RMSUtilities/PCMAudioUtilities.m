@@ -381,7 +381,8 @@ OSStatus PCMAudioUnitSetRenderCallbackFormat(AudioUnit audioUnit, const AudioStr
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
-OSStatus PCMAudioUnitGetInputSourceSampleRate(AudioUnit audioUnit, Float64 *sampleRatePtr)
+OSStatus PCMAudioUnitGetSampleRateAtIndex(AudioUnit audioUnit, AudioUnitScope unitScope,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr)
 {
 	if (audioUnit == nil) return paramErr;
 	if (sampleRatePtr == nil) return paramErr;
@@ -389,11 +390,20 @@ OSStatus PCMAudioUnitGetInputSourceSampleRate(AudioUnit audioUnit, Float64 *samp
 	UInt32 size = sizeof(Float64);
 	return AudioUnitGetProperty
 		(audioUnit, kAudioUnitProperty_SampleRate, \
-		kAudioUnitScope_Input, 1, sampleRatePtr, &size);
+		unitScope, streamIndex, sampleRatePtr, &size);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
+OSStatus PCMAudioUnitGetInputScopeSampleRateAtIndex(AudioUnit audioUnit,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr)
+{ return PCMAudioUnitGetSampleRateAtIndex(audioUnit, kAudioUnitScope_Input, streamIndex, sampleRatePtr); }
 
+OSStatus PCMAudioUnitGetOutputScopeSampleRateAtIndex(AudioUnit audioUnit,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr)
+{ return PCMAudioUnitGetSampleRateAtIndex(audioUnit, kAudioUnitScope_Output, streamIndex, sampleRatePtr); }
+
+////////////////////////////////////////////////////////////////////////////////
 
 OSStatus PCMAudioUnitGetMaximumFramesPerSlice(AudioUnit audioUnit, UInt32 *maxFrames)
 {

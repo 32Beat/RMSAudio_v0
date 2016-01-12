@@ -98,6 +98,18 @@ static OSStatus renderCallback(
 	AudioBufferList_ClearFrames(bufferListPtr, frameCount);
 
 	OSStatus result = noErr;
+
+	Float64 sampleRate = 0.0;
+	result = PCMAudioUnitGetOutputScopeSampleRateAtIndex(rmsObject->mAudioUnit, 0, &sampleRate);
+	if ((sampleRate != 0.0) && (sampleRate != rmsObject->mSampleRate))
+	{
+		/*
+			A device samplerate change is typically destructive, 
+			produce silence + error until the management thread 
+			has had a chance to incorporate the change.
+		*/
+		return paramErr;
+	}
 	
 	if (rmsObject->mSource != nil)
 		result = RunRMSSource((__bridge void *)rmsObject->mSource,
@@ -271,11 +283,26 @@ static OSStatus renderCallback(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/*
+	Samplerate is only propagated to filters and monitors, as these operate on 
+	output samples, while a source might specifically need to produce samples 
+	at a different rate, like in the Varispeed case.
+	For correct reproduction, the output unit needs to receive correctly rated 
+	samples directly from its source.
+*/
 
 - (void) setSource:(RMSSource *)source
 {
 	[source setSampleRate:self.sampleRate];
 	[super setSource:source];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) setSampleRate:(Float64)sampleRate
+{
+	[mSource setSampleRate:sampleRate];
+	[super setSampleRate:sampleRate];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

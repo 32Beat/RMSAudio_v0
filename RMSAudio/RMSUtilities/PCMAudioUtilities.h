@@ -89,6 +89,13 @@ OSStatus AudioUnitSetRenderCallback
 
 ////////////////////////////////////////////////////////////////////////////////
 
+OSStatus PCMAudioUnitGetSampleRateAtIndex(AudioUnit audioUnit, AudioUnitScope unitScope,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr);
+OSStatus PCMAudioUnitGetInputScopeSampleRateAtIndex(AudioUnit audioUnit,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr);
+OSStatus PCMAudioUnitGetOutputScopeSampleRateAtIndex(AudioUnit audioUnit,
+AudioUnitElement streamIndex, Float64 *sampleRatePtr);
+
 OSStatus PCMAudioUnitGetInputSourceSampleRate(AudioUnit audioUnit, Float64 *sampleRatePtr);
 
 OSStatus PCMAudioUnitGetMaximumFramesPerSlice(AudioUnit audioUnit, UInt32 *maxFrames);
