@@ -38,7 +38,7 @@ static OSStatus renderCallback(
 	const AudioTimeStamp       *timeStampPtr,
 	UInt32                     busNumber,
 	UInt32                     frameCount,
-	AudioBufferList * __nullable bufferListPtr)
+	AudioBufferList            *bufferListPtr)
 {
 	__unsafe_unretained MyRMSSource *rmsObject =
 	(__bridge __unsafe_unretained MyRMSSource *)refCon;
