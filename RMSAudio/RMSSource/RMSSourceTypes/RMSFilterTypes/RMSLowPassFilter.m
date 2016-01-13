@@ -103,18 +103,15 @@ static OSStatus renderCallback(
 - (void) setCutOff:(float)f
 {
 	float minF = 20.0;
-	float maxF = 0.5*mSampleRate;
+	float maxF = 20000.0;
 	
 	[self setCutOffFrequency:minF + f * f * (maxF - minF)];
-	[self updateMultipliers];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 - (void) setCutOffFrequency:(float)f
 {
-	float maxF = 0.5*mSampleRate;
-	if (f > maxF) f = maxF;
 	if (f < 20.0) f = 20.0;
 	
 	mCutOff = f;
@@ -134,8 +131,7 @@ static OSStatus renderCallback(
 - (void) updateMultipliers
 {
 	double maxF = 0.5 * mSampleRate;
-//	double m = (20.0 + (maxF - 20.0) * mCutOff * mCutOff)/maxF;
-	double m = mCutOff / maxF;
+	double m = mCutOff < maxF ? mCutOff / maxF : 1.0;
 	mLM = m;
 	mRM = m;
 }
