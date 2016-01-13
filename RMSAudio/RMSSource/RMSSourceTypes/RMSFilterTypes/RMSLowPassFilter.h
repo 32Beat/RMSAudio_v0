@@ -13,5 +13,5 @@
 
 - (void) setCutOff:(float)f;
 - (void) setCutOffFrequency:(float)f;
-
+- (void) setResonance:(float)value;
 @end

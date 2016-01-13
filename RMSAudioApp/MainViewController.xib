@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9531"/>
+        <capability name="box content view" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="MainViewController">
@@ -11,6 +12,7 @@
                 <outlet property="balanceControl" destination="PTc-sf-7Tp" id="UkC-M4-Med"/>
                 <outlet property="cutOffControl" destination="kvJ-jh-7iT" id="jUC-kc-Eeb"/>
                 <outlet property="gainControl" destination="8co-XE-7Ix" id="mhO-Ll-lmu"/>
+                <outlet property="resonanceControl" destination="PbG-nu-370" id="Ak3-z9-b6z"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
                 <outlet property="volumeControl" destination="SE4-C7-Agl" id="lYx-5u-YcD"/>
@@ -129,27 +131,47 @@
                         <action selector="didSelectMicButton:" target="-2" id="2Hb-lg-VVN"/>
                     </connections>
                 </button>
-                <slider verticalHuggingPriority="750" id="kvJ-jh-7iT">
-                    <rect key="frame" x="18" y="153" width="444" height="21"/>
-                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="gbL-e2-NyS"/>
-                    <connections>
-                        <action selector="didAdjustCutOff:" target="-2" id="me5-Pj-NuB"/>
-                    </connections>
-                </slider>
-                <button id="m0p-D9-8P2">
-                    <rect key="frame" x="22" y="131" width="79" height="18"/>
+                <box autoresizesSubviews="NO" title="Low Pass Filter" borderType="line" id="XqX-SV-EhV">
+                    <rect key="frame" x="17" y="68" width="446" height="139"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <buttonCell key="cell" type="check" title="Low pass" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jea-zz-G2r">
-                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                        <font key="font" metaFont="system"/>
-                    </buttonCell>
-                    <connections>
-                        <action selector="didSelectLowPass:" target="-2" id="N0G-q9-qwx"/>
-                    </connections>
-                </button>
+                    <view key="contentView" id="H2S-xK-Afe">
+                        <rect key="frame" x="1" y="1" width="444" height="123"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <slider verticalHuggingPriority="750" id="kvJ-jh-7iT">
+                                <rect key="frame" x="18" y="84" width="408" height="21"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="gbL-e2-NyS"/>
+                                <connections>
+                                    <action selector="didAdjustCutOff:" target="-2" id="me5-Pj-NuB"/>
+                                </connections>
+                            </slider>
+                            <slider verticalHuggingPriority="750" id="PbG-nu-370">
+                                <rect key="frame" x="18" y="51" width="408" height="21"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="below" sliderType="linear" id="qNr-wD-wtp"/>
+                                <connections>
+                                    <action selector="didAdjustResonance:" target="-2" id="z2x-GW-0hC"/>
+                                </connections>
+                            </slider>
+                            <button id="m0p-D9-8P2">
+                                <rect key="frame" x="29" y="18" width="60" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jea-zz-G2r">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didSelectLowPass:" target="-2" id="N0G-q9-qwx"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                    </view>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-227" y="144.5"/>
+            <point key="canvasLocation" x="-344" y="41.5"/>
         </customView>
     </objects>
 </document>

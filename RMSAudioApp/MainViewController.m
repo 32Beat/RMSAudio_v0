@@ -24,6 +24,7 @@
 
 @property (nonatomic) RMSLowPassFilter *lowPassFilter;
 @property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
+@property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
 
 
 @property (nonatomic) RMSMonitor *levelsMonitor;
@@ -145,12 +146,11 @@
 
 - (IBAction) didSelectLowPass:(NSButton *)button
 {
-	static RMSLowPassFilter *filter = nil;
-	
 	if (self.lowPassFilter == nil)
 	{
 		self.lowPassFilter = [RMSLowPassFilter new];
 		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
+		[self.lowPassFilter setResonance:self.resonanceControl.floatValue];
 		[self.audioOutput addFilter:self.lowPassFilter];
 	}
 	else
@@ -165,6 +165,13 @@
 - (IBAction) didAdjustCutOff:(NSSlider *)sender
 {
 	self.lowPassFilter.cutOff = sender.floatValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustResonance:(NSSlider *)sender
+{
+	self.lowPassFilter.resonance = sender.floatValue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
