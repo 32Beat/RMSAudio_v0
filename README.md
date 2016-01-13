@@ -1,5 +1,5 @@
 # RMSAudio
-Objective-C AudioEngine for OSX and iOS
+## Objective-C AudioEngine for OSX and iOS
 
 RMSAudio is an experiment in designing a simple and comprehensive audio management structure in Objective-C for the Mac OS family. The design principles are based on the following logic: 
 
@@ -18,7 +18,7 @@ As an example, PlayThru (from mic to output) is as simple as:
    
 That just works. It even works with differing sampleRates between input and output, as the RMSInput has a simple linear-interpolating ringbuffer build in, and the output object automatically sets the samplerate of its source. Setting the sampleRate of a source always refers to the “outputscope” of that source. 
 
-If a more sophisticated algorithm would be desired for sampleRate conversion, it is just a simple to add the Varispeed audiounit in between input and output: 
+If a more sophisticated algorithm would be desired for sampleRate conversion, it is just as simple to add the Varispeed audiounit in between input and output: 
 ```obj-c
 RMSSource *source = [RMSInput defaultInput];
 
@@ -28,3 +28,36 @@ if (source.sampleRate != self.audioOutput.sampleRate)
 self.audioOutput.source = source;
 ```
 Which builds a simple tree: input->varispeed->output
+
+## Writing a custom RMSSource
+To create your own RMSSource you need to implement a C callback function within the implementation scope. In template form it typically looks like this:
+```obj-c
+static OSStatus renderCallback(
+	void                       *refCon,
+	AudioUnitRenderActionFlags *actionFlagsPtr,
+	const AudioTimeStamp       *timeStampPtr,
+	UInt32                     busNumber,
+	UInt32                     frameCount,
+	AudioBufferList            *bufferListPtr)
+{
+	__unsafe_unretained MyRMSSource *rmsObject =
+	(__bridge __unsafe_unretained MyRMSSource *)refCon;
+
+	OSStatus result = noErr;
+	
+	// Fill buffers in bufferListPtr 
+
+	return result;
+}
+
+
++ (AURenderCallback) callbackPtr
+{ return renderCallback; }
+
+```
+
+The class globalscope callbackPtr method allow "new" and "init" to do all the required initialization. Getting your code to run then is as simple as:
+
+```obj-c
+self.audioOutput.source = [MyRMSSource new];
+```
