@@ -61,3 +61,9 @@ The class globalscope callbackPtr method allow "new" and "init" to do all the re
 ```obj-c
 self.audioOutput.source = [MyRMSSource new];
 ```
+
+## Stacking Filters
+An RMSSource object by default contains ivars for a source, a filter, and a monitor. In some scenarios it will be necessary to connect several filters in a chain. In RMSAudio objects this is accomplished by a linked list approach. Instead of setting the filter connection directly using "setFilter:", you can use "addFilter:" which will traverse the filter chain until an empty slot is encountered. 
+
+While that is not necessarily the best approach for object programming, it is very useful in the context of the audiothread. 
+For symmetry this approach is available for the source ivar as well, but using it for that case requires utmost care. It might be useful however for stacking additive oscillators in an FM generator for example.
