@@ -10,27 +10,28 @@
 #ifndef RMSAudio_h
 #define RMSAudio_h
 
-#include "RMSCallback.h"
-#include "RMSSource.h"
-#include "RMSAudioUnit.h"
-#include "RMSAudioUnitFilePlayer.h"
-#include "RMSAudioUnitVarispeed.h"
-#include "RMSAudioUnitPlatformIO.h"
-#include "RMSInput.h"
-#include "RMSOutput.h"
+#import "RMSCallback.h"
+#import "RMSSource.h"
+#import "RMSAudioUnit.h"
+#import "RMSAudioUnitFilePlayer.h"
+#import "RMSAudioUnitVarispeed.h"
+#import "RMSAudioUnitPlatformIO.h"
+#import "RMSInput.h"
+#import "RMSOutput.h"
 
-#include "RMSVolume.h"
-#include "RMSAutoPan.h"
+#import "RMSVolume.h"
+#import "RMSAutoPan.h"
+#import "RMSLowPassFilter.h"
 
-#include "RMSMonitor.h"
+#import "RMSMonitor.h"
 
-#include "RMSMixer.h"
-#include "RMSMixerSource.h"
+#import "RMSMixer.h"
+#import "RMSMixerSource.h"
 
-#include "RMSSineWave.h"
+#import "RMSSineWave.h"
 
-#include "RMSTimer.h"
-#include "RMSStereoView.h"
+#import "RMSTimer.h"
+#import "RMSStereoView.h"
 
 CF_ENUM(AudioFormatFlags)
 {

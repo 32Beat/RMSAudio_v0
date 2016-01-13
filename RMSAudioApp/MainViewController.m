@@ -22,8 +22,13 @@
 @property (nonatomic) RMSAutoPan *autoPan;
 @property (nonatomic, weak) IBOutlet NSButton *autoPanButton;
 
+@property (nonatomic) RMSLowPassFilter *lowPassFilter;
+@property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
+
+
 @property (nonatomic) RMSMonitor *levelsMonitor;
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
+
 @end
 
 
@@ -136,6 +141,36 @@
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectLowPass:(NSButton *)button
+{
+	static RMSLowPassFilter *filter = nil;
+	
+	if (self.lowPassFilter == nil)
+	{
+		self.lowPassFilter = [RMSLowPassFilter new];
+		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
+		[self.audioOutput addFilter:self.lowPassFilter];
+	}
+	else
+	{
+		[self.audioOutput removeFilter:self.lowPassFilter];
+		self.lowPassFilter = nil;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustCutOff:(NSSlider *)sender
+{
+	self.lowPassFilter.cutOff = sender.floatValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Input Source Selection
+////////////////////////////////////////////////////////////////////////////////
 /*
 	A pure sine wave for RMS power testing
 */
@@ -214,7 +249,7 @@
 			source = [RMSAudioUnitVarispeed instanceWithSource:source];
 		}
 	}
-
+	
 	// Attaching automatically sets the output sampleRate for source
 	[self.audioOutput setSource:source];
 }

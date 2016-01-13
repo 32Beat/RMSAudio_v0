@@ -9,6 +9,7 @@
             <connections>
                 <outlet property="autoPanButton" destination="wek-HA-HLG" id="FYV-As-XcP"/>
                 <outlet property="balanceControl" destination="PTc-sf-7Tp" id="UkC-M4-Med"/>
+                <outlet property="cutOffControl" destination="kvJ-jh-7iT" id="jUC-kc-Eeb"/>
                 <outlet property="gainControl" destination="8co-XE-7Ix" id="mhO-Ll-lmu"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -18,15 +19,15 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="342"/>
+            <rect key="frame" x="0.0" y="0.0" width="480" height="495"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView id="4L8-Lw-eXY" customClass="RMSStereoView">
-                    <rect key="frame" x="20" y="280" width="440" height="41"/>
+                    <rect key="frame" x="20" y="433" width="440" height="41"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </customView>
                 <button verticalHuggingPriority="750" id="LrF-dh-Ar7">
-                    <rect key="frame" x="195" y="13" width="90" height="32"/>
+                    <rect key="frame" x="197" y="13" width="90" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <buttonCell key="cell" type="push" title="Select..." bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="DAY-QN-5gO">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -37,7 +38,7 @@
                     </connections>
                 </button>
                 <slider verticalHuggingPriority="750" id="8co-XE-7Ix">
-                    <rect key="frame" x="18" y="219" width="444" height="27"/>
+                    <rect key="frame" x="18" y="372" width="444" height="27"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="12" tickMarkPosition="below" numberOfTickMarks="13" allowsTickMarkValuesOnly="YES" sliderType="linear" id="Tcg-6x-8pW"/>
                     <connections>
@@ -45,15 +46,15 @@
                     </connections>
                 </slider>
                 <customView id="T7i-Dp-rDP" customClass="RMSIndexView">
-                    <rect key="frame" x="20" y="273" width="440" height="7"/>
+                    <rect key="frame" x="20" y="426" width="440" height="7"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </customView>
                 <customView id="Lgl-fO-p3G" customClass="RMSIndexView">
-                    <rect key="frame" x="20" y="321" width="440" height="7"/>
+                    <rect key="frame" x="20" y="474" width="440" height="7"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                 </customView>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="yNk-wj-4rf">
-                    <rect key="frame" x="22" y="248" width="32" height="17"/>
+                    <rect key="frame" x="22" y="401" width="32" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Gain" id="rbf-PF-nQP">
                         <font key="font" metaFont="system"/>
@@ -62,7 +63,7 @@
                     </textFieldCell>
                 </textField>
                 <slider verticalHuggingPriority="750" id="SE4-C7-Agl">
-                    <rect key="frame" x="18" y="158" width="444" height="21"/>
+                    <rect key="frame" x="18" y="311" width="444" height="21"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="yBo-40-uVi"/>
                     <connections>
@@ -70,7 +71,7 @@
                     </connections>
                 </slider>
                 <slider verticalHuggingPriority="750" id="PTc-sf-7Tp">
-                    <rect key="frame" x="18" y="98" width="444" height="27"/>
+                    <rect key="frame" x="18" y="251" width="444" height="27"/>
                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                     <sliderCell key="cell" continuous="YES" state="on" alignment="left" minValue="-1" maxValue="1" tickMarkPosition="below" numberOfTickMarks="13" sliderType="linear" id="yQl-im-AAW"/>
                     <connections>
@@ -78,7 +79,7 @@
                     </connections>
                 </slider>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="yVW-27-ggN">
-                    <rect key="frame" x="22" y="126" width="52" height="17"/>
+                    <rect key="frame" x="22" y="279" width="52" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Balance" id="2hy-U3-VXQ">
                         <font key="font" metaFont="system"/>
@@ -87,7 +88,7 @@
                     </textFieldCell>
                 </textField>
                 <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="CFU-jU-q4v">
-                    <rect key="frame" x="22" y="180" width="49" height="17"/>
+                    <rect key="frame" x="22" y="333" width="49" height="17"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Volume" id="pY8-QN-NjC">
                         <font key="font" metaFont="system"/>
@@ -96,7 +97,7 @@
                     </textFieldCell>
                 </textField>
                 <button id="wek-HA-HLG">
-                    <rect key="frame" x="22" y="68" width="73" height="18"/>
+                    <rect key="frame" x="22" y="221" width="73" height="18"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     <buttonCell key="cell" type="check" title="AutoPan" bezelStyle="regularSquare" imagePosition="left" inset="2" id="Sh3-YM-nTv">
                         <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
@@ -118,7 +119,7 @@
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" id="MtJ-dn-Jmw">
-                    <rect key="frame" x="10" y="13" width="112" height="32"/>
+                    <rect key="frame" x="14" y="13" width="112" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                     <buttonCell key="cell" type="push" title="Microphone" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="O0H-UQ-E3E">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -128,8 +129,27 @@
                         <action selector="didSelectMicButton:" target="-2" id="2Hb-lg-VVN"/>
                     </connections>
                 </button>
+                <slider verticalHuggingPriority="750" id="kvJ-jh-7iT">
+                    <rect key="frame" x="18" y="153" width="444" height="21"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="gbL-e2-NyS"/>
+                    <connections>
+                        <action selector="didAdjustCutOff:" target="-2" id="me5-Pj-NuB"/>
+                    </connections>
+                </slider>
+                <button id="m0p-D9-8P2">
+                    <rect key="frame" x="22" y="131" width="79" height="18"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="check" title="Low pass" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jea-zz-G2r">
+                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="didSelectLowPass:" target="-2" id="N0G-q9-qwx"/>
+                    </connections>
+                </button>
             </subviews>
-            <point key="canvasLocation" x="28" y="244"/>
+            <point key="canvasLocation" x="-227" y="144.5"/>
         </customView>
     </objects>
 </document>

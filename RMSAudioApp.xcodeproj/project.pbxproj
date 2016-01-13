@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F0C3AFA1C466E190037D956 /* RMSLowPassFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */; };
 		7F166E111C43705A00537DC2 /* RMSSineWave.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F166E101C43705A00537DC2 /* RMSSineWave.m */; };
 		7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */; };
 		7FB8E0C31C42FA3800B7848A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C21C42FA3800B7848A /* main.m */; };
@@ -41,6 +42,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F0C3AF81C466E190037D956 /* RMSLowPassFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSLowPassFilter.h; sourceTree = "<group>"; };
+		7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSLowPassFilter.m; sourceTree = "<group>"; };
 		7F166E0F1C43705A00537DC2 /* RMSSineWave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSineWave.h; sourceTree = "<group>"; };
 		7F166E101C43705A00537DC2 /* RMSSineWave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSineWave.m; sourceTree = "<group>"; };
 		7FB8E0BB1C42FA3800B7848A /* RMSAudioApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSAudioApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -247,6 +250,8 @@
 				7FB8E0ED1C42FA7C00B7848A /* RMSAutoPan.m */,
 				7FB8E0EE1C42FA7C00B7848A /* RMSVolume.h */,
 				7FB8E0EF1C42FA7C00B7848A /* RMSVolume.m */,
+				7F0C3AF81C466E190037D956 /* RMSLowPassFilter.h */,
+				7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */,
 			);
 			path = RMSFilterTypes;
 			sourceTree = "<group>";
@@ -390,6 +395,7 @@
 				7FB8E1151C42FA7C00B7848A /* RMSVolume.m in Sources */,
 				7FB8E1161C42FA7C00B7848A /* RMSMixer.m in Sources */,
 				7FB8E11D1C42FA7C00B7848A /* RMSBalanceView.m in Sources */,
+				7F0C3AFA1C466E190037D956 /* RMSLowPassFilter.m in Sources */,
 				7FB8E1251C42FC5700B7848A /* MainViewController.m in Sources */,
 				7FB8E1171C42FA7C00B7848A /* RMSMixerSource.m in Sources */,
 				7FB8E1141C42FA7C00B7848A /* RMSAutoPan.m in Sources */,
