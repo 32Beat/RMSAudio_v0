@@ -14,7 +14,7 @@
 { return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
 
 static inline float SoftClip(float x)
-{ return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.5 : -1.5; }
+{ return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.0 : -1.0; }
 
 @interface RMSMoogFilter ()
 {
