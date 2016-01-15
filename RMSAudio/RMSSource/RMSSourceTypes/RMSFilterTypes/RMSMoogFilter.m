@@ -16,19 +16,16 @@
 static inline float SoftClip(float x)
 { return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.5 : -1.5; }
 
-
-typedef float RMSNativeFloat;
-
 @interface RMSMoogFilter ()
 {
-	RMSNativeFloat mCutOff;
-	RMSNativeFloat mResonance;
+	float mCutOff;
+	float mResonance;
 
-	RMSNativeFloat mLastCutOff;
-	RMSNativeFloat mLastResonance;
+	float mLastCutOff;
+	float mLastResonance;
 	
-	RMSNativeFloat mL[8];
-	RMSNativeFloat mR[8];
+	float mL[8];
+	float mR[8];
 }
 @end
 
@@ -36,44 +33,11 @@ typedef float RMSNativeFloat;
 @implementation RMSMoogFilter
 ////////////////////////////////////////////////////////////////////////////////
 
-static void MoogProcessSamples(
-	RMSNativeFloat Q, RMSNativeFloat Qstep,
-	RMSNativeFloat M, RMSNativeFloat Mstep, RMSNativeFloat *A,
-	float *samplePtr, UInt32 frameCount)
-{
-	do
-	{
-		double S = samplePtr[0];
-		
-		// Adjust feedback delay for hf stability
-		A[4] += 0.5 * (A[3]-A[4]);
-		
-		// Add feedback with inverted phase
-		// (basically this subtracts delayed low frequency content)
-		S -= Q * A[4];
-		S = SoftClip(S);
-		
-		// Filter sample value
-		A[0] += M * (S - A[0]);
-		A[1] += M * (A[0] - A[1]);
-		A[2] += M * (A[1] - A[2]);
-		A[3] += M * (A[2] - A[3]);
-		
-		*samplePtr++ = A[3];
-
-		Q += Qstep;
-		M += Mstep;
-	}
-	while(--frameCount != 0);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline void MoogProcessSamples2(
-	RMSNativeFloat Q, RMSNativeFloat Qstep,
-	RMSNativeFloat M, RMSNativeFloat Mstep,
-	RMSNativeFloat *AL, float *ptrL,
-	RMSNativeFloat *AR, float *ptrR,
+static inline void MoogProcessSamples(
+	float Q, float Qstep,
+	float M, float Mstep,
+	float *AL, float *ptrL,
+	float *AR, float *ptrR,
 	UInt32 frameCount)
 {
 
@@ -90,13 +54,13 @@ static inline void MoogProcessSamples2(
 
 	do
 	{
-		RMSNativeFloat L = ptrL[0];
+		float L = ptrL[0];
 		
 		Update(Q, M, L, AL);
 		
 		*ptrL++ = AL[3];
 
-		RMSNativeFloat R = ptrR[0];
+		float R = ptrR[0];
 
 		Update(Q, M, R, AR);
 		
@@ -144,7 +108,7 @@ static OSStatus renderCallback(
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 
 	// Filter samples 
-	MoogProcessSamples2(
+	MoogProcessSamples(
 		R, Rstep, F, Fstep,
 		rmsObject->mL, dstPtrL,
 		rmsObject->mR, dstPtrR, frameCount);
