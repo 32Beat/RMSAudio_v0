@@ -17,18 +17,18 @@ static inline float SoftClip(float x)
 { return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.5 : -1.5; }
 
 
-
+typedef float RMSNativeFloat;
 
 @interface RMSMoogFilter ()
 {
-	double mCutOff;
-	double mResonance;
+	RMSNativeFloat mCutOff;
+	RMSNativeFloat mResonance;
 
-	double mLastCutOff;
-	double mLastResonance;
+	RMSNativeFloat mLastCutOff;
+	RMSNativeFloat mLastResonance;
 	
-	double mL[8];
-	double mR[8];
+	RMSNativeFloat mL[8];
+	RMSNativeFloat mR[8];
 }
 @end
 
@@ -37,23 +37,19 @@ static inline float SoftClip(float x)
 ////////////////////////////////////////////////////////////////////////////////
 
 static void MoogProcessSamples(
-	double Q, double Qstep,
-	double M, double Mstep, double *A,
+	RMSNativeFloat Q, RMSNativeFloat Qstep,
+	RMSNativeFloat M, RMSNativeFloat Mstep, RMSNativeFloat *A,
 	float *samplePtr, UInt32 frameCount)
 {
 	do
 	{
-		// Prestep so we end up with the new values:
-		Q += Qstep;
-		M += Mstep;
-
 		double S = samplePtr[0];
 		
 		// Adjust feedback delay for hf stability
 		A[4] += 0.5 * (A[3]-A[4]);
 		
 		// Add feedback with inverted phase
-		// (basically this subtracts low frequency content with delay)
+		// (basically this subtracts delayed low frequency content)
 		S -= Q * A[4];
 		S = SoftClip(S);
 		
@@ -64,6 +60,50 @@ static void MoogProcessSamples(
 		A[3] += M * (A[2] - A[3]);
 		
 		*samplePtr++ = A[3];
+
+		Q += Qstep;
+		M += Mstep;
+	}
+	while(--frameCount != 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void MoogProcessSamples2(
+	RMSNativeFloat Q, RMSNativeFloat Qstep,
+	RMSNativeFloat M, RMSNativeFloat Mstep,
+	RMSNativeFloat *AL, float *ptrL,
+	RMSNativeFloat *AR, float *ptrR,
+	UInt32 frameCount)
+{
+
+	#define Update(Q, M, S, A) \
+	{ \
+		A[4] += 0.5*(A[3]-A[4]); \
+		S -= Q * A[4]; \
+		S = SoftClip(S); \
+		A[0] += M * (S   -A[0]); \
+		A[1] += M * (A[0]-A[1]); \
+		A[2] += M * (A[1]-A[2]); \
+		A[3] += M * (A[2]-A[3]); \
+	}
+
+	do
+	{
+		RMSNativeFloat L = ptrL[0];
+		
+		Update(Q, M, L, AL);
+		
+		*ptrL++ = AL[3];
+
+		RMSNativeFloat R = ptrR[0];
+
+		Update(Q, M, R, AR);
+		
+		*ptrR++ = AR[3];
+
+		Q += Qstep;
+		M += Mstep;
 	}
 	while(--frameCount != 0);
 }
@@ -81,7 +121,7 @@ static OSStatus renderCallback(
 	__unsafe_unretained RMSMoogFilter *rmsObject = \
 	(__bridge __unsafe_unretained RMSMoogFilter *)refCon;
 
-
+	// Prepare internal parameters
 	double S = rmsObject->mSampleRate;
 
 	// initialize if necessary
@@ -99,12 +139,15 @@ static OSStatus renderCallback(
 	rmsObject->mLastCutOff = Fnext;
 	rmsObject->mLastResonance = Rnext;
 
-
+	// Fetch buffer pointers
 	float *dstPtrL = bufferList->mBuffers[0].mData;
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 
-	MoogProcessSamples(R, Rstep, F, Fstep, rmsObject->mL, dstPtrL, frameCount);
-	MoogProcessSamples(R, Rstep, F, Fstep, rmsObject->mR, dstPtrR, frameCount);
+	// Filter samples 
+	MoogProcessSamples2(
+		R, Rstep, F, Fstep,
+		rmsObject->mL, dstPtrL,
+		rmsObject->mR, dstPtrR, frameCount);
 
 	return noErr;
 }

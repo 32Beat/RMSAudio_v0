@@ -22,6 +22,7 @@
 #import "RMSVolume.h"
 #import "RMSAutoPan.h"
 #import "RMSLowPassFilter.h"
+#import "RMSMoogFilter.h"
 
 #import "RMSMonitor.h"
 

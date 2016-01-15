@@ -145,12 +145,13 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (void) setCutOff:(float)f
+- (void) setCutOff:(float)value
 {
 	float minF = 20.0;
 	float maxF = 20000.0;
+	float F = minF + value * value * (maxF - minF);
 	
-	[self setCutOffFrequency:minF + f * f * (maxF - minF)];
+	[self setCutOffFrequency:F];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
