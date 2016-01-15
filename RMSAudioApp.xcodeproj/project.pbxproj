@@ -39,6 +39,7 @@
 		7FB8E1201C42FA7C00B7848A /* RMSStereoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E1081C42FA7C00B7848A /* RMSStereoView.m */; };
 		7FB8E1251C42FC5700B7848A /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E1231C42FC5700B7848A /* MainViewController.m */; };
 		7FB8E1261C42FC5700B7848A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E1241C42FC5700B7848A /* MainViewController.xib */; };
+		7FC519D41C49303F0041AC16 /* RMSMoogFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FC519D31C49303F0041AC16 /* RMSMoogFilter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -104,6 +105,8 @@
 		7FB8E1221C42FC5700B7848A /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		7FB8E1231C42FC5700B7848A /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		7FB8E1241C42FC5700B7848A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		7FC519D21C49303F0041AC16 /* RMSMoogFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSMoogFilter.h; sourceTree = "<group>"; };
+		7FC519D31C49303F0041AC16 /* RMSMoogFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSMoogFilter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +255,8 @@
 				7FB8E0EF1C42FA7C00B7848A /* RMSVolume.m */,
 				7F0C3AF81C466E190037D956 /* RMSLowPassFilter.h */,
 				7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */,
+				7FC519D21C49303F0041AC16 /* RMSMoogFilter.h */,
+				7FC519D31C49303F0041AC16 /* RMSMoogFilter.m */,
 			);
 			path = RMSFilterTypes;
 			sourceTree = "<group>";
@@ -382,6 +387,7 @@
 				7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */,
 				7FB8E1101C42FA7C00B7848A /* RMSAudioUnitPlatformIO.m in Sources */,
 				7FB8E10F1C42FA7C00B7848A /* RMSAudioUnitFilePlayer.m in Sources */,
+				7FC519D41C49303F0041AC16 /* RMSMoogFilter.m in Sources */,
 				7F166E111C43705A00537DC2 /* RMSSineWave.m in Sources */,
 				7FB8E10B1C42FA7C00B7848A /* RMSTimer.m in Sources */,
 				7FB8E10A1C42FA7C00B7848A /* RMSRingBuffer.m in Sources */,

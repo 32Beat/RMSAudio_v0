@@ -1,19 +1,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	RMSLowPassFilter
+	RMSMoogFilter
 	
 	Created by 32BT on 15/11/15.
 	Copyright © 2015 32BT. All rights reserved.
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "RMSLowPassFilter.h"
+#import "RMSMoogFilter.h"
 
 
-static inline double Clip(double x)
+// static inline float Clip(float x) \
 { return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
 
-@interface RMSLowPassFilter ()
+static inline float SoftClip(float x)
+{ return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.5 : -1.5; }
+
+
+
+
+@interface RMSMoogFilter ()
 {
 	double mCutOff;
 	double mResonance;
@@ -21,22 +27,47 @@ static inline double Clip(double x)
 	double mLastCutOff;
 	double mLastResonance;
 	
-	double mL0;
-	double mL1;
-	double mL2;
-	double mL3;
-	double mLL3;
-
-	double mR0;
-	double mR1;
-	double mR2;
-	double mR3;
-	double mRR3;
+	double mL[8];
+	double mR[8];
 }
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
-@implementation RMSLowPassFilter
+@implementation RMSMoogFilter
+////////////////////////////////////////////////////////////////////////////////
+
+static void MoogProcessSamples(
+	double Q, double Qstep,
+	double M, double Mstep, double *A,
+	float *samplePtr, UInt32 frameCount)
+{
+	do
+	{
+		// Prestep so we end up with the new values:
+		Q += Qstep;
+		M += Mstep;
+
+		double S = samplePtr[0];
+		
+		// Adjust feedback delay for hf stability
+		A[4] += 0.5 * (A[3]-A[4]);
+		
+		// Add feedback with inverted phase
+		// (basically this subtracts low frequency content with delay)
+		S -= Q * A[4];
+		S = SoftClip(S);
+		
+		// Filter sample value
+		A[0] += M * (S - A[0]);
+		A[1] += M * (A[0] - A[1]);
+		A[2] += M * (A[1] - A[2]);
+		A[3] += M * (A[2] - A[3]);
+		
+		*samplePtr++ = A[3];
+	}
+	while(--frameCount != 0);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static OSStatus renderCallback(
@@ -47,31 +78,15 @@ static OSStatus renderCallback(
 	UInt32							frameCount,
 	AudioBufferList 				*bufferList)
 {
-	__unsafe_unretained RMSLowPassFilter *rmsObject = \
-	(__bridge __unsafe_unretained RMSLowPassFilter *)refCon;
+	__unsafe_unretained RMSMoogFilter *rmsObject = \
+	(__bridge __unsafe_unretained RMSMoogFilter *)refCon;
 
-
-	float *dstPtrL = bufferList->mBuffers[0].mData;
-	float *dstPtrR = bufferList->mBuffers[1].mData;
-	
-	double L0 = rmsObject->mL0;
-	double L1 = rmsObject->mL1;
-	double L2 = rmsObject->mL2;
-	double L3 = rmsObject->mL3;
-	double LL3 = rmsObject->mLL3;
-
-	double R0 = rmsObject->mR0;
-	double R1 = rmsObject->mR1;
-	double R2 = rmsObject->mR2;
-	double R3 = rmsObject->mR3;
-	double RR3 = rmsObject->mRR3;
 
 	double S = rmsObject->mSampleRate;
 
-	//
+	// initialize if necessary
 	if (rmsObject->mLastCutOff == 0.0)
 	{ rmsObject->mLastCutOff = rmsObject->mCutOff * 2.0 / S; }
-
 
 	double F = rmsObject->mLastCutOff;
 	double Fnext = rmsObject->mCutOff * 2.0 / S;
@@ -80,51 +95,16 @@ static OSStatus renderCallback(
 	double R = rmsObject->mLastResonance;
 	double Rnext = rmsObject->mResonance * 4.0;
 	double Rstep = (Rnext - R) / frameCount;
+	
+	rmsObject->mLastCutOff = Fnext;
+	rmsObject->mLastResonance = Rnext;
 
 
-	for (UInt32 n=0; n!=frameCount; n++)
-	{
-		F += Fstep;
-		R += Rstep;
-//
-#define Compute(Q, M, S0, A0, A1, A2, A3, AA3) \
-{ \
-	AA3 += 0.5*(A3-AA3); \
-	S0 -= Q * AA3; \
-	S0 = Clip(S0); \
-	A0 += M * (S0 - A0); \
-	A1 += M * (A0 - A1); \
-	A2 += M * (A1 - A2); \
-	A3 += M * (A2 - A3); \
-}
-		double S0 = dstPtrL[n];
+	float *dstPtrL = bufferList->mBuffers[0].mData;
+	float *dstPtrR = bufferList->mBuffers[1].mData;
 
-		Compute(R, F, S0, L0, L1, L2, L3, LL3);
-
-		dstPtrL[n] = L3;
-		
-		
-		S0 = dstPtrR[n];
-
-		Compute(R, F, S0, R0, R1, R2, R3, RR3);
-
-		dstPtrR[n] = R3;
-	}
-
-	rmsObject->mLastCutOff = F;
-	rmsObject->mLastResonance = R;
-
-	rmsObject->mL0 = L0;
-	rmsObject->mL1 = L1;
-	rmsObject->mL2 = L2;
-	rmsObject->mL3 = L3;
-	rmsObject->mLL3 = LL3;
-
-	rmsObject->mR0 = R0;
-	rmsObject->mR1 = R1;
-	rmsObject->mR2 = R2;
-	rmsObject->mR3 = R3;
-	rmsObject->mRR3 = RR3;
+	MoogProcessSamples(R, Rstep, F, Fstep, rmsObject->mL, dstPtrL, frameCount);
+	MoogProcessSamples(R, Rstep, F, Fstep, rmsObject->mR, dstPtrR, frameCount);
 
 	return noErr;
 }
