@@ -10,7 +10,7 @@
 #import "RMSMoogFilter.h"
 
 
-// static inline float Clip(float x) \
+// static inline float HardClip(float x) \
 { return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
 
 static inline float SoftClip(float x)
