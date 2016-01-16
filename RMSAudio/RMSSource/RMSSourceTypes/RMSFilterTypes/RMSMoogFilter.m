@@ -10,11 +10,26 @@
 #import "RMSMoogFilter.h"
 
 
-// static inline float HardClip(float x) \
+static inline float HardClip(float x) \
 { return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
 
-static inline float SoftClip(float x)
+//static inline float SoftClip(float x) \
 { return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.0 : -1.0; }
+
+
+typedef struct rmsmoogfilter_t
+{
+	float F;
+	float M;
+	float Q;
+	
+	float A[8];
+}
+rmsmoogfilter_t;
+
+
+
+
 
 @interface RMSMoogFilter ()
 {
@@ -33,41 +48,40 @@ static inline float SoftClip(float x)
 @implementation RMSMoogFilter
 ////////////////////////////////////////////////////////////////////////////////
 
+static inline float MoogProcessSample(float M, float Q, float *A, float S)
+{
+	A[4] += 0.5*(A[3]-A[4]);
+	
+	S -= Q * A[4];
+	S = HardClip(S);
+	
+	A[0] += M * (S   -A[0]);
+	A[1] += M * (A[0]-A[1]);
+	A[2] += M * (A[1]-A[2]);
+	A[3] += M * (A[2]-A[3]);
+	
+	return A[3];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 static inline void MoogProcessSamples(
-	float Q, float Qstep,
 	float M, float Mstep,
+	float Q, float Qstep,
 	float *AL, float *ptrL,
 	float *AR, float *ptrR,
 	UInt32 frameCount)
 {
-
-	#define Update(Q, M, S, A) \
-	{ \
-		A[4] += 0.5*(A[3]-A[4]); \
-		S -= Q * A[4]; \
-		S = SoftClip(S); \
-		A[0] += M * (S   -A[0]); \
-		A[1] += M * (A[0]-A[1]); \
-		A[2] += M * (A[1]-A[2]); \
-		A[3] += M * (A[2]-A[3]); \
-	}
-
 	do
 	{
-		float L = ptrL[0];
+		float L = MoogProcessSample(M, Q, AL, ptrL[0]);
+		*ptrL++ = L;
 		
-		Update(Q, M, L, AL);
-		
-		*ptrL++ = AL[3];
+		float R = MoogProcessSample(M, Q, AR, ptrR[0]);
+		*ptrR++ = R;
 
-		float R = ptrR[0];
-
-		Update(Q, M, R, AR);
-		
-		*ptrR++ = AR[3];
-
-		Q += Qstep;
 		M += Mstep;
+		Q += Qstep;
 	}
 	while(--frameCount != 0);
 }
@@ -109,7 +123,7 @@ static OSStatus renderCallback(
 
 	// Filter samples 
 	MoogProcessSamples(
-		R, Rstep, F, Fstep,
+		F, Fstep, R, Rstep,
 		rmsObject->mL, dstPtrL,
 		rmsObject->mR, dstPtrR, frameCount);
 
