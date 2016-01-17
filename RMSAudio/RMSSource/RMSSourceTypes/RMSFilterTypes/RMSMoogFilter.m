@@ -13,7 +13,7 @@
 static inline float HardClip(float x) \
 { return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
 
-//static inline float SoftClip(float x) \
+static inline float SoftClip(float x) \
 { return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.0 : -1.0; }
 
 
@@ -53,12 +53,14 @@ static inline float MoogProcessSample(float M, float Q, float *A, float S)
 	A[4] += 0.5*(A[3]-A[4]);
 	
 	S -= Q * A[4];
-	S = HardClip(S);
+	S = SoftClip(S);
 	
 	A[0] += M * (S   -A[0]);
 	A[1] += M * (A[0]-A[1]);
 	A[2] += M * (A[1]-A[2]);
 	A[3] += M * (A[2]-A[3]);
+
+//	A[3] = SoftClip(A[3]);
 	
 	return A[3];
 }
@@ -151,7 +153,7 @@ static OSStatus renderCallback(
 	float minF = 20.0;
 	float maxF = 20000.0;
 	
-	[self setCutOffFrequency:minF + f * f * (maxF - minF)];
+	[self setCutOffFrequency:minF + f * (maxF - minF)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -190,8 +190,11 @@
 	self.volumeControl.floatValue = 0.1;
 	[NSThread sleepForTimeInterval:0.05];
 	
-	// Start sinewave
-	self.audioOutput.source = [RMSSineWave instanceWithFrequency:441.0];
+	// Start testsignal
+	self.audioOutput.source = [RMSTestSignal sineWaveWithFrequency:441.0];
+//	self.audioOutput.source = [RMSTestSignal blockWaveWithFrequency:441.0];
+//	self.audioOutput.source = [RMSTestSignal triangleWaveWithFrequency:441.0];
+//	self.audioOutput.source = [RMSTestSignal sawToothWaveWithFrequency:441.0];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

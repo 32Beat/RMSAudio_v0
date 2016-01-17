@@ -1,33 +1,43 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	RMSSineWave
+	RMSTestSignal
 	
 	Created by 32BT on 15/11/15.
 	Copyright © 2015 32BT. All rights reserved.
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "RMSSineWave.h"
+#import "RMSTestSignal.h"
 
 
-@interface RMSSineWave ()
+@interface RMSTestSignal ()
 {
 	double mFrequency;
-	double mX2PI;
+	double mX;
 	double mStep;
+	
+	double (*mFunctionPtr)(double);
 }
 @end
 
 
 ////////////////////////////////////////////////////////////////////////////////
-@implementation RMSSineWave
+@implementation RMSTestSignal
 ////////////////////////////////////////////////////////////////////////////////
+/*
+	x modulates between [-1.0, ..., +1.0)
+*/
+static double sineWave(double x)
+{ return sin(x*M_PI); }
 
-static double SineWave(double x)
-{ return sin(x); }
-
-static double BlockWave(double x)
+static double blockWave(double x)
 { return x < 0.0 ? -1.0 : x > 0.0 ? +1.0 : 0.0; }
+
+static double triangleWave(double x)
+{ return x < 0.0 ? +1.0 + x + x : +1.0 - x - x; }
+
+static double sawToothWave(double x)
+{ return x; }
 
 
 static OSStatus renderCallback(
@@ -38,21 +48,21 @@ static OSStatus renderCallback(
 	UInt32							frameCount,
 	AudioBufferList 				*audio)
 {
-	__unsafe_unretained RMSSineWave *rmsSource = \
-	(__bridge __unsafe_unretained RMSSineWave *)inRefCon;
+	__unsafe_unretained RMSTestSignal *rmsSource = \
+	(__bridge __unsafe_unretained RMSTestSignal *)inRefCon;
 
 	Float32 *srcPtr1 = audio->mBuffers[0].mData;
 	Float32 *srcPtr2 = audio->mBuffers[1].mData;
 		
 	for (UInt32 n=0; n!=frameCount; n++)
 	{
-		Float32 Y = SineWave(rmsSource->mX2PI);
+		Float32 Y = rmsSource->mFunctionPtr(rmsSource->mX);
 		srcPtr1[n] = Y;
 		srcPtr2[n] = Y;
 		
-		rmsSource->mX2PI += rmsSource->mStep;
-		if (rmsSource->mX2PI > M_PI)
-		{ rmsSource->mX2PI -= (M_PI+M_PI); }
+		rmsSource->mX += rmsSource->mStep;
+		if (rmsSource->mX >= 1.0)
+		{ rmsSource->mX -= 2.0; }
 	}
 
 	return noErr;
@@ -65,17 +75,35 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
++ (instancetype) sineWaveWithFrequency:(double)f
+{ return [[self alloc] initWithFrequency:f functionPtr:sineWave]; }
+
++ (instancetype) blockWaveWithFrequency:(double)f
+{ return [[self alloc] initWithFrequency:f functionPtr:blockWave]; }
+
++ (instancetype) triangleWaveWithFrequency:(double)f
+{ return [[self alloc] initWithFrequency:f functionPtr:triangleWave]; }
+
++ (instancetype) sawToothWaveWithFrequency:(double)f
+{ return [[self alloc] initWithFrequency:f functionPtr:sawToothWave]; }
+
++ (instancetype) instanceWithFrequency:(double)f functionPtr:(double (*)(double))ptr
+{ return [[self alloc] initWithFrequency:f functionPtr:ptr]; }
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (instancetype) init
-{ return [self initWithFrequency:441.0]; }
+{ return [self initWithFrequency:441.0 functionPtr:nil]; }
 
 + (instancetype) instanceWithFrequency:(double)f
-{ return [[self alloc] initWithFrequency:f]; }
+{ return [[self alloc] initWithFrequency:f functionPtr:nil]; }
 
-- (instancetype) initWithFrequency:(double)f
+- (instancetype) initWithFrequency:(double)f functionPtr:(double (*)(double))ptr
 {
 	self = [super init];
 	if (self != nil)
 	{
+		mFunctionPtr = ptr ? ptr : sineWave;
 		mFrequency = f;
 		// Initialize with reasonable default
 		[self setSampleRate:44100.0];
@@ -89,8 +117,8 @@ static OSStatus renderCallback(
 - (void) setSampleRate:(Float64)sampleRate
 {
 	[super setSampleRate:sampleRate];
-	mStep = mSampleRate ? mFrequency * 2.0 * M_PI / mSampleRate : 0.0;
-	mX2PI = 0.5 * mStep;
+	mStep = mSampleRate ? 2.0 * mFrequency / mSampleRate : 0.0;
+	mX = 0.5 * mStep;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

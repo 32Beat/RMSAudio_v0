@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7F0C3AFA1C466E190037D956 /* RMSLowPassFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */; };
 		7F166E111C43705A00537DC2 /* RMSSineWave.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F166E101C43705A00537DC2 /* RMSSineWave.m */; };
+		7F5A9A121C4BF60D00363CE2 /* RMSTestSignal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F5A9A111C4BF60D00363CE2 /* RMSTestSignal.m */; };
 		7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */; };
 		7FB8E0C31C42FA3800B7848A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C21C42FA3800B7848A /* main.m */; };
 		7FB8E0C51C42FA3800B7848A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C41C42FA3800B7848A /* Assets.xcassets */; };
@@ -47,6 +48,8 @@
 		7F0C3AF91C466E190037D956 /* RMSLowPassFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSLowPassFilter.m; sourceTree = "<group>"; };
 		7F166E0F1C43705A00537DC2 /* RMSSineWave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSineWave.h; sourceTree = "<group>"; };
 		7F166E101C43705A00537DC2 /* RMSSineWave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSineWave.m; sourceTree = "<group>"; };
+		7F5A9A101C4BF60D00363CE2 /* RMSTestSignal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSTestSignal.h; sourceTree = "<group>"; };
+		7F5A9A111C4BF60D00363CE2 /* RMSTestSignal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSTestSignal.m; sourceTree = "<group>"; };
 		7FB8E0BB1C42FA3800B7848A /* RMSAudioApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSAudioApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8E0BE1C42FA3800B7848A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 		7F166E0E1C43705A00537DC2 /* RMSTestSignals */ = {
 			isa = PBXGroup;
 			children = (
+				7F5A9A101C4BF60D00363CE2 /* RMSTestSignal.h */,
+				7F5A9A111C4BF60D00363CE2 /* RMSTestSignal.m */,
 				7F166E0F1C43705A00537DC2 /* RMSSineWave.h */,
 				7F166E101C43705A00537DC2 /* RMSSineWave.m */,
 			);
@@ -410,6 +415,7 @@
 				7FB8E10C1C42FA7C00B7848A /* RMSCallback.m in Sources */,
 				7FB8E1201C42FA7C00B7848A /* RMSStereoView.m in Sources */,
 				7FB8E11F1C42FA7C00B7848A /* RMSResultView.m in Sources */,
+				7F5A9A121C4BF60D00363CE2 /* RMSTestSignal.m in Sources */,
 				7FB8E11C1C42FA7C00B7848A /* RMSAudioUtilities.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

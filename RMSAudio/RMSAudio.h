@@ -29,6 +29,7 @@
 #import "RMSMixer.h"
 #import "RMSMixerSource.h"
 
+#import "RMSTestSignal.h"
 #import "RMSSineWave.h"
 
 #import "RMSTimer.h"
