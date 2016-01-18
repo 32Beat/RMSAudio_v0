@@ -23,6 +23,7 @@
 @property (nonatomic, weak) IBOutlet NSButton *autoPanButton;
 
 @property (nonatomic) RMSMoogFilter *lowPassFilter;
+@property (nonatomic, weak) IBOutlet NSTextField *cutOffLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
 @property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
 
@@ -165,6 +166,9 @@
 - (IBAction) didAdjustCutOff:(NSSlider *)sender
 {
 	self.lowPassFilter.cutOff = sender.floatValue;
+	
+	float F = self.lowPassFilter.frequency;
+	self.cutOffLabel.stringValue = [NSString stringWithFormat:@"Cut off: %.1f", F];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -191,8 +195,8 @@
 	[NSThread sleepForTimeInterval:0.05];
 	
 	// Start testsignal
-	self.audioOutput.source = [RMSTestSignal sineWaveWithFrequency:441.0];
-//	self.audioOutput.source = [RMSTestSignal blockWaveWithFrequency:441.0];
+//	self.audioOutput.source = [RMSTestSignal sineWaveWithFrequency:441.0];
+	self.audioOutput.source = [RMSTestSignal blockWaveWithFrequency:441.0];
 //	self.audioOutput.source = [RMSTestSignal triangleWaveWithFrequency:441.0];
 //	self.audioOutput.source = [RMSTestSignal sawToothWaveWithFrequency:441.0];
 }

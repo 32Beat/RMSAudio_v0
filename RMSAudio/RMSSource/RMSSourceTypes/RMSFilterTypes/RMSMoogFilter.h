@@ -7,11 +7,8 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "RMSSource.h"
+#import "RMSLowPassFilter.h"
 
-@interface RMSMoogFilter : RMSSource
+@interface RMSMoogFilter : RMSLowPassFilter
 
-- (void) setCutOff:(float)f;
-- (void) setCutOffFrequency:(float)f;
-- (void) setResonance:(float)value;
 @end

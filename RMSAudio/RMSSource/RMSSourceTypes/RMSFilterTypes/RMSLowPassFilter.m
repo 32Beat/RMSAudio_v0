@@ -15,28 +15,59 @@ static inline double Clip(double x)
 
 @interface RMSLowPassFilter ()
 {
-	double mCutOff;
-	double mResonance;
-
-	double mLastCutOff;
-	double mLastResonance;
+	double mLastM;
+	double mLastQ;
 	
-	double mL0;
-	double mL1;
-	double mL2;
-	double mL3;
-	double mLL3;
-
-	double mR0;
-	double mR1;
-	double mR2;
-	double mR3;
-	double mRR3;
+	double mL[16];
+	double mR[16];
 }
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSLowPassFilter
+////////////////////////////////////////////////////////////////////////////////
+
+static inline float LPProcessSample(float M, float Q, float *A, float S)
+{
+	A[0] = A[1];
+	A[1] = A[2];
+	A[2] = S;
+	float An = 0.25 * (A[0] + A[1] + A[1] + A[2]);
+	
+	return An + M * (A[1] - An) ;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void LPProcessSamples(
+	double M, double Mstep,
+	double Q, double Qstep,
+	float *AL, float *ptrL,
+	float *AR, float *ptrR,
+	UInt32 frameCount)
+{
+	do
+	{
+		float L = ptrL[0];
+		L = LPProcessSample(M, Q, &AL[0], L);
+		L = LPProcessSample(M, Q, &AL[4], L);
+		L = LPProcessSample(M, Q, &AL[8], L);
+		L = LPProcessSample(M, Q, &AL[12], L);
+		*ptrL++ = L;
+		
+		float R = ptrR[0];
+		R = LPProcessSample(M, Q, &AR[0], R);
+		R = LPProcessSample(M, Q, &AR[4], R);
+		R = LPProcessSample(M, Q, &AR[8], R);
+		R = LPProcessSample(M, Q, &AR[12], R);
+		*ptrR++ = R;
+
+		M += Mstep;
+		Q += Qstep;
+	}
+	while(--frameCount != 0);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static OSStatus renderCallback(
@@ -54,78 +85,30 @@ static OSStatus renderCallback(
 	float *dstPtrL = bufferList->mBuffers[0].mData;
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 	
-	double L0 = rmsObject->mL0;
-	double L1 = rmsObject->mL1;
-	double L2 = rmsObject->mL2;
-	double L3 = rmsObject->mL3;
-	double LL3 = rmsObject->mLL3;
-
-	double R0 = rmsObject->mR0;
-	double R1 = rmsObject->mR1;
-	double R2 = rmsObject->mR2;
-	double R3 = rmsObject->mR3;
-	double RR3 = rmsObject->mRR3;
-
 	double S = rmsObject->mSampleRate;
 
 	//
-	if (rmsObject->mLastCutOff == 0.0)
-	{ rmsObject->mLastCutOff = rmsObject->mCutOff * 2.0 / S; }
+	if (rmsObject->mLastM == 0.0)
+	{ rmsObject->mLastM = rmsObject->mFrequency * 2.0 / S; }
 
 
-	double F = rmsObject->mLastCutOff;
-	double Fnext = rmsObject->mCutOff * 2.0 / S;
-	double Fstep = (Fnext - F) / frameCount;
+	double M = rmsObject->mLastM;
+	double Mnext = rmsObject->mFrequency * 2.0 / S;
+	double Mstep = (Mnext - M) / frameCount;
 	
-	double R = rmsObject->mLastResonance;
+	double R = rmsObject->mLastQ;
 	double Rnext = rmsObject->mResonance * 4.0;
 	double Rstep = (Rnext - R) / frameCount;
 
+	rmsObject->mLastM = Mnext;
+	rmsObject->mLastQ = Rnext;
 
-	for (UInt32 n=0; n!=frameCount; n++)
-	{
-		F += Fstep;
-		R += Rstep;
-//
-#define Compute(Q, M, S0, A0, A1, A2, A3, AA3) \
-{ \
-	AA3 += 0.5*(A3-AA3); \
-	S0 -= Q * AA3; \
-	S0 = Clip(S0); \
-	A0 += M * (S0 - A0); \
-	A1 += M * (A0 - A1); \
-	A2 += M * (A1 - A2); \
-	A3 += M * (A2 - A3); \
-}
-		double S0 = dstPtrL[n];
-
-		Compute(R, F, S0, L0, L1, L2, L3, LL3);
-
-		dstPtrL[n] = L3;
-		
-		
-		S0 = dstPtrR[n];
-
-		Compute(R, F, S0, R0, R1, R2, R3, RR3);
-
-		dstPtrR[n] = R3;
-	}
-
-	rmsObject->mLastCutOff = F;
-	rmsObject->mLastResonance = R;
-
-	rmsObject->mL0 = L0;
-	rmsObject->mL1 = L1;
-	rmsObject->mL2 = L2;
-	rmsObject->mL3 = L3;
-	rmsObject->mLL3 = LL3;
-
-	rmsObject->mR0 = R0;
-	rmsObject->mR1 = R1;
-	rmsObject->mR2 = R2;
-	rmsObject->mR3 = R3;
-	rmsObject->mRR3 = RR3;
-
+	// Filter samples 
+	LPProcessSamples(
+			M, Mstep, R, Rstep,
+			rmsObject->mL, dstPtrL,
+			rmsObject->mR, dstPtrR, frameCount);
+	
 	return noErr;
 }
 
@@ -135,6 +118,9 @@ static OSStatus renderCallback(
 { return renderCallback; }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+- (float) resonance
+{ return mResonance; }
 
 - (void) setResonance:(float)value
 {
@@ -151,17 +137,22 @@ static OSStatus renderCallback(
 	float maxF = 20000.0;
 	float F = minF + value * value * (maxF - minF);
 	
-	[self setCutOffFrequency:F];
+	[self setFrequency:F];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (void) setCutOffFrequency:(float)f
+- (void) setFrequency:(float)f
 {
 	if (f < 20.0) f = 20.0;
 	
-	mCutOff = f;
+	mFrequency = f;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (float) frequency
+{ return mFrequency; }
 
 ////////////////////////////////////////////////////////////////////////////////
 @end

@@ -223,6 +223,15 @@ void *RMSSourceGetMonitor(void *source)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+- (void) insertFilter:(RMSSource *)filter
+{
+	if (mFilter != nil)
+	{ [filter addFilter:mFilter]; }
+	mFilter = filter;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (void) removeFilter:(RMSSource *)filter
 {
 	if (mFilter == filter)

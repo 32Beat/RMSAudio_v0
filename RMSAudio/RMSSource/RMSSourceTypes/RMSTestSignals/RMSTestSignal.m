@@ -14,6 +14,7 @@
 {
 	double mFrequency;
 	double mX;
+	double mY;
 	double mStep;
 	
 	double (*mFunctionPtr)(double);
@@ -31,10 +32,10 @@ static double sineWave(double x)
 { return sin(x*M_PI); }
 
 static double blockWave(double x)
-{ return x < 0.0 ? -1.0 : x > 0.0 ? +1.0 : 0.0; }
+{ return x < 0.0 ? -1.0 : +1.0; }
 
 static double triangleWave(double x)
-{ return x < 0.0 ? +1.0 + x + x : +1.0 - x - x; }
+{ return x < 0.0 ? x + x + 1.0 : 1.0 - x - x; }
 
 static double sawToothWave(double x)
 { return x; }
@@ -53,17 +54,23 @@ static OSStatus renderCallback(
 
 	Float32 *srcPtr1 = audio->mBuffers[0].mData;
 	Float32 *srcPtr2 = audio->mBuffers[1].mData;
-		
+	
+	double Y0 = rmsSource->mY;
+	
 	for (UInt32 n=0; n!=frameCount; n++)
 	{
-		Float32 Y = rmsSource->mFunctionPtr(rmsSource->mX);
-		srcPtr1[n] = Y;
-		srcPtr2[n] = Y;
-		
 		rmsSource->mX += rmsSource->mStep;
 		if (rmsSource->mX >= 1.0)
 		{ rmsSource->mX -= 2.0; }
+
+		double Y1 = rmsSource->mFunctionPtr(rmsSource->mX);
+		double Y = 0.5*(Y0+Y1);
+		srcPtr1[n] = Y;
+		srcPtr2[n] = Y;
+		Y0 = Y1;
 	}
+	
+	rmsSource->mY = Y0;
 
 	return noErr;
 }
@@ -117,8 +124,9 @@ static OSStatus renderCallback(
 - (void) setSampleRate:(Float64)sampleRate
 {
 	[super setSampleRate:sampleRate];
+	mX = 0.0;
+	mY = mFunctionPtr(mX);
 	mStep = mSampleRate ? 2.0 * mFrequency / mSampleRate : 0.0;
-	mX = 0.5 * mStep;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

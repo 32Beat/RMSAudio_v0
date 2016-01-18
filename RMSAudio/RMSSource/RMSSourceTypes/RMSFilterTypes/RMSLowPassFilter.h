@@ -9,9 +9,18 @@
 
 #import "RMSSource.h"
 
+
 @interface RMSLowPassFilter : RMSSource
+{
+	double mFrequency;
+	double mResonance;
+}
 
 - (void) setCutOff:(float)f;
-- (void) setCutOffFrequency:(float)f;
+
+- (float) frequency;
+- (void) setFrequency:(float)f;
+- (float) resonance;
 - (void) setResonance:(float)value;
+
 @end

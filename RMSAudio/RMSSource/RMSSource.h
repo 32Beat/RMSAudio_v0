@@ -27,6 +27,7 @@
 - (RMSSource *) filter;
 - (void) setFilter:(RMSSource *)filter;
 - (void) addFilter:(RMSSource *)filter;
+- (void) insertFilter:(RMSSource *)filter;
 - (void) removeFilter:(RMSSource *)filter;
 - (void) removeFilter;
 
