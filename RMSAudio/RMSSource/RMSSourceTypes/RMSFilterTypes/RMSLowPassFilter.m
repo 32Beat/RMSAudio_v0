@@ -10,16 +10,13 @@
 #import "RMSLowPassFilter.h"
 
 
-static inline double Clip(double x)
-{ return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
-
 @interface RMSLowPassFilter ()
 {
 	double mLastM;
 	double mLastQ;
 	
-	double mL[16];
-	double mR[16];
+	float mL[16];
+	float mR[16];
 }
 @end
 
@@ -27,14 +24,32 @@ static inline double Clip(double x)
 @implementation RMSLowPassFilter
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline float LPProcessSample(float M, float Q, float *A, float S)
+static inline float LPProcessSample(float F, float *A, float S)
 {
-	A[0] = A[1];
-	A[1] = A[2];
-	A[2] = S;
-	float An = 0.25 * (A[0] + A[1] + A[1] + A[2]);
+	UInt32 n = 0;
+	A[0] = S;
+
+	float f = 20000;
+	float m = 0.5;
+	while (f > F)
+	{
+		n += 1;
+
+		S = (A[n] += m * (S - A[n]));
+
+		f *= 0.5;
+		m *= 0.5;
+	}
 	
-	return An + M * (A[1] - An) ;
+	if (f < F)
+	{
+		S += (F - f) * (A[n-1] - S) / f;
+	}
+	
+	while (++n & 15)
+	{ A[n] = 0; }
+	
+	return S ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -49,17 +64,11 @@ static inline void LPProcessSamples(
 	do
 	{
 		float L = ptrL[0];
-		L = LPProcessSample(M, Q, &AL[0], L);
-		L = LPProcessSample(M, Q, &AL[4], L);
-		L = LPProcessSample(M, Q, &AL[8], L);
-		L = LPProcessSample(M, Q, &AL[12], L);
+		L = LPProcessSample(M, AL, L);
 		*ptrL++ = L;
 		
 		float R = ptrR[0];
-		R = LPProcessSample(M, Q, &AR[0], R);
-		R = LPProcessSample(M, Q, &AR[4], R);
-		R = LPProcessSample(M, Q, &AR[8], R);
-		R = LPProcessSample(M, Q, &AR[12], R);
+		R = LPProcessSample(M, AR, R);
 		*ptrR++ = R;
 
 		M += Mstep;
@@ -85,15 +94,13 @@ static OSStatus renderCallback(
 	float *dstPtrL = bufferList->mBuffers[0].mData;
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 	
-	double S = rmsObject->mSampleRate;
-
 	//
 	if (rmsObject->mLastM == 0.0)
-	{ rmsObject->mLastM = rmsObject->mFrequency * 2.0 / S; }
+	{ rmsObject->mLastM = rmsObject->mFrequency; }
 
 
 	double M = rmsObject->mLastM;
-	double Mnext = rmsObject->mFrequency * 2.0 / S;
+	double Mnext = rmsObject->mFrequency;
 	double Mstep = (Mnext - M) / frameCount;
 	
 	double R = rmsObject->mLastQ;
@@ -119,18 +126,6 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (float) resonance
-{ return mResonance; }
-
-- (void) setResonance:(float)value
-{
-	if (value < 0.0) value = 0.0;
-	if (value > 1.0) value = 1.0;
-	mResonance = value;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 - (void) setCutOff:(float)value
 {
 	float minF = 20.0;
@@ -142,6 +137,9 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+- (float) frequency
+{ return mFrequency; }
+
 - (void) setFrequency:(float)f
 {
 	if (f < 20.0) f = 20.0;
@@ -151,8 +149,15 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (float) frequency
-{ return mFrequency; }
+- (float) resonance
+{ return mResonance; }
+
+- (void) setResonance:(float)value
+{
+	if (value < 0.0) value = 0.0;
+	if (value > 1.0) value = 1.0;
+	mResonance = value;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 @end

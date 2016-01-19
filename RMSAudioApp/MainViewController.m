@@ -22,7 +22,7 @@
 @property (nonatomic) RMSAutoPan *autoPan;
 @property (nonatomic, weak) IBOutlet NSButton *autoPanButton;
 
-@property (nonatomic) RMSMoogFilter *lowPassFilter;
+@property (nonatomic) RMSLowPassFilter *lowPassFilter;
 @property (nonatomic, weak) IBOutlet NSTextField *cutOffLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
 @property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
@@ -149,9 +149,10 @@
 {
 	if (self.lowPassFilter == nil)
 	{
-		self.lowPassFilter = [RMSMoogFilter new];
-		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
+//		self.lowPassFilter = [RMSMoogFilter new];
+		self.lowPassFilter = [RMSLowPassFilter new];
 		[self.lowPassFilter setResonance:self.resonanceControl.floatValue];
+		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
 		[self.audioOutput addFilter:self.lowPassFilter];
 	}
 	else
