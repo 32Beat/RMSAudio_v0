@@ -24,32 +24,12 @@
 @implementation RMSLowPassFilter
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline float LPProcessSample(float F, float *A, float S)
+static inline double _ComputeMultiplier(double Fc, double Fs)
+{ return 1.0 - exp(-2.0*M_PI*Fc/Fs); }
+
+static inline float LPProcessSample(float M, float *A, float S)
 {
-	UInt32 n = 0;
-	A[0] = S;
-
-	float f = 20000;
-	float m = 0.5;
-	while (f > F)
-	{
-		n += 1;
-
-		S = (A[n] += m * (S - A[n]));
-
-		f *= 0.5;
-		m *= 0.5;
-	}
-	
-	if (f < F)
-	{
-		S += (F - f) * (A[n-1] - S) / f;
-	}
-	
-	while (++n & 15)
-	{ A[n] = 0; }
-	
-	return S ;
+	return A[0] += M * (S - A[0]) ;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,13 +74,15 @@ static OSStatus renderCallback(
 	float *dstPtrL = bufferList->mBuffers[0].mData;
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 	
-	//
+	float S = rmsObject->mSampleRate;
+
+	// Initialize if necessary
 	if (rmsObject->mLastM == 0.0)
-	{ rmsObject->mLastM = rmsObject->mFrequency; }
+	{ rmsObject->mLastM = _ComputeMultiplier(rmsObject->mFrequency, S); }
 
 
 	double M = rmsObject->mLastM;
-	double Mnext = rmsObject->mFrequency;
+	double Mnext = _ComputeMultiplier(rmsObject->mFrequency, S);
 	double Mstep = (Mnext - M) / frameCount;
 	
 	double R = rmsObject->mLastQ;
