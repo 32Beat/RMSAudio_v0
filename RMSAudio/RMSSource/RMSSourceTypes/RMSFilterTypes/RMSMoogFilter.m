@@ -4,31 +4,14 @@
 	
 	Created by 32BT on 15/11/15.
 	Copyright © 2015 32BT. All rights reserved.
+
+	From:
+	NON-LINEAR DIGITAL IMPLEMENTATION OF THE MOOG LADDER FILTER
+	Antti Huovilainen
 */
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "RMSMoogFilter.h"
-
-
-static inline float HardClip(float x) \
-{ return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
-
-static inline float SoftClip(float x) \
-{ return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.0 : -1.0; }
-
-
-typedef struct rmsmoogfilter_t
-{
-	float F;
-	float M;
-	float Q;
-	
-	float A[8];
-}
-rmsmoogfilter_t;
-
-
-
 
 
 @interface RMSMoogFilter ()
@@ -41,58 +24,110 @@ rmsmoogfilter_t;
 }
 @end
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Helper functions
+
+static inline double RMSMoogFilterComputeMultiplier(double Fc, double Fs)
+{ return 1.0 - exp(-2.0*M_PI*Fc/Fs); }
+
+static inline double RMSMoogFilterComputeResonance(double R)
+{ return 4.0 * R; }
+
+static inline float HardClip(float x) \
+{ return -1.0 < x ? x < +1.0 ? x : +1.0 : -1.0; }
+
+//static inline float SoftClip(float x) \
+{ return -1.5 < x ? x < +1.5 ? x -(4.0/27.0)*x*x*x : +1.0 : -1.0; }
+
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSMoogFilter
 ////////////////////////////////////////////////////////////////////////////////
 
 static inline double MoogProcessSample(double M, double Q, double *A, double S)
 {
+	// Phase shift compensation
 	A[4] += 0.5*(A[3]-A[4]);
 	
+	// Feedback
 	S -= Q * A[4];
 	S = HardClip(S);
 	
+	// Ladder
 	A[0] += M * (S   -A[0]);
 	A[1] += M * (A[0]-A[1]);
 	A[2] += M * (A[1]-A[2]);
 	A[3] += M * (A[2]-A[3]);
-
-//	A[3] = SoftClip(A[3]);
 	
 	return A[3];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void MoogProcessSamples(
+static inline void MoogProcessSamples1(
 	double M, double Mstep,
 	double Q, double Qstep,
 	double *AL, float *ptrL,
 	double *AR, float *ptrR,
 	UInt32 frameCount)
-{	
+{
 	do
 	{
-		AL[0] += ptrL[0];
-		AL[0] *= 0.5;
-		double L = MoogProcessSample(M, Q, &AL[1], AL[0]);
+		double L = MoogProcessSample(M, Q, AL, ptrL[0]);
+		*ptrL++ = L;
+		double R = MoogProcessSample(M, Q, AR, ptrR[0]);
+		*ptrR++ = R;
 
-		AR[0] += ptrR[0];
-		AR[0] *= 0.5;
-		double R = MoogProcessSample(M, Q, &AR[1], AR[0]);
-		
 		M += Mstep;
 		Q += Qstep;
-		
-		AL[0] = ptrL[0];
-		L += MoogProcessSample(M, Q, &AL[1], AL[0]);
-		AR[0] = ptrR[0];
-		R += MoogProcessSample(M, Q, &AR[1], AR[0]);
-		
-		*ptrL++ = 0.5*L;
-		*ptrR++ = 0.5*R;
 	}
 	while(--frameCount != 0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void MoogProcessSamples2(
+	double M, double Mstep,
+	double Q, double Qstep,
+	double *AL, float *ptrL,
+	double *AR, float *ptrR,
+	UInt32 frameCount)
+{
+	// Fetch source samples from previous run (initially 0.0)
+	double SL = AL[7];
+	double SR = AR[7];
+
+	do
+	{
+		// Interpolate between previous samples and new samples
+		SL += ptrL[0];
+		SL *= 0.5;
+		double L = MoogProcessSample(M, Q, AL, SL);
+
+		SR += ptrR[0];
+		SR *= 0.5;
+		double R = MoogProcessSample(M, Q, AR, SR);
+		
+		// Process new samples and accumulate
+		SL = ptrL[0];
+		L += MoogProcessSample(M, Q, AL, SL);
+		SR = ptrR[0];
+		R += MoogProcessSample(M, Q, AR, SR);
+		
+		// Store average result
+		*ptrL++ = 0.5*L;
+		*ptrR++ = 0.5*R;
+
+		// Update once per loop, half-step is overly precise
+		M += Mstep;
+		Q += Qstep;
+
+	}
+	while(--frameCount != 0);
+	
+	// Save last samples for next run
+	AL[7] = SL;
+	AR[7] = SR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,14 +148,14 @@ static OSStatus renderCallback(
 
 	// initialize if necessary
 	if (rmsObject->mLastM == 0.0)
-	{ rmsObject->mLastM = rmsObject->mFrequency * 2.0 / S; }
+	{ rmsObject->mLastM = RMSMoogFilterComputeMultiplier(rmsObject->mFrequency, S); }
 
 	double M = rmsObject->mLastM;
-	double Mnext = rmsObject->mFrequency * 2.0 / S;
+	double Mnext = RMSMoogFilterComputeMultiplier(rmsObject->mFrequency, S);
 	double Mstep = (Mnext - M) / frameCount;
 	
 	double Q = rmsObject->mLastQ;
-	double Qnext = rmsObject->mResonance * 4.0;
+	double Qnext = RMSMoogFilterComputeResonance(rmsObject->mResonance);
 	double Qstep = (Qnext - Q) / frameCount;
 	
 	rmsObject->mLastM = Mnext;
@@ -131,10 +166,17 @@ static OSStatus renderCallback(
 	float *dstPtrR = bufferList->mBuffers[1].mData;
 
 	// Filter samples 
-	MoogProcessSamples(
-		M, Mstep, Q, Qstep,
-		rmsObject->mL, dstPtrL,
-		rmsObject->mR, dstPtrR, frameCount);
+	if (S >= 88200.0)
+		MoogProcessSamples1(
+			M, Mstep, Q, Qstep,
+			rmsObject->mL, dstPtrL,
+			rmsObject->mR, dstPtrR, frameCount);
+	else
+		// Use oversampling routine
+		MoogProcessSamples2(
+			M, Mstep, Q, Qstep,
+			rmsObject->mL, dstPtrL,
+			rmsObject->mR, dstPtrR, frameCount);
 
 	return noErr;
 }
