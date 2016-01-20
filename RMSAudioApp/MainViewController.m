@@ -149,10 +149,10 @@
 {
 	if (self.lowPassFilter == nil)
 	{
-//		self.lowPassFilter = [RMSMoogFilter new];
-		self.lowPassFilter = [RMSLowPassFilter new];
-		[self.lowPassFilter setResonance:self.resonanceControl.floatValue];
+//		self.lowPassFilter = [RMSLowPassFilter new];
+		self.lowPassFilter = [RMSMoogFilter new];
 		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
+		[self.lowPassFilter setResonance:self.resonanceControl.floatValue];
 		[self.audioOutput addFilter:self.lowPassFilter];
 	}
 	else
