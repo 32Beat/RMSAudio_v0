@@ -23,6 +23,7 @@
 #import "RMSAutoPan.h"
 #import "RMSLowPassFilter.h"
 #import "RMSMoogFilter.h"
+#import "RMSDelay.h"
 
 #import "RMSMonitor.h"
 

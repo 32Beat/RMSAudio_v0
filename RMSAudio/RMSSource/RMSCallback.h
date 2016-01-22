@@ -34,8 +34,6 @@ struct RMSCallbackInfo
 	void *procPrm;
 
 	UInt32 flags;
-	float volume;
-	float balance;
 	const RMSCallbackInfo *nextCallbackInfo;
 };
 

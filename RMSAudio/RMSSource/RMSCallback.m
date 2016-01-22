@@ -32,6 +32,7 @@
 - (instancetype) initWithCallbackPtr:(void *)procPtr
 { return [self initWithCallbackPtr:procPtr callbackPrm:(__bridge void *)self]; }
 
+////////////////////////////////////////////////////////////////////////////////
 
 + (instancetype) instanceWithCallbackPtr:(void *)procPtr callbackPrm:(void *)procPrm
 { return [[self alloc] initWithCallbackPtr:procPtr callbackPrm:procPrm]; }

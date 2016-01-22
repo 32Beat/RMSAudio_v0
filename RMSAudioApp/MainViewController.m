@@ -27,6 +27,12 @@
 @property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
 @property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
 
+@property (nonatomic) RMSDelay *delayFilter;
+@property (nonatomic, weak) IBOutlet NSTextField *delayTimeLabel;
+@property (nonatomic, weak) IBOutlet NSSlider *delayTimeControl;
+@property (nonatomic, weak) IBOutlet NSSlider *delayDecayControl;
+@property (nonatomic, weak) IBOutlet NSSlider *delayFeedBackControl;
+
 
 @property (nonatomic) RMSMonitor *levelsMonitor;
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
@@ -144,6 +150,9 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Low Pass
+////////////////////////////////////////////////////////////////////////////////
 
 - (IBAction) didSelectLowPass:(NSButton *)button
 {
@@ -177,6 +186,43 @@
 - (IBAction) didAdjustResonance:(NSSlider *)sender
 {
 	self.lowPassFilter.resonance = sender.floatValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Delay
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectDelay:(NSButton *)button
+{
+	if (self.delayFilter == nil)
+	{
+		self.delayFilter = [RMSDelay new];
+		[self.delayFilter setDelayTime:self.delayTimeControl.floatValue];
+		[self.audioOutput addFilter:self.delayFilter];
+	}
+	else
+	{
+		[self.audioOutput removeFilter:self.delayFilter];
+		self.delayFilter = nil;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustDelayTime:(NSSlider *)sender
+{
+	self.delayFilter.delayTime = sender.floatValue;
+	
+	float T = self.delayFilter.delayTime;
+	self.delayTimeLabel.stringValue = [NSString stringWithFormat:@"Time: %.4f", T];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustDelayFeedBack:(NSSlider *)sender
+{
+	self.delayFilter.feedBack = sender.floatValue;	
 }
 
 ////////////////////////////////////////////////////////////////////////////////
