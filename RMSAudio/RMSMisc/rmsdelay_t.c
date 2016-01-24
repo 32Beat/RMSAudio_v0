@@ -10,124 +10,34 @@
 #include "rmsdelay_t.h"
 #include <math.h>
 
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline double rms_fma(double A, double M, double S) \
-{ return A + M * (S - A); }
-
-////////////////////////////////////////////////////////////////////////////////
-
-void RMSDelayUpdateOffset(rmsdelay_t *delay);
-void RMSDelaySetOffset(rmsdelay_t *delay, uint32_t offset);
-
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
 rmsdelay_t RMSDelayNew(void)
-{ return RMSDelayInit(1024*1024); }
-
-////////////////////////////////////////////////////////////////////////////////
-
-rmsdelay_t RMSDelayInit(uint32_t maxFrameCount)
-{
-	rmsdelay_t delay = {
-		.feedBack = 0.0,
-		.offset = 0,
-		.index = 0,
-		.indexMask = 0,
-		.frameCount = 0,
-		.buffer = NULL
-	};
-	
-	uint32_t frameCount = 2;
-	while (frameCount < maxFrameCount)
-	{ frameCount <<= 1; }
-	
-	delay.indexMask = frameCount - 1;
-	delay.frameCount = frameCount;
-	delay.buffer = calloc(frameCount, sizeof(float));
-	
-	return delay;
-}
+{ return RMSBufferNew(1024*1024); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 void RMSDelayReleaseMemory(rmsdelay_t *delay)
 {
-	if (delay && delay->buffer)
-	{
-		free(delay->buffer);
-		delay->buffer = NULL;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-/*
-void RMSDelaySetDelayTime(rmsdelay_t *delay, double time)
-{
-	delay->time = time;
-	RMSDelayUpdateOffset(delay);
+	RMSBufferReleaseMemory(delay);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RMSDelaySetSampleRate(rmsdelay_t *delay, double rate)
+float RMSDelayProcessSample(rmsdelay_t *delay, double offset, float feedBack, float S)
 {
-	delay->sampleRate = rate;
-	RMSDelayUpdateOffset(delay);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void RMSDelayUpdateOffset(rmsdelay_t *delay)
-{
-	uint32_t offset = delay->time * delay->sampleRate;
-	RMSDelaySetOffset(delay, offset);
-}
-*/
-////////////////////////////////////////////////////////////////////////////////
-
-void RMSDelaySetOffset(rmsdelay_t *delay, uint32_t offset)
-{
-	if (offset > delay->frameCount)
-	{ offset = delay->frameCount; }
-
-	delay->offset = offset;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-float RMSDelayProcessSample(rmsdelay_t *delay, float S)
-{
-	uint64_t index = delay->index++;
-	uint64_t indexMask = delay->indexMask;
-	float R = delay->buffer[(index-delay->offset)&indexMask];
-
-	S += delay->feedBack * (R - S);
+	float R = RMSBufferGetSampleWithDelay(delay, offset);
 	
-	delay->buffer[index&indexMask] = S;
+	S += feedBack * R;
 
-	return R;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-void RMSDelayProcessSamples(rmsdelay_t *delay, uint32_t newOffset, float newFeedBack, float *ptr, uint32_t count)
-{
-	double T = delay->offset;
-	double Tstep = 1.0 * (newOffset - T) / count;
+	RMSBufferSetSample(delay, S);
+	delay->index++;
 	
-	double F = delay->feedBack;
-	double Fstep = 1.0 * (newFeedBack - F) / count;
+	return R - feedBack * S;
 	
-	for (uint32_t n=0; n!=count; n++)
-	{
-		ptr[n] = RMSDelayProcessSample(delay, ptr[n]);
-		delay->offset = (T += Tstep);
-		delay->feedBack = (F += Fstep);
-	}
+	return S;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

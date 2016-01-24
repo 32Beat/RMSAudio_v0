@@ -28,10 +28,13 @@
 @property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
 
 @property (nonatomic) RMSDelay *delayFilter;
+@property (nonatomic) RMSDelay *delayFilter1;
+@property (nonatomic) RMSDelay *delayFilter2;
 @property (nonatomic, weak) IBOutlet NSTextField *delayTimeLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *delayTimeControl;
 @property (nonatomic, weak) IBOutlet NSSlider *delayDecayControl;
 @property (nonatomic, weak) IBOutlet NSSlider *delayFeedBackControl;
+@property (nonatomic, weak) IBOutlet NSSlider *delayMixControl;
 
 
 @property (nonatomic) RMSMonitor *levelsMonitor;
@@ -199,6 +202,9 @@
 	{
 		self.delayFilter = [RMSDelay new];
 		[self.delayFilter setDelayTime:self.delayTimeControl.floatValue];
+		[self.delayFilter setFeedBack:self.delayFeedBackControl.floatValue];
+		[self.delayFilter setMix:self.delayMixControl.floatValue];
+
 		[self.audioOutput addFilter:self.delayFilter];
 	}
 	else
@@ -223,6 +229,11 @@
 - (IBAction) didAdjustDelayFeedBack:(NSSlider *)sender
 {
 	self.delayFilter.feedBack = sender.floatValue;	
+}
+
+- (IBAction) didAjdustDelayMix:(NSSlider *)sender
+{
+	self.delayFilter.mix = sender.floatValue;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

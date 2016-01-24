@@ -17,4 +17,7 @@
 - (float) feedBack;
 - (void) setFeedBack:(float)value;
 
+- (float) mix;
+- (void) setMix:(float)value;
+
 @end

@@ -10,9 +10,7 @@
 #ifndef rmsdelay_t_h
 #define rmsdelay_t_h
 
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include "rmsbuffer_t.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -21,31 +19,16 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef struct rmsdelay_t
-{
-	float feedBack;
-	uint32_t offset;
-	
-	uint64_t index;
-	uint64_t indexMask;
-	uint32_t frameCount;
-	float *buffer;
-}
-rmsdelay_t;
-
+typedef rmsbuffer_t rmsdelay_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 
 rmsdelay_t RMSDelayNew(void);
-rmsdelay_t RMSDelayInit(uint32_t frameCount);
 void RMSDelayReleaseMemory(rmsdelay_t *delay);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RMSDelaySetDelayTime(rmsdelay_t *delay, double time);
-void RMSDelaySetSampleRate(rmsdelay_t *delay, double rate);
-
-void RMSDelayProcessSamples(rmsdelay_t *delay, uint32_t newOffset, float newFeedBack, float *ptr, uint32_t count);
+float RMSDelayProcessSample(rmsdelay_t *delay, double sampleDelay, float feedBack, float S);
 
 ////////////////////////////////////////////////////////////////////////////////
 #endif // rmslevels_h
