@@ -9,9 +9,19 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>RMSKaraokeApp.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>7FA0438F1C58F15500CAC51D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>7FB8E0BA1C42FA3800B7848A</key>
 		<dict>
 			<key>primary</key>
