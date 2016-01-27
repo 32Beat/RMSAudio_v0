@@ -42,6 +42,17 @@
 	// Get RMSSource instance for default input
 	id src = [RMSInput defaultInput];
 
+
+	// Pimp up the input with some oldskool delay
+	RMSDelay *delayFilter = [RMSDelay new];
+	[delayFilter setDelayTime:0.2];
+	[delayFilter setFeedBack:0.7];
+	[delayFilter setMix:0.5];
+
+	[src addFilter:delayFilter];
+
+
+
 	// Embed in RMSMixerSource
 	src = [self.mixer addSource:src];
 
@@ -69,13 +80,7 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-- (void) removeMixerSourceController:(RMSMixerSourceController *)sourceController
-{
-	[sourceController.view removeFromSuperview];
-	[sourceController removeFromParentViewController];
-}
-
+#pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
 - (IBAction) didSelectFileButton:(NSButton *)button

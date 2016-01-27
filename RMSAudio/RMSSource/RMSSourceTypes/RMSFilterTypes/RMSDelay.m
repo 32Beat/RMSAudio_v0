@@ -128,11 +128,19 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (float) delayTime
+- (void) setDelay:(float)delay
+{
+	NSTimeInterval time = pow(10, -4 + 5 * delay);
+	[self setDelayTime:time];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (NSTimeInterval) delayTime
 { return mTime; }
 
-- (void) setDelayTime:(float)time
-{ mTime = pow(10, -4 + 5 * time); }
+- (void) setDelayTime:(NSTimeInterval)time
+{ mTime = time; }
 
 ////////////////////////////////////////////////////////////////////////////////
 

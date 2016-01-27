@@ -11,8 +11,10 @@
 
 @interface RMSDelay : RMSSource
 
-- (float) delayTime;
-- (void) setDelayTime:(float)time;
+- (void) setDelay:(float)delay;
+
+- (NSTimeInterval) delayTime;
+- (void) setDelayTime:(NSTimeInterval)time;
 
 - (float) feedBack;
 - (void) setFeedBack:(float)value;
