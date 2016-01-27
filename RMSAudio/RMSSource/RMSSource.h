@@ -18,6 +18,8 @@
 	RMSSource *mMonitor;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 - (RMSSource *) source;
 - (void) setSource:(RMSSource *)source;
 - (void) addSource:(RMSSource *)source;
@@ -37,8 +39,14 @@
 - (void) removeMonitor:(RMSSource *)monitor;
 - (void) removeMonitor;
 
+////////////////////////////////////////////////////////////////////////////////
+
 - (Float64) sampleRate;
 - (void) setSampleRate:(Float64)sampleRate;
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) trashObject:(id)object;
 
 // Get the value of the corresponding objectpointers in an RMSSource
 void *RMSSourceGetSource(void *source);

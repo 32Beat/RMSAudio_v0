@@ -216,6 +216,34 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+- (void) removeSource:(RMSSource *)source
+{
+	RMSMixerSource *mixerSource = [self findMixerSourceWithSource:source];
+	if (mixerSource!=nil)
+	{ [self removeMixerSource:mixerSource]; }
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (id) findMixerSourceWithSource:(RMSSource *)source
+{
+	RMSMixerSource *mixerSource = mFirstSource;
+	while(mixerSource != nil)
+	{
+		if (mixerSource.source == source)
+		{
+			return mixerSource;
+		}
+		
+		mixerSource = [mixerSource nextMixerSource];
+	}
+	
+	return nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (void) addMixerSource:(RMSMixerSource *)mixerSource
 {
 	[mixerSource setSampleRate:[self sampleRate]];
@@ -226,6 +254,20 @@ static OSStatus renderCallback(
 	{ [mFirstSource setNextMixerSource:mixerSource]; }
 
 	mSourceCount += 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) removeMixerSource:(RMSMixerSource *)mixerSource
+{
+	if (mFirstSource == mixerSource)
+	{
+		id oldObject = mFirstSource;
+		mFirstSource = [mFirstSource nextMixerSource];
+		[self trashObject:oldObject];
+	}
+	else
+	[mFirstSource removeNextMixerSource:mixerSource];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

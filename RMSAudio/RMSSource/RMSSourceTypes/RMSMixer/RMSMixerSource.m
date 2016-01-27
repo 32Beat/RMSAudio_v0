@@ -109,10 +109,42 @@ static OSStatus renderCallback(
 
 - (void) setNextMixerSource:(RMSMixerSource *)source
 {
+	if (mNextMixerSource != source)
+	{
+		id oldSource = mSource;
+		
+		mNextMixerSource = source;
+
+		[self trashObject:oldSource];
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) addNextMixerSource:(RMSMixerSource *)source
+{
 	if (mNextMixerSource == nil)
 	{ mNextMixerSource = source; }
 	else
-	{ [mNextMixerSource setNextMixerSource:source]; }
+	{ [mNextMixerSource addNextMixerSource:source]; }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) removeNextMixerSource:(RMSMixerSource *)source
+{
+	if (mNextMixerSource == source)
+	{ [self removeNextMixerSource]; }
+	else
+	{ [mNextMixerSource removeNextMixerSource:source]; }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) removeNextMixerSource
+{
+	if (mNextMixerSource != nil)
+	{ [self setNextMixerSource:[mNextMixerSource nextMixerSource]]; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

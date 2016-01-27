@@ -45,6 +45,18 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+- (void) setSource:(RMSMixerSource *)source
+{
+	if (mSource != source)
+	{
+		[mSource removeMonitor:self.monitor];
+		mSource = source;
+		[mSource addMonitor:self.monitor];
+		
+		[self.volumeSlider setFloatValue:[mSource volume]];
+		[self.balanceSlider setFloatValue:[mSource balance]];		
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

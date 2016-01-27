@@ -34,6 +34,8 @@
 + (instancetype) instanceWithSource:(RMSMixerSource *)source;
 - (instancetype) initWithSource:(RMSMixerSource *)source;
 
+- (void) setSource:(RMSMixerSource *)source;
+
 - (IBAction) didAdjustSlider:(NSSlider *)slider;
 
 @end

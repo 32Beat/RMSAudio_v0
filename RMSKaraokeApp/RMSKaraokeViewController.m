@@ -59,11 +59,21 @@
 	NSRect dstBounds = self.view.frame;
 	NSRect srcFrame = sourceController.view.frame;
 	
-	srcFrame.origin.y = dstBounds.origin.y + dstBounds.size.height - srcFrame.size.height;
+	srcFrame.origin.y = dstBounds.origin.y + dstBounds.size.height;
+	srcFrame.origin.y -= srcFrame.size.height + 
+	self.childViewControllers.count * srcFrame.size.height;
 	
 	sourceController.view.frame = srcFrame;
 	[self addChildViewController:sourceController];
 	[self.view addSubview:sourceController.view];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) removeMixerSourceController:(RMSMixerSourceController *)sourceController
+{
+	[sourceController.view removeFromSuperview];
+	[sourceController removeFromParentViewController];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,8 +106,17 @@
 		}
 	}
 	
-	// Attaching automatically sets the output sampleRate for source
-	[self.audioOutput setSource:source];
+	
+	id src = [self.mixer addSource:source];
+	
+	// Create viewController with mixerSource
+	if (self.fileController == nil)
+	{
+		self.fileController = [RMSMixerSourceController instanceWithSource:src];
+		[self addMixerSourceController:self.fileController];
+	}
+	else
+	{ [self.fileController setSource:src]; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
