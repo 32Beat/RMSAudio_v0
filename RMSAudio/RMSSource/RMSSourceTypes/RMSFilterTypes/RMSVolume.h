@@ -20,4 +20,7 @@
 - (float) balance;
 - (void) setBalance:(float)balance;
 
+
+float RMSVolumeGetLastVolume(void *source);
+
 @end

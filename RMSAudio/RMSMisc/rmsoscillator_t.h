@@ -1,16 +1,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	rmsdelay_t.h
+	rmsoscillator_t
 	
 	Created by 32BT on 15/11/15.
 	Copyright © 2015 32BT. All rights reserved.
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef rmsdelay_t_h
-#define rmsdelay_t_h
+#ifndef rmsoscillator_t_h
+#define rmsoscillator_t_h
 
-#include "rmsbuffer_t.h"
+#include <stddef.h>
+#include <stdint.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
@@ -19,19 +20,27 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef rmsbuffer_t rmsdelay_t;
+typedef struct rmsoscillator_t
+{
+	double X;
+	double Xstep;
+	double (*functionPtr)(double);
+}
+rmsoscillator_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-rmsdelay_t RMSDelayBegin(void);
-void RMSDelayEnd(rmsdelay_t *delay);
+rmsoscillator_t RMSOscillatorBeginSineWave(double hertz, double sampleRate);
+rmsoscillator_t RMSOscillatorBeginTriangleWave(double hertz, double sampleRate);
+rmsoscillator_t RMSOscillatorBegin(double hertz, double sampleRate, double (*functionPtr)(double));
+
+
+void RMSOscillatorSetStep(rmsoscillator_t *oscPtr, double step);
+
+double RMSOscillatorFetchSample(rmsoscillator_t *oscPtr);
 
 ////////////////////////////////////////////////////////////////////////////////
-
-float RMSDelayProcessSample(rmsdelay_t *delay, float sampleDelay, float feedBack, float S);
-
-////////////////////////////////////////////////////////////////////////////////
-#endif // rmsdelay_t_h
+#endif // rmsoscillator_t_h
 ////////////////////////////////////////////////////////////////////////////////
 
 

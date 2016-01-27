@@ -7,40 +7,58 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #include "rmsdelay_t.h"
-#include <math.h>
+
 
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
-rmsdelay_t RMSDelayNew(void)
-{ return RMSBufferNew(1024*1024); }
+rmsdelay_t RMSDelayBegin(void)
+{ return RMSBufferBegin(1024*1024); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RMSDelayReleaseMemory(rmsdelay_t *delay)
-{
-	RMSBufferReleaseMemory(delay);
-}
+void RMSDelayEnd(rmsdelay_t *delay)
+{ return RMSBufferEnd(delay); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float RMSDelayProcessSample(rmsdelay_t *delay, double offset, float feedBack, float S)
+float RMSDelayProcessSample(rmsdelay_t *delay, float offset, float feedBack, float S)
 {
 	float R = RMSBufferGetSampleWithDelay(delay, offset);
 	
 	S += feedBack * R;
-
-	RMSBufferSetSample(delay, S);
-	delay->index++;
 	
-	return R - feedBack * S;
+	RMSBufferWriteSample(delay, S);
 	
 	return S;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
+float RMSDelayProcessSampleMT(rmsdelay_t *delay, float offset, float feedBack, float S)
+{
+	float R = 0;
+
+	uint64_t T1 = 0;
+	uint64_t T2 = offset;
+	while ((T2-T1) > 1)
+	{
+		T1 = (T1+T2)>>1;
+		R += 0.5 * (RMSBufferGetSampleWithDelay(delay, T1) - R);
+	}
+	
+	R += 0.5 * (RMSBufferGetSampleWithDelay(delay, T2)-R);
+		
+	S += feedBack * R;
+	
+	RMSBufferWriteSample(delay, S);
+	
+	return S;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 

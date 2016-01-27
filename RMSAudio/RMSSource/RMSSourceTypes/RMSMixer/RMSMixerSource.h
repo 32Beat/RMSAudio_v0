@@ -23,8 +23,8 @@
 - (RMSMixerSource *) nextMixerSource;
 - (void) setNextMixerSource:(RMSMixerSource *)source;
 
-float RMSMixerSourceLastVolume(void *source);
-void *RMSMixerSourceNextSource(void *source);
+float RMSMixerSourceGetLastVolume(void *source);
+void *RMSMixerSourceGetNextSource(void *source);
 
 @end
 

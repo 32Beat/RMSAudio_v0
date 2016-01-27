@@ -1,10 +1,11 @@
-//
-//  RMSMixerSourceController.h
-//  TheEngineSample
-//
-//  Created by 32BT on 25/12/15.
-//  Copyright © 2015 A Tasty Pixel. All rights reserved.
-//
+////////////////////////////////////////////////////////////////////////////////
+/*
+	RMSMixerSourceController
+	
+	Created by 32BT on 15/11/15.
+	Copyright © 2015 32BT. All rights reserved.
+*/
+////////////////////////////////////////////////////////////////////////////////
 
 
 #if !TARGET_OS_IPHONE

@@ -9,6 +9,7 @@
 
 #import "RMSDelay.h"
 #import "rmsdelay_t.h"
+#import "rmsoscillator_t.h"
 
 
 @interface RMSDelay ()
@@ -21,6 +22,7 @@
 	float mLastF;
 	float mLastM;
 	
+	rmsoscillator_t mLFO;
 	rmsdelay_t mDelayL;
 	rmsdelay_t mDelayR;
 }
@@ -29,6 +31,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSDelay
 ////////////////////////////////////////////////////////////////////////////////
+
+static inline float rmsWeight(float x)
+{ return 1.0-x*x; }
+
+static inline float rmsBalance(float S1, float S2, float B)
+{ return S1 * rmsWeight(B) + S2 * rmsWeight(1-B); }
 
 static OSStatus renderCallback(
 	void 							*inRefCon,
@@ -41,18 +49,20 @@ static OSStatus renderCallback(
 	__unsafe_unretained RMSDelay *rmsObject = \
 	(__bridge __unsafe_unretained RMSDelay *)inRefCon;
 
+	// delay offset
+	float D = rmsObject->mLastD;
+	float Dnext = rmsObject->mTime * rmsObject->mSampleRate;
+	float Dstep = (Dnext - D) / frameCount;
 
-	double D = rmsObject->mLastD;
-	double Dnext = rmsObject->mTime * rmsObject->mSampleRate;
-	double Dstep = (Dnext - D) / frameCount;
+	// delay feedback
+	float F = rmsObject->mLastF;
+	float Fnext = rmsObject->mFeedBack;
+	float Fstep = (Fnext - F) / frameCount;
 
-	double F = rmsObject->mLastF;
-	double Fnext = rmsObject->mFeedBack;
-	double Fstep = (Fnext - F) / frameCount;
-
-	double M = rmsObject->mLastM;
-	double Mnext = rmsObject->mMix;
-	double Mstep = (Mnext - M) / frameCount;
+	// dry-wet mix
+	float M = rmsObject->mLastM;
+	float Mnext = rmsObject->mMix;
+	float Mstep = (Mnext - M) / frameCount;
 	
 	rmsObject->mLastD = Dnext;
 	rmsObject->mLastF = Fnext;
@@ -65,13 +75,19 @@ static OSStatus renderCallback(
 
 	do
 	{
-		double L0 = ptrL[0];
-		double L1 = RMSDelayProcessSample(&rmsObject->mDelayL, D, F, L0);
-		*ptrL++ = L0 + M * (L1 - L0);
+		float Y = .1*RMSOscillatorFetchSample(&rmsObject->mLFO);
 		
-		double R0 = ptrR[0];
-		double R1 = RMSDelayProcessSample(&rmsObject->mDelayR, D, F, R0);
-		*ptrR++ = R0 + M * (R1 - R0);
+		// Compute dry-wet mix
+		float L0 = ptrL[0];
+		float L1 = RMSDelayProcessSample(&rmsObject->mDelayL, D+D*Y, F, L0);
+		//*ptrL++ = L0 + M * (L1 - L0);
+		*ptrL++ = rmsBalance(L0, L1, M);
+		
+		// Compute dry-wet mix
+		float R0 = ptrR[0];
+		float R1 = RMSDelayProcessSample(&rmsObject->mDelayR, D-D*Y, F, R0);
+		//*ptrR++ = R0 + M * (R1 - R0);
+		*ptrR++ = rmsBalance(R0, R1, M);
 		
 		D += Dstep;
 		F += Fstep;
@@ -94,8 +110,9 @@ static OSStatus renderCallback(
 	self = [super init];
 	if (self != nil)
 	{
-		mDelayL = RMSDelayNew();
-		mDelayR = RMSDelayNew();
+		mLFO = RMSOscillatorBeginTriangleWave(.1, 44100.0);
+		mDelayL = RMSDelayBegin();
+		mDelayR = RMSDelayBegin();
 	}
 	
 	return self;
@@ -105,8 +122,8 @@ static OSStatus renderCallback(
 
 - (void) dealloc
 {
-	RMSDelayReleaseMemory(&mDelayL);
-	RMSDelayReleaseMemory(&mDelayR);
+	RMSDelayEnd(&mDelayL);
+	RMSDelayEnd(&mDelayR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

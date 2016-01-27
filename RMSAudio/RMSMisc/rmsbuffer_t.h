@@ -13,11 +13,23 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 /*
+	rmsbuffer_t
+	-----------
+	Simple general purpose ringbuffer type (without multithreading guards)
+	
 	usage indication:
- 
+	start buffer with desired size
+	
+		rmsbuffer_t buffer = RMSBufferBegin(sampleCount);
+	
+	release internal memory when done
+	
+ 		RMSBufferEnd(&buffer);
+	
 */
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -25,17 +37,25 @@ typedef struct rmsbuffer_t
 {
 	uint64_t index;
 	uint64_t indexMask;
-	float *dataPtr;
+	float   *sampleData;
 }
 rmsbuffer_t;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Start bufferstruct with initialized memory ptr
-rmsbuffer_t RMSBufferNew(size_t sampleCount);
+// Create bufferstruct with internal memory
+rmsbuffer_t *RMSBufferNew(size_t sampleCount);
 
-// Release memory ptr in bufferstruct
-void RMSBufferReleaseMemory(rmsbuffer_t *buffer);
+// Release bufferstruct and internal memory
+rmsbuffer_t *RMSBufferRelease(rmsbuffer_t *bufferPtr);
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Start bufferstruct with internal memory
+rmsbuffer_t RMSBufferBegin(size_t maxSampleCount);
+
+// Release internal memory
+void RMSBufferEnd(rmsbuffer_t *buffer);
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -53,11 +73,14 @@ void RMSBufferSetSampleAtOffset(rmsbuffer_t *buffer, int64_t offset, float S);
 
 ////////////////////////////////////////////////////////////////////////////////
 
-// Get interpolated sample at fractional offset = -sampleDelay
-float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, double sampleDelay);
+// Get sample at offset = -sampleDelay
+float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint64_t sampleDelay);
+
+// Set sample at current index modulo buffersize, then update index
+void RMSBufferWriteSample(rmsbuffer_t *buffer, float S);
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif // rmslevels_h
+#endif // rmsbuffer_t_h
 ////////////////////////////////////////////////////////////////////////////////
 
 

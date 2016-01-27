@@ -145,18 +145,18 @@ static OSStatus renderCallback(
 		// Clear cachebuffer, also adjusts mDataByteSize
 		AudioBufferList_ClearFrames(tmpBuffer, frameCount);
 
-		float lastVolume = RMSMixerSourceLastVolume(source);
+		float lastVolume = RMSMixerSourceGetLastVolume(source);
 		
 		result = RunRMSSource(source, \
 		actionFlags, timeStamp, busNumber, frameCount, tmpBuffer);
 		
-		float nextVolume = RMSMixerSourceLastVolume(source);
+		float nextVolume = RMSMixerSourceGetLastVolume(source);
 
 		// Add to mixer result with volume weight
 		PCM_RMA(lastVolume, nextVolume, tmpBuffer, mixBuffer, frameCount);
 		rmsMixer->mNextVolume += nextVolume;
 		
-		source = RMSMixerSourceNextSource(source);
+		source = RMSMixerSourceGetNextSource(source);
 	}
 	
 	// Adjust overall volume

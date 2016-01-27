@@ -13,8 +13,8 @@
 @interface RMSTestSignal ()
 {
 	double mFrequency;
+	
 	double mX;
-	double mY;
 	double mStep;
 	
 	double (*mFunctionPtr)(double);
@@ -55,23 +55,17 @@ static OSStatus renderCallback(
 	Float32 *srcPtr1 = audio->mBuffers[0].mData;
 	Float32 *srcPtr2 = audio->mBuffers[1].mData;
 	
-	double Y0 = rmsSource->mY;
-	
 	for (UInt32 n=0; n!=frameCount; n++)
 	{
 		rmsSource->mX += rmsSource->mStep;
 		if (rmsSource->mX >= 1.0)
 		{ rmsSource->mX -= 2.0; }
 
-		double Y1 = rmsSource->mFunctionPtr(rmsSource->mX);
-		double Y = 0.5*(Y0+Y1);
+		double Y = rmsSource->mFunctionPtr(rmsSource->mX);
 		srcPtr1[n] = Y;
 		srcPtr2[n] = Y;
-		Y0 = Y1;
 	}
 	
-	rmsSource->mY = Y0;
-
 	return noErr;
 }
 
@@ -110,8 +104,9 @@ static OSStatus renderCallback(
 	self = [super init];
 	if (self != nil)
 	{
-		mFunctionPtr = ptr ? ptr : sineWave;
 		mFrequency = f;
+		mFunctionPtr = ptr ? ptr : sineWave;
+
 		// Initialize with reasonable default
 		[self setSampleRate:44100.0];
 	}
@@ -124,9 +119,8 @@ static OSStatus renderCallback(
 - (void) setSampleRate:(Float64)sampleRate
 {
 	[super setSampleRate:sampleRate];
-	mX = 0.0;
-	mY = mFunctionPtr(mX);
 	mStep = mSampleRate ? 2.0 * mFrequency / mSampleRate : 0.0;
+	mX = 0.5 * mStep;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

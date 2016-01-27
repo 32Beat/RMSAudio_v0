@@ -7,52 +7,90 @@
 */
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #include "rmsbuffer_t.h"
 #include <math.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline double rms_fma(double A, double M, double S) \
-{ return A + M * (S - A); }
-
-////////////////////////////////////////////////////////////////////////////////
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
-rmsbuffer_t RMSBufferNew(size_t maxSampleCount)
+rmsbuffer_t RMSBufferBegin(size_t maxSampleCount)
 {
-	rmsbuffer_t buffer = {
-		.index = 0,
-		.indexMask = 0,
-		.dataPtr = NULL
-	};
-
 	size_t sampleCount = 2;
 	while (sampleCount < maxSampleCount)
 	{ sampleCount <<= 1; }
 	
-	buffer.indexMask = sampleCount - 1;
-	buffer.dataPtr = calloc(sampleCount, sizeof(float));
-	
-	return buffer;
+	return (rmsbuffer_t){
+		.index = 0,
+		.indexMask = sampleCount-1,
+		.sampleData = calloc(sampleCount, sizeof(float)) };
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RMSBufferReleaseMemory(rmsbuffer_t *buffer)
+void RMSBufferEnd(rmsbuffer_t *buffer)
 {
 	if (buffer != NULL)
 	{
-		if (buffer->dataPtr != NULL)
+		if (buffer->sampleData != NULL)
 		{
-			free(buffer->dataPtr);
-			buffer->dataPtr = NULL;
+			free(buffer->sampleData);
+			buffer->sampleData = NULL;
 		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+rmsbuffer_t *RMSBufferNew(size_t maxSampleCount)
+{
+	rmsbuffer_t *bufferPtr = malloc(sizeof(rmsbuffer_t));
+	if (bufferPtr != NULL)
+	{
+		bufferPtr[0] = RMSBufferBegin(maxSampleCount);
+		if (bufferPtr->sampleData != NULL)
+		{
+			return bufferPtr;
+		}
+		
+		free(bufferPtr);
+	}
+	
+	return NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+rmsbuffer_t *RMSBufferRelease(rmsbuffer_t *bufferPtr)
+{
+	if (bufferPtr != NULL)
+	{
+		if (bufferPtr->sampleData != NULL)
+		{ free(bufferPtr->sampleData); }
+
+		free(bufferPtr);
+	}
+	
+	return NULL;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+
+void RMSBufferClearSamples(rmsbuffer_t *bufferPtr)
+{
+	if (bufferPtr && bufferPtr->sampleData)
+	{
+		uint64_t n = (bufferPtr->indexMask + 1) >> 1;
+
+		while (n != 0)
+		{ ((uint64_t *)bufferPtr->sampleData)[(n -= 1)] = 0; }
 	}
 }
 
@@ -61,10 +99,10 @@ void RMSBufferReleaseMemory(rmsbuffer_t *buffer)
 ////////////////////////////////////////////////////////////////////////////////
 
 float RMSBufferGetSampleAtIndex(rmsbuffer_t *buffer, int64_t index)
-{ return buffer->dataPtr[index&buffer->indexMask]; }
+{ return buffer->sampleData[index&buffer->indexMask]; }
 
 void RMSBufferSetSampleAtIndex(rmsbuffer_t *buffer, int64_t index, float S)
-{ buffer->dataPtr[index&buffer->indexMask] = S; }
+{ buffer->sampleData[index&buffer->indexMask] = S; }
 
 float RMSBufferGetSampleAtOffset(rmsbuffer_t *buffer, int64_t offset)
 { return RMSBufferGetSampleAtIndex(buffer, buffer->index+offset); }
@@ -80,18 +118,50 @@ float RMSBufferGetSample(rmsbuffer_t *buffer)
 void RMSBufferSetSample(rmsbuffer_t *buffer, float S)
 { RMSBufferSetSampleAtIndex(buffer, buffer->index, S); }
 
+void RMSBufferWriteSample(rmsbuffer_t *buffer, float S)
+{ RMSBufferSetSampleAtIndex(buffer, buffer->index, S); buffer->index++; }
+
 ////////////////////////////////////////////////////////////////////////////////
 
-float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, double sampleDelay)
+float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint64_t sampleDelay)
+{
+	uint64_t index = buffer->index;
+	uint64_t indexMask = buffer->indexMask;	
+	return buffer->sampleData[(index-sampleDelay)&indexMask];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, float sampleDelay)
 {
 	uint64_t index = buffer->index;
 	uint64_t indexMask = buffer->indexMask;
 	
-	int64_t T = index - (int64_t)sampleDelay;
-	float R1 = buffer->dataPtr[(T-0)&indexMask];
-	float R2 = buffer->dataPtr[(T-1)&indexMask];
-	return R1 + (sampleDelay-trunc(sampleDelay)) * (R2 - R1);
-//	return fmaf((sampleDelay-trunc(sampleDelay)), (R2 - R1), R1);
+	index -= (int64_t)sampleDelay;
+	float R0 = buffer->sampleData[(index-0)&indexMask];
+	float R1 = buffer->sampleData[(index-1)&indexMask];
+	
+	float M = sampleDelay - truncf(sampleDelay);
+	
+	return R0 + M * (R1 - R0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+float RMSBufferStepSizeForFrequency(rmsbuffer_t *buffer, float F)
+{ return F / (buffer->indexMask + 1.0); }
+
+float RMSBufferValueAtOffset(rmsbuffer_t *buffer, double offset)
+{
+	uint64_t index = offset;
+	uint64_t indexMask = buffer->indexMask;
+	
+	float R0 = buffer->sampleData[(index+0)&indexMask];
+	float R1 = buffer->sampleData[(index+1)&indexMask];
+	
+	float M = offset - truncf(offset);
+	
+	return R0 + M * (R1 - R0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

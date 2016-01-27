@@ -161,7 +161,7 @@
                             <slider verticalHuggingPriority="750" id="qr4-u0-W8c">
                                 <rect key="frame" x="18" y="148" width="408" height="21"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="qS0-h8-fmC"/>
+                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="below" sliderType="linear" id="qS0-h8-fmC"/>
                                 <connections>
                                     <action selector="didAdjustDelayTime:" target="-2" id="0A0-xd-7oS"/>
                                 </connections>

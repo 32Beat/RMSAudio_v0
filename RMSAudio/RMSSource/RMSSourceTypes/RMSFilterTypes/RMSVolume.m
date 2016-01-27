@@ -29,6 +29,10 @@
 @implementation RMSVolume
 ////////////////////////////////////////////////////////////////////////////////
 
+float RMSVolumeGetLastVolume(void *source)
+{ return ((__bridge RMSVolume *)source)->mLastVolume; }
+
+
 static void PCM_ApplyVolume
 (float V1, float V2, float *dstL, float *dstR, UInt32 n)
 {

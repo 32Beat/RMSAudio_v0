@@ -28,11 +28,8 @@
 @property (nonatomic, weak) IBOutlet NSSlider *resonanceControl;
 
 @property (nonatomic) RMSDelay *delayFilter;
-@property (nonatomic) RMSDelay *delayFilter1;
-@property (nonatomic) RMSDelay *delayFilter2;
 @property (nonatomic, weak) IBOutlet NSTextField *delayTimeLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *delayTimeControl;
-@property (nonatomic, weak) IBOutlet NSSlider *delayDecayControl;
 @property (nonatomic, weak) IBOutlet NSSlider *delayFeedBackControl;
 @property (nonatomic, weak) IBOutlet NSSlider *delayMixControl;
 

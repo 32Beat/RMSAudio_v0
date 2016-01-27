@@ -11,6 +11,7 @@
 		7F12BE771C517DCC003A26C3 /* rmsdelay_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F12BE751C517DCC003A26C3 /* rmsdelay_t.c */; };
 		7F166E111C43705A00537DC2 /* RMSSineWave.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F166E101C43705A00537DC2 /* RMSSineWave.m */; };
 		7F5A9A121C4BF60D00363CE2 /* RMSTestSignal.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F5A9A111C4BF60D00363CE2 /* RMSTestSignal.m */; };
+		7F7572511C557BE8004CFE6D /* rmsoscillator_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F75724F1C557BE8004CFE6D /* rmsoscillator_t.c */; };
 		7FA4267B1C52407B004FAEFD /* RMSDelay.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA4267A1C52407B004FAEFD /* RMSDelay.m */; };
 		7FACF1411C54E93700AF850A /* rmsbuffer_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7FACF13F1C54E93700AF850A /* rmsbuffer_t.c */; };
 		7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */; };
@@ -55,6 +56,8 @@
 		7F166E101C43705A00537DC2 /* RMSSineWave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSineWave.m; sourceTree = "<group>"; };
 		7F5A9A101C4BF60D00363CE2 /* RMSTestSignal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSTestSignal.h; sourceTree = "<group>"; };
 		7F5A9A111C4BF60D00363CE2 /* RMSTestSignal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSTestSignal.m; sourceTree = "<group>"; };
+		7F75724F1C557BE8004CFE6D /* rmsoscillator_t.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rmsoscillator_t.c; sourceTree = "<group>"; };
+		7F7572501C557BE8004CFE6D /* rmsoscillator_t.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rmsoscillator_t.h; sourceTree = "<group>"; };
 		7FA426791C52407B004FAEFD /* RMSDelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSDelay.h; sourceTree = "<group>"; };
 		7FA4267A1C52407B004FAEFD /* RMSDelay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSDelay.m; sourceTree = "<group>"; };
 		7FACF13F1C54E93700AF850A /* rmsbuffer_t.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rmsbuffer_t.c; sourceTree = "<group>"; };
@@ -205,6 +208,8 @@
 				7FB8E0D21C42FA7C00B7848A /* rmslevels.h */,
 				7F12BE761C517DCC003A26C3 /* rmsdelay_t.h */,
 				7F12BE751C517DCC003A26C3 /* rmsdelay_t.c */,
+				7F75724F1C557BE8004CFE6D /* rmsoscillator_t.c */,
+				7F7572501C557BE8004CFE6D /* rmsoscillator_t.h */,
 				7FB8E0D31C42FA7C00B7848A /* RMSRingBuffer.h */,
 				7FB8E0D41C42FA7C00B7848A /* RMSRingBuffer.m */,
 				7FB8E0D51C42FA7C00B7848A /* RMSTimer.h */,
@@ -405,6 +410,7 @@
 				7FB8E0C31C42FA3800B7848A /* main.m in Sources */,
 				7FB8E1131C42FA7C00B7848A /* RMSOutput.m in Sources */,
 				7F12BE771C517DCC003A26C3 /* rmsdelay_t.c in Sources */,
+				7F7572511C557BE8004CFE6D /* rmsoscillator_t.c in Sources */,
 				7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */,
 				7FB8E1101C42FA7C00B7848A /* RMSAudioUnitPlatformIO.m in Sources */,
 				7FB8E10F1C42FA7C00B7848A /* RMSAudioUnitFilePlayer.m in Sources */,
