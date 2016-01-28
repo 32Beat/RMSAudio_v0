@@ -3,13 +3,13 @@
 
 RMSAudio is an experiment in designing a simple and comprehensive audio management structure in Objective-C for the Mac OS family. The design principles are based on the following logic: 
 
-1. Connecting objects should be as simple as the real world equivalents, in other words, no AUGraph, no separate render trees etc. Connecting objects automatically is the tree. Nodes and leaves are exponents of a single parent. It is as easy to connect a single object, as it is to connect an entire tree.
+1. Connecting objects should be simple and intuitive, in other words, no AUGraph, no separate render trees etc. Connecting objects automatically is the tree. Nodes and leaves are exponents of a single parent. It is as easy to connect a single object, as it is to connect an entire tree.
   * object management is done in Objective-C, 
   * rendering is done in C, 
   * hooks are used to maintain inheritance,
   * object existence is guarded for the audiothread. 
 
-2. Writing experimental code to test audio algorithms is extremely easily accomplished and does not require setting up a full environment and writing an entire audiounit.
+2. Writing experimental code to test audio algorithms is should be extremely easy to accomplish and does not require setting up a full environment and writing an entire audiounit.
 
 As an example, PlayThru (from mic to output) is as simple as: 
 
