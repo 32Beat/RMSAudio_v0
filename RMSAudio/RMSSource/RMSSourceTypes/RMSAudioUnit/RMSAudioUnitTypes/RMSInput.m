@@ -233,7 +233,7 @@ static OSStatus outputCallback(
 	return result;
 }
 
-#endif
+#endif // TARGET_OS_DESKTOP
 
 ////////////////////////////////////////////////////////////////////////////////
 #if TARGET_OS_IPHONE
@@ -267,7 +267,7 @@ static OSStatus outputCallback(
 	return self;
 }
 
-#endif
+#endif // TARGET_OS_IPHONE
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -338,12 +338,20 @@ static OSStatus outputCallback(
 	result = [self enableOutput:false];
 	if (result != noErr) return result;
 
-	// Attach callback on outputside of inputstream (bus 1)
-	result = AudioUnitSetInputCallback \
-	(mAudioUnit, [[self class] inputCallback], (__bridge void *)self);
+	// Attach callback for outputside of inputstream
+	result = [self attachInputCallback];
 	if (result != noErr) return result;
 	
 	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (OSStatus) attachInputCallback
+{
+	// Attach callback for outputside of inputstream 
+	return AudioUnitSetInputCallback \
+	(mAudioUnit, [[self class] inputCallback], (__bridge void *)self);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -18,7 +18,7 @@
 @property (nonatomic) RMSMixer *mixer;
 
 @property (nonatomic) RMSSource *micSource;
-@property (nonatomic) RMSSource *fileSource;
+@property (nonatomic) RMSSource *filePlayer;
 @property (nonatomic) RMSMixerSourceController *fileController;
 
 @end
@@ -47,10 +47,12 @@
 	// Pimp up the input with some oldskool delay
 	[self.micSource addFilter:[RMSDelay spaceEcho]];
 
+
+	
 // TODO: need better separation from mixersource
 /*
 	[self.mixer addSource:] is intuitive, 
-	but returning a mixersource is not correct
+	but returning a mixersource is not 
 	
 	probably better strategy: create RMSMixerViewController
 */
