@@ -13,8 +13,10 @@
 
 + (instancetype) spaceEcho;
 
+// Set relative delay 0.0 = min, 1.0 = max
 - (void) setDelay:(float)delay;
 
+// Set delay time in seconds
 - (NSTimeInterval) delayTime;
 - (void) setDelayTime:(NSTimeInterval)time;
 

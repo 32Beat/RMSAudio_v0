@@ -215,7 +215,7 @@
 
 - (IBAction) didAdjustDelayTime:(NSSlider *)sender
 {
-	self.delayFilter.delayTime = sender.floatValue;
+	self.delayFilter.delay = sender.floatValue;
 	
 	float T = self.delayFilter.delayTime;
 	self.delayTimeLabel.stringValue = [NSString stringWithFormat:@"Time: %.4f", T];
