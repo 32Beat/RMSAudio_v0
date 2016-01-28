@@ -11,6 +11,8 @@
 
 @interface RMSDelay : RMSSource
 
++ (instancetype) spaceEcho;
+
 - (void) setDelay:(float)delay;
 
 - (NSTimeInterval) delayTime;

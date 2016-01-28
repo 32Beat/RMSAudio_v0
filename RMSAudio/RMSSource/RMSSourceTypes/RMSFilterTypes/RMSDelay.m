@@ -105,6 +105,17 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
++ (instancetype) spaceEcho
+{
+	RMSDelay *filter = [RMSDelay new];
+	[filter setDelayTime:0.2];
+	[filter setFeedBack:0.7];
+	[filter setMix:0.5];
+	return filter;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (instancetype) init
 {
 	self = [super init];

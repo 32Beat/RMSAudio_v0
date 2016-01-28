@@ -17,6 +17,8 @@
 @property (nonatomic) RMSOutput *audioOutput;
 @property (nonatomic) RMSMixer *mixer;
 
+@property (nonatomic) RMSSource *micSource;
+@property (nonatomic) RMSSource *fileSource;
 @property (nonatomic) RMSMixerSourceController *fileController;
 
 @end
@@ -40,27 +42,40 @@
 - (void) startDefaultInput
 {
 	// Get RMSSource instance for default input
-	id src = [RMSInput defaultInput];
-
+	self.micSource = [RMSInput defaultInput];
 
 	// Pimp up the input with some oldskool delay
-	RMSDelay *delayFilter = [RMSDelay new];
-	[delayFilter setDelayTime:0.2];
-	[delayFilter setFeedBack:0.7];
-	[delayFilter setMix:0.5];
+	[self.micSource addFilter:[RMSDelay spaceEcho]];
 
-	[src addFilter:delayFilter];
-
-
+// TODO: need better separation from mixersource
+/*
+	[self.mixer addSource:] is intuitive, 
+	but returning a mixersource is not correct
+	
+	probably better strategy: create RMSMixerViewController
+*/
 
 	// Embed in RMSMixerSource
-	src = [self.mixer addSource:src];
+	id src = [self.mixer addSource:self.micSource];
 
 	// Create viewController with mixerSource
 	src = [RMSMixerSourceController instanceWithSource:src];
 	
 	// Add to main view
 	[self addMixerSourceController:src];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (RMSMixerSourceController *)fileController
+{
+	if (_fileController == nil)
+	{
+		_fileController = [RMSMixerSourceController instanceWithSource:nil];
+		[self addMixerSourceController:_fileController];
+	}
+	
+	return _fileController;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -111,17 +126,18 @@
 		}
 	}
 	
+	// Remove previous source
+	if (self.filePlayer != nil)
+	{ [self.mixer removeSource:self.filePlayer]; }
 	
+	// Set new source
+	self.filePlayer = source;
+	
+	// Embed in mixersource
 	id src = [self.mixer addSource:source];
 	
-	// Create viewController with mixerSource
-	if (self.fileController == nil)
-	{
-		self.fileController = [RMSMixerSourceController instanceWithSource:src];
-		[self addMixerSourceController:self.fileController];
-	}
-	else
-	{ [self.fileController setSource:src]; }
+	// Set in viewController
+	[self.fileController setSource:src];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
