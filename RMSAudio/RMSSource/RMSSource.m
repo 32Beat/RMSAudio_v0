@@ -105,23 +105,20 @@ OSStatus RunRMSSource(
 
 	OSStatus result = RunRMSCallback(&rmsSource->mCallbackInfo,
 	actionFlags, timeStamp, busNumber, frameCount, bufferList);
-	if (result != noErr)
-		return result;
+	if (result != noErr) return result;
 	
 	if (rmsSource->mFilter != nil)
 	{
 		result = RunRMSSource((__bridge void *)rmsSource->mFilter,
 		actionFlags, timeStamp, busNumber, frameCount, bufferList);
-		if (result != noErr)
-			return result;
+		if (result != noErr) return result;
 	}
 	
 	if (rmsSource->mMonitor != nil)
 	{
 		result = RunRMSSource((__bridge void *)rmsSource->mMonitor,
 		actionFlags, timeStamp, busNumber, frameCount, bufferList);
-		if (result != noErr)
-			return result;
+		if (result != noErr) return result;
 	}
 	
 	return result;

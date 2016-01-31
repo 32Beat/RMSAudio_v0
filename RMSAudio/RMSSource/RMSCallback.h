@@ -27,6 +27,7 @@ typedef void *RMSCallbackPtr;
 typedef void *RMSCallbackPrm;
 
 typedef struct RMSCallbackInfo RMSCallbackInfo;
+typedef struct RMSCallbackInfo *RMSCallbackInfoPtr;
 
 struct RMSCallbackInfo
 {
@@ -34,7 +35,7 @@ struct RMSCallbackInfo
 	void *procPrm;
 
 	UInt32 flags;
-	const RMSCallbackInfo *nextCallbackInfo;
+	const RMSCallbackInfoPtr nextCallbackInfo;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,36 +95,43 @@ static inline OSStatus RMSCallbackInfoRun(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-OSStatus RMSCallbackRun(
-	void *pcmObject,
-	PCMSampleRange sampleRange,
-	AudioBufferList *bufferList);
+OSStatus RMSCallbackRun(void *pcmObject,
+	PCMSampleRange sampleRange, AudioBufferList *bufferList);
 
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef	OSStatus (^RMSCallbackBlock)
-		(PCMSampleRange sampleRange, AudioBufferList *audio);
+	(PCMSampleRange sampleRange, AudioBufferList *bufferList);
 
-
-
+////////////////////////////////////////////////////////////////////////////////
+/*
+	RMSCallback
+	-----------
+	Root object of the RMSAudio object graph
+	
+	RMSCallback contains the callback logic for all RMSSource objects.
+	The callback function is initialized by providing either a procPtr, 
+	or a blockPtr.
+	
+	procPtr:
+	By default, the RMSCallbackProcPtr is assumed to be available thru
+	the class global method "callbackPtr". This allows normal object creation
+	by using "new" or "init". The default refcon value supplied to this
+	RMSCallbackProcPtr is "self".
+	
+	blockPtr:
+	Calling interface under construction!
+		
+*/
 @interface RMSCallback : NSObject
 {
 	RMSCallbackInfo mCallbackInfo;
 	RMSCallbackBlock mCallbackBlock;
 }
 
-+ (instancetype) instanceWithCallbackPtr:(void *)procPtr;
-- (instancetype) initWithCallbackPtr:(void *)procPtr;
-+ (instancetype) instanceWithCallbackPtr:(void *)procPtr callbackPrm:(void *)procPrm;
-- (instancetype) initWithCallbackPtr:(void *)procPtr callbackPrm:(void *)procPrm;
-+ (instancetype) instanceWithCallbackInfo:(RMSCallbackInfo)callbackInfo;
-- (instancetype) initWithCallbackInfo:(RMSCallbackInfo)callbackInfo;
-
 + (const RMSCallbackProcPtr) callbackPtr;
-- (const RMSCallbackInfo *) callbackInfoPtr;
 
 + (instancetype) instanceWithBlock:(RMSCallbackBlock)block;
-- (instancetype) initWithBlock:(RMSCallbackBlock)block;
 
 @end
 ////////////////////////////////////////////////////////////////////////////////

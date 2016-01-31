@@ -11,6 +11,25 @@
 #import "RMSCallback.h"
 
 
+
+@interface RMSCallback ()
+
++ (instancetype) instanceWithCallbackPtr:(void *)procPtr;
+- (instancetype) initWithCallbackPtr:(void *)procPtr;
++ (instancetype) instanceWithCallbackPtr:(void *)procPtr callbackPrm:(void *)procPrm;
+- (instancetype) initWithCallbackPtr:(void *)procPtr callbackPrm:(void *)procPrm;
++ (instancetype) instanceWithCallbackInfo:(RMSCallbackInfo)callbackInfo;
+- (instancetype) initWithCallbackInfo:(RMSCallbackInfo)callbackInfo;
+
++ (const RMSCallbackProcPtr) callbackPtr;
+- (const RMSCallbackInfoPtr) callbackInfoPtr;
+
+- (instancetype) initWithBlock:(RMSCallbackBlock)block;
+
+@end
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSCallback
 ////////////////////////////////////////////////////////////////////////////////
@@ -62,7 +81,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (const RMSCallbackInfo *)callbackInfoPtr;
+- (const RMSCallbackInfoPtr)callbackInfoPtr;
 { return &mCallbackInfo; }
 
 const RMSCallbackInfo *RMSCallbackGetInfoPtr(void *rmsSource)

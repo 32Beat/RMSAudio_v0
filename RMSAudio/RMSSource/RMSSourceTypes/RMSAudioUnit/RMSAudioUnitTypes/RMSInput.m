@@ -183,6 +183,38 @@ static OSStatus outputCallback(
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
+/*
+	voiceProcessing exists on OSX but doesn't allow our initialization, 
+	
+	TODO: create and test iOS version
+*/
+/*
++ (instancetype) voiceProcessingInput
+{ return [[self alloc] initWithVoiceProcessingIO]; }
+
+- (instancetype) initWithVoiceProcessingIO
+{
+	self = [super initWithDescription:(AudioComponentDescription) {
+		.componentType = kAudioUnitType_Output,
+		.componentSubType = kAudioUnitSubType_VoiceProcessingIO,
+		.componentManufacturer = kAudioUnitManufacturer_Apple,
+		.componentFlags = 0,
+		.componentFlagsMask = 0 }];
+	if (self != nil)
+	{
+		OSStatus result = noErr;
+		
+		
+		
+		
+		result = [self attachInputCallback];
+		if (result != noErr) return nil;
+	}
+	
+	return self;
+}
+*/
+////////////////////////////////////////////////////////////////////////////////
 #if TARGET_OS_DESKTOP
 
 + (instancetype) defaultInput

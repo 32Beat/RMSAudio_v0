@@ -11,4 +11,5 @@
 
 @interface RMSInput : RMSAudioUnitPlatformIO
 + (instancetype) defaultInput;
+//+ (instancetype) voiceProcessingInput;
 @end
