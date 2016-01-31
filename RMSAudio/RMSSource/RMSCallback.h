@@ -107,20 +107,19 @@ typedef	OSStatus (^RMSCallbackBlock)
 /*
 	RMSCallback
 	-----------
-	Root object of the RMSAudio object graph
-	
-	RMSCallback contains the callback logic for all RMSSource objects.
-	The callback function is initialized by providing either a procPtr, 
-	or a blockPtr.
-	
-	procPtr:
-	By default, the RMSCallbackProcPtr is assumed to be available thru
-	the class global method "callbackPtr". This allows normal object creation
-	by using "new" or "init". The default refcon value supplied to this
-	RMSCallbackProcPtr is "self".
-	
-	blockPtr:
-	Calling interface under construction!
+	RMSCallback contains the callback logic for RMSSource objects.
+
+	The callback function is initialized by providing either a procPtr,
+	or a blockPtr:
+ 
+		procPtr:
+		By default, the RMSCallbackProcPtr is assumed to be available thru
+		the class global method "callbackPtr". This allows normal object 
+		creation by using "new" or "init". The default refcon value supplied to 
+		the RMSCallbackProcPtr is "self".
+		
+		blockPtr:
+		Calling interface under construction!
 		
 */
 @interface RMSCallback : NSObject

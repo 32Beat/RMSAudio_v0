@@ -61,11 +61,13 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Handled on main
 
 static void TrashCallback(void *rmsObject, NSUInteger count)
 { [(__bridge RMSSource *)rmsObject emptyTrash:count]; }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Handled on audio thread
 
 static void HandleTrash(void *rmsObject)
 {
@@ -103,10 +105,14 @@ OSStatus RunRMSSource(
 	{ HandleTrash(rmsObject); }
 
 
-	OSStatus result = RunRMSCallback(&rmsSource->mCallbackInfo,
+	OSStatus result = noErr;
+
+	// Run the callback for self
+	result = RunRMSCallback(&rmsSource->mCallbackInfo,
 	actionFlags, timeStamp, busNumber, frameCount, bufferList);
 	if (result != noErr) return result;
 	
+	// Run the filter (chain)
 	if (rmsSource->mFilter != nil)
 	{
 		result = RunRMSSource((__bridge void *)rmsSource->mFilter,
@@ -114,6 +120,7 @@ OSStatus RunRMSSource(
 		if (result != noErr) return result;
 	}
 	
+	// Run the monitor (chain)
 	if (rmsSource->mMonitor != nil)
 	{
 		result = RunRMSSource((__bridge void *)rmsSource->mMonitor,
