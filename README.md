@@ -33,7 +33,10 @@ Which builds a simple tree: input->varispeed->output
 ## Root object: RMSSource
 The core object behind the RMSAudio structure is the RMSSource object. It contains the callback management for producing/manipulating audiosamples, and it also contains the rendertree management by incorporating the ability to connect to other RMSSource objects. Any properly implemented object based on RMSSource can be attached to another RMSSource. RMSSource objects can be a root as well as a leaf in the rendertree. Even the default input and output objects are based on RMSSource. 
 
-There are three distinct connections: a source connection, a filter connection, and a monitor connection. They are processed in that order. A source connection can be used by an object to produce audio. A variospeed filter for example, can have a fileplayer connected to its source. The filter connection can be used to add objects that manipulate the audiosamples previously produced by self. The RMSVolume filter is a prime example: it multiplies existing samples to produce proper volume, balance, and gain control. The monitor connection can be used to monitor results of the rendertree after the particular object has produced and filtered its samples. Levelmonitoring is an obvious example. 
+There are three distinct connections: a source connection, a filter connection, and a monitor connection. They are processed in that order. 
+ * A source connection can be used by an object to produce audio. A variospeed filter for example, can have a fileplayer connected to its source. 
+ * The filter connection can be used to add objects that manipulate the audiosamples previously produced by self. The RMSVolume filter is a prime example: it multiplies existing samples to produce proper volume, balance, and gain control. 
+ * The monitor connection can be used to monitor results of the rendertree after the particular object has produced and filtered its samples. Levelmonitoring is an obvious example. 
 
 
 ## Stacking Filters
