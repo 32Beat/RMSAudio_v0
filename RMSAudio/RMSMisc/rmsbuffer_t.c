@@ -123,7 +123,7 @@ void RMSBufferWriteSample(rmsbuffer_t *buffer, float S)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint64_t sampleDelay)
+float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint32_t sampleDelay)
 {
 	uint64_t index = buffer->index;
 	uint64_t indexMask = buffer->indexMask;	

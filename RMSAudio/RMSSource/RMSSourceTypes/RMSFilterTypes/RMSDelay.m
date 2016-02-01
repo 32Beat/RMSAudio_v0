@@ -80,14 +80,14 @@ static OSStatus renderCallback(
 		// Compute dry-wet mix
 		float L0 = ptrL[0];
 		float L1 = RMSDelayProcessSample(&rmsObject->mDelayL, D+D*Y, F, L0);
-		//*ptrL++ = L0 + M * (L1 - L0);
-		*ptrL++ = rmsBalance(L0, L1, M);
+		*ptrL++ = L0 + M * (L1 - L0);
+		//*ptrL++ = rmsBalance(L0, L1, M);
 		
 		// Compute dry-wet mix
 		float R0 = ptrR[0];
 		float R1 = RMSDelayProcessSample(&rmsObject->mDelayR, D-D*Y, F, R0);
-		//*ptrR++ = R0 + M * (R1 - R0);
-		*ptrR++ = rmsBalance(R0, R1, M);
+		*ptrR++ = R0 + M * (R1 - R0);
+		//*ptrR++ = rmsBalance(R0, R1, M);
 		
 		D += Dstep;
 		F += Fstep;
@@ -121,7 +121,7 @@ static OSStatus renderCallback(
 	self = [super init];
 	if (self != nil)
 	{
-		mLFO = RMSOscillatorBeginTriangleWave(.1, 44100.0);
+		mLFO = RMSOscillatorBeginTriangleWave(.05, 44100.0);
 		mDelayL = RMSDelayBegin();
 		mDelayR = RMSDelayBegin();
 	}

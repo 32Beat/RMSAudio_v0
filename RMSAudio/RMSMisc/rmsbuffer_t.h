@@ -38,6 +38,7 @@ typedef struct rmsbuffer_t
 	uint64_t index;
 	uint64_t indexMask;
 	float   *sampleData;
+	float reserved[20];
 }
 rmsbuffer_t;
 
@@ -74,7 +75,8 @@ void RMSBufferSetSampleAtOffset(rmsbuffer_t *buffer, int64_t offset, float S);
 ////////////////////////////////////////////////////////////////////////////////
 
 // Get sample at offset = -sampleDelay
-float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint64_t sampleDelay);
+float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint32_t sampleDelay);
+float RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, float sampleDelay);
 
 // Set sample at current index modulo buffersize, then update index
 void RMSBufferWriteSample(rmsbuffer_t *buffer, float S);
