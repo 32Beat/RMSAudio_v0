@@ -40,7 +40,24 @@ float _RMSDelayProcessSample(rmsdelay_t *delay, float offset, float feedBack, fl
 
 float RMSDelayProcessSample(rmsdelay_t *delay, float offset, float feedBack, float S)
 {
-	float R = RMSBufferGetSampleWithDelay(delay, offset);
+#define steps 8
+
+	uint32_t T1 = 0;
+	uint32_t T2 = offset;
+	
+	float R = 0;
+	
+	for (size_t n=steps; n!=0; n--)
+	{
+		R -= RMSBufferGetSampleWithDelay(delay, T2);
+		T1 = 1 | ((T1+T2)>>1);
+		R += RMSBufferGetSampleWithDelay(delay, T1);
+		T2 = 1 | ((T1+T2)>>1);
+	}
+	
+	R *= (1.0/steps);
+	
+//	R = (delay->reserved[0] += (1.0-feedBack) * (R - delay->reserved[0]));
 	
 	S += feedBack * R;
 	
@@ -51,7 +68,7 @@ float RMSDelayProcessSample(rmsdelay_t *delay, float offset, float feedBack, flo
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float RMSDelayProcessSampleMT(rmsdelay_t *delay, float offset, float feedBack, float S)
+float RMSDelayProcessSample2(rmsdelay_t *delay, float offset, float feedBack, float S)
 {
 #define steps 8
 

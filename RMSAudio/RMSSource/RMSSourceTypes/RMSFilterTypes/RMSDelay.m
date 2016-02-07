@@ -75,19 +75,15 @@ static OSStatus renderCallback(
 
 	do
 	{
-		float Y = .1*RMSOscillatorFetchSample(&rmsObject->mLFO);
+		float Y = .1 * D * RMSOscillatorFetchSample(&rmsObject->mLFO);
 		
-		// Compute dry-wet mix
 		float L0 = ptrL[0];
-		float L1 = RMSDelayProcessSample(&rmsObject->mDelayL, D+D*Y, F, L0);
-		*ptrL++ = L0 + M * (L1 - L0);
-		//*ptrL++ = rmsBalance(L0, L1, M);
+		float L1 = RMSDelayProcessSample(&rmsObject->mDelayL, D+Y, F, L0);
+		*ptrL++ = L1;// + M * (L1 - L0);
 		
-		// Compute dry-wet mix
 		float R0 = ptrR[0];
-		float R1 = RMSDelayProcessSample(&rmsObject->mDelayR, D-D*Y, F, R0);
-		*ptrR++ = R0 + M * (R1 - R0);
-		//*ptrR++ = rmsBalance(R0, R1, M);
+		float R1 = RMSDelayProcessSample(&rmsObject->mDelayR, D-Y, F, R0);
+		*ptrR++ = R1;// + M * (R1 - R0);
 		
 		D += Dstep;
 		F += Fstep;

@@ -158,8 +158,8 @@
 {
 	if (self.lowPassFilter == nil)
 	{
-//		self.lowPassFilter = [RMSLowPassFilter new];
-		self.lowPassFilter = [RMSMoogFilter new];
+		self.lowPassFilter = [RMSLowPassFilter new];
+//		self.lowPassFilter = [RMSMoogFilter new];
 		[self.lowPassFilter setCutOff:self.cutOffControl.floatValue];
 		[self.lowPassFilter setResonance:self.resonanceControl.floatValue];
 		[self.audioOutput addFilter:self.lowPassFilter];
@@ -201,7 +201,7 @@
 		[self.delayFilter setDelayTime:self.delayTimeControl.floatValue];
 		[self.delayFilter setFeedBack:self.delayFeedBackControl.floatValue];
 		[self.delayFilter setMix:self.delayMixControl.floatValue];
-
+		
 		[self.audioOutput addFilter:self.delayFilter];
 	}
 	else
@@ -250,10 +250,11 @@
 	[NSThread sleepForTimeInterval:0.05];
 	
 	// Start testsignal
-//	self.audioOutput.source = [RMSTestSignal sineWaveWithFrequency:441.0];
-	self.audioOutput.source = [RMSTestSignal blockWaveWithFrequency:441.0];
-//	self.audioOutput.source = [RMSTestSignal triangleWaveWithFrequency:441.0];
-//	self.audioOutput.source = [RMSTestSignal sawToothWaveWithFrequency:441.0];
+	self.audioOutput.source =
+		[RMSTestSignal sineWaveWithFrequency:441.0];
+//		[RMSTestSignal blockWaveWithFrequency:441.0];
+//		[RMSTestSignal triangleWaveWithFrequency:441.0];
+//		[RMSTestSignal sawToothWaveWithFrequency:441.0];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -282,19 +283,25 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Select Audio File
+////////////////////////////////////////////////////////////////////////////////
 /*
-	Select a music file and play it. 
+	Select an audio file and play it.
 	
-	Note that the RMSAudioUnitVarispeed is automatically attached if necessary.
+	Note that the RMSAudioUnitVarispeed is attached if necessary.
 	
 	sampleRate always refers to the output samplerate of an RMSSource.
 	Where appropriate, the input sampleRate should be set by a specific method, 
 	unless the sampleRate is implicated.
 */
 
-- (IBAction) didSelectButton:(NSButton *)button
+- (IBAction) didSelectFileButton:(NSButton *)button
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	
+	panel.allowedFileTypes = [RMSAudioUnitFilePlayer readableTypes];
+	
 	[panel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result)
 	{
 		[panel orderOut:self];
@@ -307,6 +314,7 @@
 	}];
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 - (void) startFileWithURL:(NSURL *)url
 {
@@ -323,5 +331,9 @@
 	[self.audioOutput setSource:source];
 }
 
-
+////////////////////////////////////////////////////////////////////////////////
 @end
+////////////////////////////////////////////////////////////////////////////////
+
+
+

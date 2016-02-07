@@ -12,8 +12,37 @@
 #import "RMSAudio.h"
 
 
+@interface RMSAudioUnitFilePlayer ()
+{
+	AudioFileID mFileID;
+	AudioStreamBasicDescription mFileFormat;
+	
+	UInt64 mByteCount;
+	UInt64 mPacketCount;
+	
+	Float64 mEstimatedDuration;
+}
+
+@end
+
+
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSAudioUnitFilePlayer
+////////////////////////////////////////////////////////////////////////////////
+
++ (NSArray *) readableTypes
+{
+	CFArrayRef arrayPtr = nil;
+	
+	UInt32 size = sizeof(CFArrayRef);
+	OSStatus result = AudioFileGetGlobalInfo
+	(kAudioFileGlobalInfo_AllExtensions, 0, nil, &size, &arrayPtr);
+	if (result != noErr)
+	{}
+	
+	return (__bridge_transfer NSArray *)arrayPtr;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 + (AudioComponentDescription) componentDescription
@@ -63,7 +92,6 @@
 	kAudioUnitScope_Global, 0, &mFileID, sizeof(mFileID));
 	if (result != noErr)
 	{ NSLog(@"Failed to set file ID: %d", result); return result; }
-
 
 
 	UInt32 size = sizeof(mFileFormat);
@@ -138,5 +166,39 @@
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+- (OSStatus) readSizeInfo
+{
+	OSStatus result = noErr;
+	
+	UInt32 size = sizeof(Float64);
+	result = AudioFileGetProperty(mFileID, kAudioFilePropertyEstimatedDuration,
+	&size, &mEstimatedDuration);
+
+	size = sizeof(UInt64);
+	result = AudioFileGetProperty(mFileID, kAudioFilePropertyAudioDataByteCount,
+	&size, &mByteCount);
+
+	size = sizeof(UInt64);
+	result = AudioFileGetProperty(mFileID, kAudioFilePropertyAudioDataPacketCount,
+	&size, &mPacketCount);
+	
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (OSStatus) getCurrentPlayTime:(AudioTimeStamp *)timeStamp
+{
+	UInt32 size = sizeof(AudioTimeStamp);
+	return AudioUnitGetProperty(mAudioUnit, kAudioUnitProperty_CurrentPlayTime,
+	kAudioUnitScope_Global, 0, timeStamp, &size);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 @end
 ////////////////////////////////////////////////////////////////////////////////
+
+
+
+

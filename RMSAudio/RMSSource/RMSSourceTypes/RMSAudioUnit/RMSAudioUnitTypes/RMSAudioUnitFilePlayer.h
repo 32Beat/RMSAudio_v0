@@ -10,11 +10,11 @@
 #import "RMSAudioUnit.h"
 
 @interface RMSAudioUnitFilePlayer : RMSAudioUnit
-{
-	AudioFileID mFileID;
-	AudioStreamBasicDescription mFileFormat;
-}
+
++ (NSArray *) readableTypes;
 
 + (instancetype) instanceWithURL:(NSURL *)fileURL;
+
+- (OSStatus) getCurrentPlayTime:(AudioTimeStamp *)timeStamp;
 
 @end

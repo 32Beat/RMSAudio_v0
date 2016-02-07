@@ -27,11 +27,25 @@
 static inline double _ComputeMultiplier(double Fc, double Fs)
 { return 1.0 - exp(-2.0*M_PI*Fc/Fs); }
 
-static inline float LPProcessSample(float M, float Q, float *A, float S)
+static inline float ProcessSampleLP(float M, float Q, float *A, float S)
 {
 #pragma unused(Q)
 
 	return A[0] += M * (S - A[0]) ;
+}
+
+static inline float ProcessSampleAP(float M, float Q, float *A, float S)
+{
+#pragma unused(Q)
+
+	float R = A[0];
+	
+	S += M * R;
+	R -= M * S;
+	
+	A[0] = S;
+	
+	return R;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,11 +60,11 @@ static inline void LPProcessSamples(
 	do
 	{
 		float L = ptrL[0];
-		L = LPProcessSample(M, Q, AL, L);
+		L = ProcessSampleLP(M, Q, AL, L);
 		*ptrL++ = L;
 		
 		float R = ptrR[0];
-		R = LPProcessSample(M, Q, AR, R);
+		R = ProcessSampleLP(M, Q, AR, R);
 		*ptrR++ = R;
 
 		M += Mstep;

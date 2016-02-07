@@ -32,15 +32,41 @@
 @implementation RMSMixer
 ////////////////////////////////////////////////////////////////////////////////
 
-static void Div32f(float *numPtr, float *denPtr, float *dstPtr, UInt32 n)
+static inline void _AddSamples(
+	float *srcL, float *dstL,
+	float *srcR, float *dstR,
+	UInt32 n)
 {
-	for (; n!=0; n--)
+//	vDSP_vadd(srcL, 1, dstL, 1, dstL, 1, n);
+//	vDSP_vadd(srcR, 1, dstR, 1, dstR, 1, n);
+
+	// By the time vDSP has figured out which optimization to use (twice)
+	// the following has probably finished already
+	while(n != 0)
 	{
-		float N = *numPtr++;
-		float D = *denPtr++;
-		*dstPtr++ = N < D ? N / D : N;
+		n -= 1;
+		dstL[n] += srcL[n];
+		dstR[n] += srcR[n];
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void AudioBufferList_AddSamples(
+	AudioBufferList *srcBuffer,
+	AudioBufferList *dstBuffer,
+	UInt32 n)
+{
+	_AddSamples(
+	srcBuffer->mBuffers[0].mData,
+	dstBuffer->mBuffers[0].mData,
+	srcBuffer->mBuffers[1].mData,
+	dstBuffer->mBuffers[1].mData, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 
 static void _RMA(
@@ -98,14 +124,7 @@ static void DivideByTotalVolume(AudioBufferList *bufferList, float V1, float V2,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/*
-	Note: AudioUnits may adjust the AudioBufferList, 
-	particularly the FilePlayer will adjust the mDataByteSize field. 
-	This will happen on the mCacheBuffer possibly making it invalid 
-	for subsequent calls. The AudioBufferList_ClearFrames will reset 
-	the mDataByteSize field to the corresponding length.
-*/
-static OSStatus renderCallback(
+static OSStatus weightedMix(
 	void 							*inRefCon,
 	AudioUnitRenderActionFlags 		*actionFlags,
 	const AudioTimeStamp 			*timeStamp,
@@ -142,7 +161,7 @@ static OSStatus renderCallback(
 	// Accumulate Chained RMSMixerSources
 	while (source != nil)
 	{
-		// Clear cachebuffer, also adjusts mDataByteSize
+		// Clear cachebuffer, also reset mDataByteSize
 		AudioBufferList_ClearFrames(tmpBuffer, frameCount);
 
 		float lastVolume = RMSMixerSourceGetLastVolume(source);
@@ -161,6 +180,65 @@ static OSStatus renderCallback(
 	
 	// Adjust overall volume
 	DivideByTotalVolume(mixBuffer, rmsMixer->mLastVolume, rmsMixer->mNextVolume, frameCount);
+	
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+	Note: AudioUnits may adjust the AudioBufferList, 
+	particularly the FilePlayer will adjust the mDataByteSize field. 
+	This will happen on the mCacheBuffer possibly making it invalid 
+	for subsequent calls. The AudioBufferList_ClearFrames will reset 
+	the mDataByteSize field to the corresponding length.
+*/
+static OSStatus renderCallback(
+	void 							*inRefCon,
+	AudioUnitRenderActionFlags 		*actionFlags,
+	const AudioTimeStamp 			*timeStamp,
+	UInt32							busNumber,
+	UInt32							frameCount,
+	AudioBufferList 				*mixBuffer)
+{
+	__unsafe_unretained RMSMixer *rmsMixer = \
+	(__bridge __unsafe_unretained RMSMixer *)inRefCon;
+
+	// TODO: implement proper loop
+	if (frameCount > rmsMixer->mMaxFrameCount)
+	{
+		NSLog(@"frameCount = %d !", frameCount);
+		frameCount = rmsMixer->mMaxFrameCount;
+	}
+
+	OSStatus result = noErr;
+
+	
+	// Clear incoming audioBuffers
+	AudioBufferList_ClearBuffers(mixBuffer);
+	
+	// Get convenience reference to cacheBuffer
+	AudioBufferList *tmpBuffer = (AudioBufferList *)&rmsMixer->mCacheBuffer;
+	
+	
+	// Render each source into cacheBuffer, and add to mixBuffer
+	void *source = (__bridge void *)rmsMixer->mFirstSource;
+	
+	// Accumulate Chained RMSMixerSources
+	while (source != nil)
+	{
+		// Clear cachebuffer, also reset mDataByteSize
+		AudioBufferList_ClearFrames(tmpBuffer, frameCount);
+		
+		// Render source into tmp buffer
+		result = RunRMSSource(source, \
+		actionFlags, timeStamp, busNumber, frameCount, tmpBuffer);
+		
+		// Add tmp buffer to audiobuffer
+		AudioBufferList_AddSamples(tmpBuffer, mixBuffer, frameCount);
+		
+		// Fetch next source
+		source = RMSMixerSourceGetNextSource(source);
+	}
 	
 	return result;
 }
@@ -251,7 +329,7 @@ static OSStatus renderCallback(
 	if (mFirstSource == nil)
 	{ mFirstSource = mixerSource; }
 	else
-	{ [mFirstSource setNextMixerSource:mixerSource]; }
+	{ [mFirstSource addNextMixerSource:mixerSource]; }
 
 	mSourceCount += 1;
 }

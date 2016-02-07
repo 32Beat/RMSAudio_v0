@@ -17,10 +17,10 @@ static double sineWave(double x)
 { return sin(x*M_PI); }
 
 static double triangleWave(double x)
-{ return x < 0.0 ? x + x + 1.0 : 1.0 - x - x; }
+{ return (x += x) < 0.0 ? x + 1.0 : 1.0 - x; }
 
 static double pseudoSineWave(double x)
-{ x = x < 0.0 ? x*(1+x) : x*(1-x); x += x; return x+x; }
+{ return (x += x) < 0.0 ? x*(2.0+x) : x*(2.0-x); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,9 @@ rmsoscillator_t RMSOscillatorBeginSineWave(double hertz, double sampleRate)
 
 rmsoscillator_t RMSOscillatorBeginTriangleWave(double hertz, double sampleRate)
 { return RMSOscillatorBegin(hertz, sampleRate, triangleWave); }
+
+rmsoscillator_t RMSOscillatorBeginPseudoSineWave(double hertz, double sampleRate)
+{ return RMSOscillatorBegin(hertz, sampleRate, pseudoSineWave); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
