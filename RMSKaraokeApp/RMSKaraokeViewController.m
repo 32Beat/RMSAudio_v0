@@ -69,6 +69,20 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+- (void) setFilePlayer:(RMSSource *)filePlayer
+{
+	if (_filePlayer != nil)
+	{ [self.mixer removeSource:_filePlayer]; }
+
+	// Embed in mixersource
+	id src = [self.mixer addSource:filePlayer];
+	
+	// Set in viewController
+	[self.fileController setSource:src];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (RMSMixerSourceController *)fileController
 {
 	if (_fileController == nil)
@@ -103,6 +117,9 @@
 - (IBAction) didSelectFileButton:(NSButton *)button
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	
+	panel.allowedFileTypes = [RMSAudioUnitFilePlayer readableTypes];
+
 	[panel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result)
 	{
 		[panel orderOut:self];
@@ -128,18 +145,8 @@
 		}
 	}
 	
-	// Remove previous source
-	if (self.filePlayer != nil)
-	{ [self.mixer removeSource:self.filePlayer]; }
-	
 	// Set new source
 	self.filePlayer = source;
-	
-	// Embed in mixersource
-	id src = [self.mixer addSource:source];
-	
-	// Set in viewController
-	[self.fileController setSource:src];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

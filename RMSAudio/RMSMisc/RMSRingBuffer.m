@@ -126,8 +126,7 @@ void RMSRingBufferReport(RMSRingBuffer *buffer)
 		NSLog(@"Maximum delta: %llu", maxDelta);
 	}
 	
-	return;
-	
+/*
 	static UInt64 avgDelta = 0;
 	static UInt64 sumDelta = 0;
 	static UInt64 sumCount = 0;
@@ -140,6 +139,7 @@ void RMSRingBufferReport(RMSRingBuffer *buffer)
 		avgDelta = A;
 		NSLog(@"Average delta: %llu", avgDelta);
 	}
+*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////

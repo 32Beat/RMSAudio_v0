@@ -23,13 +23,6 @@
 @implementation RMSSineWave
 ////////////////////////////////////////////////////////////////////////////////
 
-static double SineWave(double x)
-{ return sin(x); }
-
-static double BlockWave(double x)
-{ return x < 0.0 ? -1.0 : x > 0.0 ? +1.0 : 0.0; }
-
-
 static OSStatus renderCallback(
 	void 							*inRefCon,
 	AudioUnitRenderActionFlags 		*ioActionFlags,
@@ -46,7 +39,7 @@ static OSStatus renderCallback(
 		
 	for (UInt32 n=0; n!=frameCount; n++)
 	{
-		Float32 Y = SineWave(rmsSource->mX2PI);
+		Float32 Y = sin(rmsSource->mX2PI);
 		srcPtr1[n] = Y;
 		srcPtr2[n] = Y;
 		
