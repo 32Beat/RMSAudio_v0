@@ -9,6 +9,7 @@
 #import "MainViewController.h"
 
 #import "RMSAudio.h"
+#import "NSBitmapImageRepView.h"
 
 @interface MainViewController () <RMSTimerProtocol>
 
@@ -37,6 +38,10 @@
 @property (nonatomic) RMSMonitor *levelsMonitor;
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
 
+@property (nonatomic) RMSSpectrogram *spectrogram;
+@property (nonatomic) UInt64 spectrumIndex;
+@property (nonatomic, weak) IBOutlet NSBitmapImageRepView *spectrumView;
+
 @end
 
 
@@ -57,6 +62,9 @@
 	
 	self.levelsMonitor = [RMSMonitor new];
 	self.audioOutput.monitor = self.levelsMonitor;
+
+	self.spectrogram = [RMSSpectrogram new];
+	[self.audioOutput addMonitor:self.spectrogram];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +97,16 @@
 	
 	if (self.autoPan != nil)
 	{ self.balanceControl.floatValue = self.autoPan.correctionBalance; }
+	
+	if (self.spectrogram != nil)
+	{
+		NSImageRep *imageRep = [self.spectrogram imageRepWithIndex:self.spectrumIndex];
+		if (imageRep != nil)
+		{
+			self.spectrumIndex += imageRep.size.height;
+			[self.spectrumView appendImageRep:imageRep];
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////

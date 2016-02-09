@@ -18,6 +18,7 @@
                 <outlet property="delayTimeLabel" destination="azI-5l-fQA" id="4Lf-bK-2Va"/>
                 <outlet property="gainControl" destination="8co-XE-7Ix" id="mhO-Ll-lmu"/>
                 <outlet property="resonanceControl" destination="PbG-nu-370" id="Ak3-z9-b6z"/>
+                <outlet property="spectrumView" destination="TGV-d5-Wn6" id="iah-zO-iMx"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
                 <outlet property="volumeControl" destination="SE4-C7-Agl" id="lYx-5u-YcD"/>
@@ -26,7 +27,7 @@
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customView id="Hz6-mo-xeY">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="743"/>
+            <rect key="frame" x="0.0" y="0.0" width="1059" height="743"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <customView id="4L8-Lw-eXY" customClass="RMSStereoView">
@@ -240,8 +241,12 @@
                         <action selector="didSelectMicButton:" target="-2" id="2Hb-lg-VVN"/>
                     </connections>
                 </button>
+                <customView id="TGV-d5-Wn6" customClass="NSBitmapImageRepView">
+                    <rect key="frame" x="527" y="20" width="512" height="709"/>
+                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                </customView>
             </subviews>
-            <point key="canvasLocation" x="-884" y="141.5"/>
+            <point key="canvasLocation" x="-433.5" y="141.5"/>
         </customView>
     </objects>
 </document>

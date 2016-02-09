@@ -25,6 +25,15 @@ void RMSDelayEnd(rmsdelay_t *delay)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+float RMSDelayExchangeSample(rmsdelay_t *delay, float S)
+{
+	float R = RMSBufferGetSample(delay);
+	RMSBufferWriteSample(delay, S);
+	return R;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 float _RMSDelayProcessSample(rmsdelay_t *delay, float offset, float feedBack, float S)
 {
 	float R = RMSBufferGetSampleWithDelay(delay, offset);

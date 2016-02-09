@@ -24,6 +24,7 @@
 #import "RMSLowPassFilter.h"
 #import "RMSMoogFilter.h"
 #import "RMSDelay.h"
+#import "RMSSpectrogram.h"
 
 #import "RMSMonitor.h"
 
