@@ -239,7 +239,7 @@ static inline void CopyRow(void *src, void *dst)
 		NSRange R = { index&255, mSpectrumIndex-index };
 		return [self imageRepWithRange:R];
 	}
-	
+
 	return nil;
 }
 
