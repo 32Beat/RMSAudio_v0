@@ -36,6 +36,8 @@
     [super drawRect:dirtyRect];
 	
 	NSRect dstR = self.bounds;
+//	dstR.origin.x = -2048;\
+	dstR.size.width = 4096;
 	dstR.origin.y += dstR.size.height;
 	
 	UInt32 n = 0;

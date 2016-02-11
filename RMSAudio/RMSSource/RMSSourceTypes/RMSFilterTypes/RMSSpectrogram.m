@@ -12,7 +12,7 @@
 
 
 // nr of samples used for DCT conversion
-#define kDCTCount 	2048
+#define kDCTCount 	1024
 #define kDCTMask 	(kDCTCount-1)
 
 // nr of samples between each conversion
@@ -24,6 +24,15 @@
 	float mL[kDCTCount];
 	float mR[kDCTCount];
 
+	float mW[kDCTCount];
+	float mT[kDCTCount];
+
+	float mTr[2 + kDCTCount/2];
+	float mTi[2 + kDCTCount/2];
+
+	FFTSetup mFFTSetup;
+	vDSP_DFT_Setup mDFTSetup;
+	
 	// write index for sliding buffer
 	UInt32 mDstIndex;
 
@@ -41,6 +50,8 @@
 
 
 
+static inline void _ClearSamples(float *dstPtr, UInt32 n)
+{ do { *dstPtr++ = 0.0; } while (--n!=0); }
 
 static inline void _CopySamples(
 	float *srcL, float *dstL,
@@ -53,6 +64,8 @@ static inline void _CopySamples(
 		dstR[n] = srcR[n];
 	}
 }
+
+
 
 
 static inline void _NormalizeSamples(
@@ -112,6 +125,16 @@ static OSStatus renderCallback(
 		
 		if (dstIndex == kDCTCount)
 		{
+/*
+			DSPSplitComplex T = { rmsObject->mTr, rmsObject->mTi };
+			
+			// Split signal into even and odd elements
+			vDSP_ctoz((DSPComplex *)rmsObject->mL, 2, &T, 1, kDCTCount/2);
+			
+			// Apply in-place transform
+			//vDSP_fft_zrip(rmsObject->mFFTSetup, &T, 1, 11, FFT_FORWARD);
+			vDSP_DFT_Execute(rmsObject->mDFTSetup, T.realp, T.imagp, T.realp, T.imagp);
+*/
 			float *imgData = rmsObject->mSpectrumData;
 
 			UInt32 imgIndex = rmsObject->mImgIndex & 255;
@@ -120,6 +143,20 @@ static OSStatus renderCallback(
 			imgData += imgIndex * kDCTCount * 2;
 			// Move to center of image
 			imgData += kDCTCount;
+
+//			_ClearSamples(imgData, kDCTCount);
+//			vDSP_zaspec(&T, imgData, kDCTCount/2);
+
+			vDSP_vmul(rmsObject->mL, 1, rmsObject->mW, 1, rmsObject->mT, 1, kDCTCount);
+			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mT, rmsObject->mT);
+			_DCT_to_Image(rmsObject->mT, 1, imgData-1, -1, kDCTCount);
+			
+			vDSP_vmul(rmsObject->mR, 1, rmsObject->mW, 1, rmsObject->mT, 1, kDCTCount);
+			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mT, rmsObject->mT);
+			_DCT_to_Image(rmsObject->mT, 1, imgData, 1, kDCTCount);
+
+
+/*
 			
 			// Use right half of image as temp buffer
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mL, imgData);
@@ -130,7 +167,7 @@ static OSStatus renderCallback(
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mR, imgData);
 			// Normalize right side of image
 			_DCT_to_Image(imgData, 1, imgData, 1, kDCTCount);
-
+//*/
 			// Update index
 			rmsObject->mImgIndex += 1;
 
@@ -161,7 +198,17 @@ static OSStatus renderCallback(
 	self = [super init];
 	if (self != nil)
 	{
-		mDCTSetup = vDSP_DCT_CreateSetup(nil, kDCTCount, vDSP_DCT_II);
+		mFFTSetup = vDSP_create_fftsetup(11, FFT_RADIX2);
+		mDFTSetup = vDSP_DFT_zrop_CreateSetup(nil, kDCTCount, vDSP_DFT_FORWARD);
+		mDCTSetup = vDSP_DCT_CreateSetup(nil, kDCTCount, vDSP_DCT_IV);
+		
+		
+		for (UInt32 n=0; n!=kDCTCount; n++)
+		{
+			float x = (1.0*n + 0.5)/kDCTCount;
+			float y = sin(x*M_PI);
+			mW[n] = y*y;
+		}
 		
 		mSpectrumData = calloc(2 * kDCTCount * 256, sizeof(float));
 	}
@@ -217,8 +264,8 @@ static OSStatus renderCallback(
 
 static inline void CopyRow(void *src, void *dst)
 {
-	double *srcPtr = (double *)src;
-	double *dstPtr = (double *)dst;
+	uint64_t *srcPtr = (uint64_t *)src;
+	uint64_t *dstPtr = (uint64_t *)dst;
 	
 	UInt32 n = kDCTCount-1;
 	do { dstPtr[n] = srcPtr[n]; } while(--n != 0);
@@ -249,7 +296,7 @@ static inline void CopyRow(void *src, void *dst)
 		isPlanar:NO
 		colorSpaceName:NSCalibratedWhiteColorSpace
 		bitmapFormat:NSFloatingPointSamplesBitmapFormat
-		bytesPerRow:2*kDCTCount * sizeof(float)
+		bytesPerRow:kDCTCount * 2 * sizeof(float)
 		bitsPerPixel:8 * sizeof(float)];
 
 	float *srcPtr = mSpectrumData;
