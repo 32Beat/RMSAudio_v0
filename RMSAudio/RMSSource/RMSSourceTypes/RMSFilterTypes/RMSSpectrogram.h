@@ -11,7 +11,6 @@
 
 @interface RMSSpectrogram : RMSSource
 
-- (UInt64) slidingIndex;
 - (NSBitmapImageRep *) imageRep;
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index;
 - (NSBitmapImageRep *) imageRepWithRange:(NSRange)range;

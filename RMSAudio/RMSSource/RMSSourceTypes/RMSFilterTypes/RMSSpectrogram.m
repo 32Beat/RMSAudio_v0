@@ -11,48 +11,42 @@
 #import <Accelerate/Accelerate.h>
 
 
+
 // nr of samples used for DCT conversion
 #define kDCTCount 	1024
-#define kDCTMask 	(kDCTCount-1)
 
 // nr of samples between each conversion
 #define kDCTStep 	512
+
+
 
 @interface RMSSpectrogram ()
 {
 	// sliding buffers for left and right samples
 	float mL[kDCTCount];
 	float mR[kDCTCount];
-
-	float mW[kDCTCount];
-	float mT[kDCTCount];
-
-	float mTr[2 + kDCTCount/2];
-	float mTi[2 + kDCTCount/2];
-
-	FFTSetup mFFTSetup;
-	vDSP_DFT_Setup mDFTSetup;
-	
 	// write index for sliding buffer
 	UInt32 mDstIndex;
+
+	// working buffers
+	float mW[kDCTCount]; // tabulated window function
+	float mT[kDCTCount]; // temporary buffer
 
 	// invariants for dct conversion
 	vDSP_DFT_Setup mDCTSetup;
 	
-	UInt64 mImgIndex;
-
+	// result buffer
 	float *mSpectrumData;
+	UInt64 mSpectrumIndex;
 }
 @end
 
 
+////////////////////////////////////////////////////////////////////////////////
 @implementation RMSSpectrogram
+////////////////////////////////////////////////////////////////////////////////
 
-
-
-static inline void _ClearSamples(float *dstPtr, UInt32 n)
-{ do { *dstPtr++ = 0.0; } while (--n!=0); }
-
+// forward copy for sliding buffer
 static inline void _CopySamples(
 	float *srcL, float *dstL,
 	float *srcR, float *dstR,
@@ -65,21 +59,7 @@ static inline void _CopySamples(
 	}
 }
 
-
-
-
-static inline void _NormalizeSamples(
-	float *dstL, UInt32 n)
-{
-	while(n != 0)
-	{
-		n -= 1;
-		dstL[n] *= dstL[n];
-	}
-}
-
-
-
+// convert to power and clip
 static inline void _DCT_to_Image(
 	float *srcPtr, int srcStep,
 	float *dstPtr, int dstStep, UInt32 n)
@@ -125,51 +105,26 @@ static OSStatus renderCallback(
 		
 		if (dstIndex == kDCTCount)
 		{
-/*
-			DSPSplitComplex T = { rmsObject->mTr, rmsObject->mTi };
-			
-			// Split signal into even and odd elements
-			vDSP_ctoz((DSPComplex *)rmsObject->mL, 2, &T, 1, kDCTCount/2);
-			
-			// Apply in-place transform
-			//vDSP_fft_zrip(rmsObject->mFFTSetup, &T, 1, 11, FFT_FORWARD);
-			vDSP_DFT_Execute(rmsObject->mDFTSetup, T.realp, T.imagp, T.realp, T.imagp);
-*/
-			float *imgData = rmsObject->mSpectrumData;
-
-			UInt32 imgIndex = rmsObject->mImgIndex & 255;
+			float *spectrumData = rmsObject->mSpectrumData;
+			UInt32 spectrumIndex = rmsObject->mSpectrumIndex & 255;
 			
 			// Move to current row
-			imgData += imgIndex * kDCTCount * 2;
+			spectrumData += spectrumIndex * kDCTCount * 2;
 			// Move to center of image
-			imgData += kDCTCount;
+			spectrumData += kDCTCount;
 
-//			_ClearSamples(imgData, kDCTCount);
-//			vDSP_zaspec(&T, imgData, kDCTCount/2);
-
+			// Convert left signal
 			vDSP_vmul(rmsObject->mL, 1, rmsObject->mW, 1, rmsObject->mT, 1, kDCTCount);
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mT, rmsObject->mT);
-			_DCT_to_Image(rmsObject->mT, 1, imgData-1, -1, kDCTCount);
+			_DCT_to_Image(rmsObject->mT, 1, spectrumData-1, -1, kDCTCount);
 			
+			// Convert right signal
 			vDSP_vmul(rmsObject->mR, 1, rmsObject->mW, 1, rmsObject->mT, 1, kDCTCount);
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mT, rmsObject->mT);
-			_DCT_to_Image(rmsObject->mT, 1, imgData, 1, kDCTCount);
+			_DCT_to_Image(rmsObject->mT, 1, spectrumData, 1, kDCTCount);
 
-
-/*
-			
-			// Use right half of image as temp buffer
-			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mL, imgData);
-			// Normalize to left side of image
-			_DCT_to_Image(imgData, 1, imgData-1, -1, kDCTCount);
-			
-			// Compute right side of image
-			vDSP_DCT_Execute(rmsObject->mDCTSetup, rmsObject->mR, imgData);
-			// Normalize right side of image
-			_DCT_to_Image(imgData, 1, imgData, 1, kDCTCount);
-//*/
 			// Update index
-			rmsObject->mImgIndex += 1;
+			rmsObject->mSpectrumIndex += 1;
 
 			// Shift source samples for sliding window
 			_CopySamples(
@@ -198,11 +153,10 @@ static OSStatus renderCallback(
 	self = [super init];
 	if (self != nil)
 	{
-		mFFTSetup = vDSP_create_fftsetup(11, FFT_RADIX2);
-		mDFTSetup = vDSP_DFT_zrop_CreateSetup(nil, kDCTCount, vDSP_DFT_FORWARD);
+		// initialize DCT setup
 		mDCTSetup = vDSP_DCT_CreateSetup(nil, kDCTCount, vDSP_DCT_IV);
 		
-		
+		// initialize window function
 		for (UInt32 n=0; n!=kDCTCount; n++)
 		{
 			float x = (1.0*n + 0.5)/kDCTCount;
@@ -210,6 +164,7 @@ static OSStatus renderCallback(
 			mW[n] = y*y;
 		}
 		
+		// initialize result buffer
 		mSpectrumData = calloc(2 * kDCTCount * 256, sizeof(float));
 	}
 	
@@ -264,8 +219,8 @@ static OSStatus renderCallback(
 
 static inline void CopyRow(void *src, void *dst)
 {
-	uint64_t *srcPtr = (uint64_t *)src;
-	uint64_t *dstPtr = (uint64_t *)dst;
+	double *srcPtr = (double *)src;
+	double *dstPtr = (double *)dst;
 	
 	UInt32 n = kDCTCount-1;
 	do { dstPtr[n] = srcPtr[n]; } while(--n != 0);
@@ -276,11 +231,16 @@ static inline void CopyRow(void *src, void *dst)
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index
 {
 	// Keep reasonable margin 
-	if (index < (mImgIndex - 128))
-	{ index = mImgIndex - 128; }
+	if (index < (mSpectrumIndex - 128))
+	{ index = mSpectrumIndex - 128; }
 	
-	return index < mImgIndex ?
-	[self imageRepWithRange:(NSRange){ index&255, mImgIndex-index }] : nil;
+	if (index < mSpectrumIndex)
+	{
+		NSRange R = { index&255, mSpectrumIndex-index };
+		return [self imageRepWithRange:R];
+	}
+	
+	return nil;
 }
 
 
