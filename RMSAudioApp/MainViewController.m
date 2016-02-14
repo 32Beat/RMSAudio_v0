@@ -315,7 +315,7 @@
 	unless the sampleRate is implicated.
 */
 
-- (IBAction) didSelectFileButton:(NSButton *)button
+- (IBAction) didSelectAudioFileButton:(NSButton *)button
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	
@@ -348,6 +348,38 @@
 	
 	// Attaching automatically sets the output sampleRate for source
 	[self.audioOutput setSource:source];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Select Image File
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectImageFileButton:(NSButton *)button
+{
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+		
+	[panel beginSheetModalForWindow:self.view.window completionHandler:^(NSInteger result)
+	{
+		[panel orderOut:self];
+
+		if (result != 0)
+		{
+			NSURL *url = [panel URLs][0];
+			[self startImageFileWithURL:url];
+		}
+	}];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) startImageFileWithURL:(NSURL *)url
+{
+	NSImage *image = [[NSImage alloc] initByReferencingURL:url];
+	RMSClip *clip = [RMSSpectrogram computeSampleBufferUsingImage:image];
+	
+	self.audioOutput.source = clip;
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -216,7 +216,7 @@
                         <font key="font" metaFont="system"/>
                     </buttonCell>
                     <connections>
-                        <action selector="didSelectFileButton:" target="-2" id="nML-zX-VSq"/>
+                        <action selector="didSelectImageFileButton:" target="-2" id="S1H-9W-Beo"/>
                     </connections>
                 </button>
                 <button verticalHuggingPriority="750" id="Fio-1l-D9e">

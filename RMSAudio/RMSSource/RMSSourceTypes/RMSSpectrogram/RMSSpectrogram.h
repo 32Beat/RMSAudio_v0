@@ -8,11 +8,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "RMSSource.h"
+#import "RMSClip.h"
 
 @interface RMSSpectrogram : RMSSource
 
 - (NSBitmapImageRep *) imageRep;
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index;
 - (NSBitmapImageRep *) imageRepWithRange:(NSRange)range;
+
++ (RMSClip *) computeSampleBufferUsingImage:(NSImage *)image;
 
 @end

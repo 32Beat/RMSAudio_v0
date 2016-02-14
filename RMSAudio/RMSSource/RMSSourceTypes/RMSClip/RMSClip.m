@@ -26,38 +26,6 @@
 @implementation RMSClip
 ////////////////////////////////////////////////////////////////////////////////
 
-// forward copy for sliding buffer
-static inline void _CopySamples(
-	float *srcL, float *dstL,
-	float *srcR, float *dstR,
-	UInt32 count)
-{
-	for (UInt32 n=0; n!=count; n++)
-	{
-		dstL[n] = srcL[n];
-		dstR[n] = srcR[n];
-	}
-}
-
-// convert to power and clip
-static inline void _DCT_to_Image(
-	float *srcPtr, int srcStep,
-	float *dstPtr, int dstStep, UInt32 n)
-{
-	while(n != 0)
-	{
-		n -= 1;
-		
-		dstPtr[0] = srcPtr[0] * srcPtr[0];
-		if (dstPtr[0] > 1.0) dstPtr[0] = 1.0;
-		
-		srcPtr += srcStep;
-		dstPtr += dstStep;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 static OSStatus renderCallback(
 	void 							*inRefCon,
 	AudioUnitRenderActionFlags 		*actionFlags,
@@ -166,11 +134,64 @@ static OSStatus renderCallback(
 - (UInt32) sampleCount
 { return mCount; }
 
-- (float *) getPtrL
+- (float *) mutablePtrL
 { return mL; }
 
-- (float *) getPtrR
+- (float *) mutablePtrR
 { return mR; }
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) normalize
+{
+	[self normalizeL];
+	[self normalizeR];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) normalizeL
+{
+	float min = FLT_MAX;
+	float avg = 0.0;
+	float max = FLT_MIN;
+	
+	for (UInt32 x=0; x!=mCount; x++)
+	{
+		if (max < mL[x]) max = mL[x];
+		if (min > mL[x]) min = mL[x];
+		avg += mL[x];
+	}
+	
+	avg /= mCount;
+	max -= avg;
+	min -= avg;
+	float R = (fabsf(max) > fabsf(min)) ? fabsf(max) : fabsf(min);
+	
+	for (UInt32 x=0; x!=mCount; x++)
+	{
+		mL[x] = (mL[x] - avg) / R;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) normalizeR
+{
+	float min = FLT_MAX;
+	float max = FLT_MIN;
+	
+	for (UInt32 x=0; x!=mCount; x++)
+	{
+		if (max < mR[x]) max = mR[x];
+		if (min > mR[x]) min = mR[x];
+	}
+	
+	for (UInt32 x=0; x!=mCount; x++)
+	{
+		mR[x] = -1.0 + 2.0 * (mR[x] - min) / (max - min);
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 @end

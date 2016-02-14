@@ -12,9 +12,12 @@
 @interface RMSClip : RMSSource
 
 + (instancetype) sineWaveWithLength:(UInt64)N;
+- (instancetype) initWithLength:(UInt64)size;
 
 - (UInt32) sampleCount;
-- (float *) getPtrL;
-- (float *) getPtrR;
+- (float *) mutablePtrL;
+- (float *) mutablePtrR;
+
+- (void) normalize;
 
 @end

@@ -29,8 +29,8 @@
 	UInt32 mDstIndex;
 
 	// working buffers
-	float mW[kDCTCount]; // tabulated window function
-	float mT[kDCTCount]; // temporary buffer
+	float *mW; // tabulated window function
+	float *mT; // temporary buffer
 
 	// invariants for dct conversion
 	vDSP_DFT_Setup mDCTSetup;
@@ -149,23 +149,36 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (instancetype) init
+{ return [self initWithLength:kDCTCount step:kDCTCount/2]; }
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (instancetype) initWithLength:(size_t)N step:(size_t)step
 {
 	self = [super init];
 	if (self != nil)
 	{
 		// initialize DCT setup
-		mDCTSetup = vDSP_DCT_CreateSetup(nil, kDCTCount, vDSP_DCT_IV);
+		mDCTSetup = vDSP_DCT_CreateSetup(nil, N, vDSP_DCT_IV);
+		if (mDCTSetup == nil) return nil;
 		
+		mT = calloc(N, sizeof(float));
+		if (mT == nil) return nil;
+
+		mW = calloc(N, sizeof(float));
+		if (mW == nil) return nil;
+
 		// initialize window function
-		for (UInt32 n=0; n!=kDCTCount; n++)
+		for (UInt32 n=0; n!=N; n++)
 		{
-			float x = (1.0*n + 0.5)/kDCTCount;
+			float x = (1.0*n + 0.5)/N;
 			float y = sin(x*M_PI);
 			mW[n] = y*y;
 		}
 		
 		// initialize result buffer
-		mSpectrumData = calloc(2 * kDCTCount * 256, sizeof(Byte));
+		mSpectrumData = calloc(2 * N * 256, sizeof(Byte));
+		if (mSpectrumData == nil) return nil;
 	}
 	
 	return self;
@@ -179,6 +192,18 @@ static OSStatus renderCallback(
 	{
 		free(mSpectrumData);
 		mSpectrumData = nil;
+	}
+	
+	if (mW != nil)
+	{
+		free(mW);
+		mW = nil;
+	}
+
+	if (mT != nil)
+	{
+		free(mT);
+		mT = nil;
 	}
 	
 	if (mDCTSetup != nil)
@@ -291,39 +316,114 @@ CGContextRef CGBitmapContextCreateRGBA8WithSize(size_t W, size_t H)
 	return context;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-
-+ (float *) computeSampleBufferUsingImage:(NSImage *)image
+NSBitmapImageRep *NSBitmapImageRepWithSize(size_t W, size_t H)
 {
-	UInt32 W = round(image.size.width);
-	UInt32 H = round(image.size.height);
-
-	W += W&0x01;
-	
-	[image lockFocus];
-
-	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
-	initWithFocusedViewRect:(NSRect){ 0, 0, W, H }];
-	
-	[image unlockFocus];
-	
-	return [self computeSampleBufferUsingBitmapImageRep:bitmap];
+	return [[NSBitmapImageRep alloc]
+		initWithBitmapDataPlanes:nil
+		pixelsWide:W
+		pixelsHigh:H
+		bitsPerSample:8
+		samplesPerPixel:4
+		hasAlpha:YES
+		isPlanar:NO
+		colorSpaceName:NSCalibratedRGBColorSpace
+		bitmapFormat:0
+		bytesPerRow:W * 4 * sizeof(Byte)
+		bitsPerPixel:8 * 4 * sizeof(Byte)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-+ (float *) computeSampleBufferUsingBitmapImageRep:(NSBitmapImageRep *)bitmap
++ (RMSClip *) computeSampleBufferUsingImage:(NSImage *)image
 {
-	UInt32 W = bitmap.pixelsWide;
-	UInt32 H = bitmap.pixelsHigh;
+	UInt32 W = round(image.size.width);
+	UInt32 H = round(image.size.height);
 
-	W += W&0x01;
+	H = H * 256 / W;
+	W = 256;
+	H += H;
 	
-	UInt32 N = (H+1) * (W/2);
-	float *ptr = calloc(N, sizeof(float));
-	
+	NSBitmapImageRep *bitmap = NSBitmapImageRepWithSize(W, H);
+	if (bitmap != nil)
+	{
+		NSGraphicsContext *context =
+		[NSGraphicsContext graphicsContextWithBitmapImageRep:bitmap];
+		
+		[NSGraphicsContext setCurrentContext:context];
+		
+		[image drawInRect:(NSRect){0.0, 0.0, W, H }];
+		
+		return [self computeSampleBufferUsingBitmapImageRep:bitmap];
+	}
 	
 	return nil;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
++ (RMSClip *) computeSampleBufferUsingBitmapImageRep:(NSBitmapImageRep *)bitmap
+{
+	RMSClip *clip = nil;
+	
+	
+	NSInteger W = bitmap.pixelsWide;
+	NSInteger H = bitmap.pixelsHigh;
+
+	
+	// initialize DCT setup
+	vDSP_DFT_Setup dctSetup = vDSP_DCT_CreateSetup(nil, W, vDSP_DCT_IV);
+	if (dctSetup != nil)
+	{
+
+		float *F = calloc(W, sizeof(float));
+		if (F != nil)
+		{
+			for (long n=0; n!=W; n++)
+			{
+				float x = (1.0*n + 0.5)/W;
+				float y = sin(x*M_PI);
+				F[n] = y*y;
+			}
+
+			
+			clip = [[RMSClip alloc] initWithLength:H * W];
+			if (clip != nil)
+			{
+				Byte *srcPtr = [bitmap bitmapData];
+				float *tmpPtr = calloc(W, sizeof(float));
+				float *dstPtr = clip.mutablePtrL;
+				dstPtr += (H-1) * W;
+
+				for (UInt32 y=0; y!=H; y++)
+				{
+					for (UInt32 x=0; x!=W; x++)
+					{
+						long R = srcPtr[0];
+						long G = srcPtr[1];
+						long B = srcPtr[2];
+						srcPtr += 4;
+
+						tmpPtr[x] = (R + G + B) / (3*255.0);
+					}
+					
+					vDSP_DCT_Execute(dctSetup, tmpPtr, dstPtr);
+					
+					srcPtr += bitmap.bytesPerRow - 4*W;
+					dstPtr -= W;
+				}
+			
+				memcpy(clip.mutablePtrR, clip.mutablePtrL, 4*clip.sampleCount);
+	
+				[clip normalize];
+			}
+			
+			free(F);
+		}
+		
+		vDSP_DFT_DestroySetup(dctSetup);
+	}
+	
+	return clip;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
