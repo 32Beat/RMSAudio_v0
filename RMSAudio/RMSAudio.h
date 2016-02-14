@@ -33,6 +33,7 @@
 
 #import "RMSTestSignal.h"
 #import "RMSSineWave.h"
+#import "RMSClip.h"
 
 #import "RMSTimer.h"
 #import "RMSStereoView.h"

@@ -269,7 +269,8 @@
 	
 	// Start testsignal
 	self.audioOutput.source =
-		[RMSTestSignal sineWaveWithFrequency:441.0];
+		[RMSClip sineWaveWithLength:100];
+//		[RMSTestSignal sineWaveWithFrequency:441.0];
 //		[RMSTestSignal blockWaveWithFrequency:441.0];
 //		[RMSTestSignal triangleWaveWithFrequency:441.0];
 //		[RMSTestSignal sawToothWaveWithFrequency:441.0];

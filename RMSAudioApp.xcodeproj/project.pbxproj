@@ -10,6 +10,8 @@
 		7F727CAC1C69315600416DB0 /* NSBitmapImageRepView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */; };
 		7F9673BE1C6D3BF200D04F6C /* RMSSpectrogram.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9673BD1C6D3BF200D04F6C /* RMSSpectrogram.m */; };
 		7F9673BF1C6D3C0400D04F6C /* RMSSpectrogram.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9673BD1C6D3BF200D04F6C /* RMSSpectrogram.m */; };
+		7F9A334B1C6D862A007BE445 /* RMSClip.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9A334A1C6D862A007BE445 /* RMSClip.m */; };
+		7F9A334C1C6D862A007BE445 /* RMSClip.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9A334A1C6D862A007BE445 /* RMSClip.m */; };
 		7FA043941C58F15500CAC51D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA043931C58F15500CAC51D /* AppDelegate.m */; };
 		7FA043971C58F15500CAC51D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA043961C58F15500CAC51D /* main.m */; };
 		7FA043991C58F15500CAC51D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FA043981C58F15500CAC51D /* Assets.xcassets */; };
@@ -93,6 +95,8 @@
 		7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSBitmapImageRepView.m; sourceTree = "<group>"; };
 		7F9673BC1C6D3BF200D04F6C /* RMSSpectrogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSpectrogram.h; sourceTree = "<group>"; };
 		7F9673BD1C6D3BF200D04F6C /* RMSSpectrogram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSpectrogram.m; sourceTree = "<group>"; };
+		7F9A33491C6D862A007BE445 /* RMSClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSClip.h; sourceTree = "<group>"; };
+		7F9A334A1C6D862A007BE445 /* RMSClip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSClip.m; sourceTree = "<group>"; };
 		7FA043901C58F15500CAC51D /* RMSKaraokeApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSKaraokeApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FA043921C58F15500CAC51D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7FA043931C58F15500CAC51D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -206,6 +210,15 @@
 			path = RMSSpectrogram;
 			sourceTree = "<group>";
 		};
+		7F9A33481C6D862A007BE445 /* RMSClip */ = {
+			isa = PBXGroup;
+			children = (
+				7F9A33491C6D862A007BE445 /* RMSClip.h */,
+				7F9A334A1C6D862A007BE445 /* RMSClip.m */,
+			);
+			path = RMSClip;
+			sourceTree = "<group>";
+		};
 		7FA043911C58F15500CAC51D /* RMSKaraokeApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -276,11 +289,12 @@
 		7FA0448D1C58F30600CAC51D /* RMSSourceTypes */ = {
 			isa = PBXGroup;
 			children = (
-				7F9673BB1C6D3BF200D04F6C /* RMSSpectrogram */,
 				7FA0448E1C58F30600CAC51D /* RMSAudioUnit */,
 				7FA0449C1C58F30600CAC51D /* RMSFilterTypes */,
+				7F9A33481C6D862A007BE445 /* RMSClip */,
 				7FA044A71C58F30600CAC51D /* RMSMixer */,
 				7FA044AF1C58F30600CAC51D /* RMSMonitor */,
+				7F9673BB1C6D3BF200D04F6C /* RMSSpectrogram */,
 				7FA044B21C58F30600CAC51D /* RMSTestSignals */,
 			);
 			path = RMSSourceTypes;
@@ -565,6 +579,7 @@
 				7F9673BF1C6D3C0400D04F6C /* RMSSpectrogram.m in Sources */,
 				7FA045021C58F30600CAC51D /* RMSResultView.m in Sources */,
 				7FA044E01C58F30600CAC51D /* RMSOutput.m in Sources */,
+				7F9A334C1C6D862A007BE445 /* RMSClip.m in Sources */,
 				7FA045041C58F30600CAC51D /* RMSStereoView.m in Sources */,
 				7FA044C61C58F30600CAC51D /* rmsbuffer_t.c in Sources */,
 				7FA044D41C58F30600CAC51D /* RMSSource.m in Sources */,
@@ -591,6 +606,7 @@
 				7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */,
 				7FA044F51C58F30600CAC51D /* RMSSineWave.m in Sources */,
 				7FA044E91C58F30600CAC51D /* RMSVolume.m in Sources */,
+				7F9A334B1C6D862A007BE445 /* RMSClip.m in Sources */,
 				7FA044D71C58F30600CAC51D /* RMSAudioUnitFilePlayer.m in Sources */,
 				7FA044DF1C58F30600CAC51D /* RMSOutput.m in Sources */,
 				7FA044ED1C58F30600CAC51D /* RMSMixerSource.m in Sources */,

@@ -36,7 +36,7 @@
 	vDSP_DFT_Setup mDCTSetup;
 	
 	// result buffer
-	float *mSpectrumData;
+	Byte *mSpectrumData;
 	UInt64 mSpectrumIndex;
 }
 @end
@@ -62,14 +62,14 @@ static inline void _CopySamples(
 // convert to power and clip
 static inline void _DCT_to_Image(
 	float *srcPtr, int srcStep,
-	float *dstPtr, int dstStep, UInt32 n)
+	Byte *dstPtr, int dstStep, UInt32 n)
 {
 	while(n != 0)
 	{
 		n -= 1;
 		
-		dstPtr[0] = srcPtr[0] * srcPtr[0];
-		if (dstPtr[0] > 1.0) dstPtr[0] = 1.0;
+		long V = 255.0 * srcPtr[0] * srcPtr[0] + 0.5;
+		dstPtr[0] = V < 255 ? V : 255;
 		
 		srcPtr += srcStep;
 		dstPtr += dstStep;
@@ -105,7 +105,7 @@ static OSStatus renderCallback(
 		
 		if (dstIndex == kDCTCount)
 		{
-			float *spectrumData = rmsObject->mSpectrumData;
+			Byte *spectrumData = rmsObject->mSpectrumData;
 			UInt32 spectrumIndex = rmsObject->mSpectrumIndex & 255;
 			
 			// Move to current row
@@ -165,7 +165,7 @@ static OSStatus renderCallback(
 		}
 		
 		// initialize result buffer
-		mSpectrumData = calloc(2 * kDCTCount * 256, sizeof(float));
+		mSpectrumData = calloc(2 * kDCTCount * 256, sizeof(Byte));
 	}
 	
 	return self;
@@ -205,28 +205,17 @@ static OSStatus renderCallback(
 		initWithBitmapDataPlanes:(Byte **)&mSpectrumData
 		pixelsWide:kDCTCount * 2
 		pixelsHigh:256
-		bitsPerSample:32
+		bitsPerSample:8
 		samplesPerPixel:1
 		hasAlpha:NO
 		isPlanar:NO
 		colorSpaceName:NSCalibratedWhiteColorSpace
-		bitmapFormat:NSFloatingPointSamplesBitmapFormat
-		bytesPerRow:2*kDCTCount * sizeof(float)
-		bitsPerPixel:8 * sizeof(float)];
+		bitmapFormat:0
+		bytesPerRow:2*kDCTCount * sizeof(Byte)
+		bitsPerPixel:8 * sizeof(Byte)];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
-static inline void CopyRow(void *src, void *dst)
-{
-	double *srcPtr = (double *)src;
-	double *dstPtr = (double *)dst;
-	
-	UInt32 n = kDCTCount-1;
-	do { dstPtr[n] = srcPtr[n]; } while(--n != 0);
-	dstPtr[0] = srcPtr[0];
-}
-
 
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index
 {
@@ -250,17 +239,17 @@ static inline void CopyRow(void *src, void *dst)
 		initWithBitmapDataPlanes:nil
 		pixelsWide:kDCTCount * 2
 		pixelsHigh:range.length
-		bitsPerSample:32
+		bitsPerSample:8
 		samplesPerPixel:1
 		hasAlpha:NO
 		isPlanar:NO
 		colorSpaceName:NSCalibratedWhiteColorSpace
-		bitmapFormat:NSFloatingPointSamplesBitmapFormat
-		bytesPerRow:kDCTCount * 2 * sizeof(float)
-		bitsPerPixel:8 * sizeof(float)];
+		bitmapFormat:0
+		bytesPerRow:kDCTCount * 2 * sizeof(Byte)
+		bitsPerPixel:8 * sizeof(Byte)];
 
-	float *srcPtr = mSpectrumData;
-	float *dstPtr = (float *)bitmap.bitmapData;
+	Byte *srcPtr = mSpectrumData;
+	Byte *dstPtr = bitmap.bitmapData;
 	
 	// spectrum data is appended downward
 	srcPtr += 2 * kDCTCount * (range.location&=255);
@@ -269,7 +258,7 @@ static inline void CopyRow(void *src, void *dst)
 	
 	for (UInt32 n=0; n!=range.length; n++)
 	{
-		CopyRow(srcPtr, dstPtr);
+		memcpy(dstPtr, srcPtr, 2*kDCTCount);
 		srcPtr += 2*kDCTCount;
 		dstPtr -= 2*kDCTCount;
 		
@@ -282,6 +271,59 @@ static inline void CopyRow(void *src, void *dst)
 	}
 	
 	return bitmap;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+CGContextRef CGBitmapContextCreateRGBA8WithSize(size_t W, size_t H)
+{
+	CGContextRef context = nil;
+	
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName(kCGColorSpaceSRGB);
+	if (colorSpace != nil)
+	{
+		context = CGBitmapContextCreate(nil, W, H,
+		8, 0, colorSpace, kCGImageAlphaLast);
+		
+		CGColorSpaceRelease(colorSpace);
+	}
+	
+	return context;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
++ (float *) computeSampleBufferUsingImage:(NSImage *)image
+{
+	UInt32 W = round(image.size.width);
+	UInt32 H = round(image.size.height);
+
+	W += W&0x01;
+	
+	[image lockFocus];
+
+	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
+	initWithFocusedViewRect:(NSRect){ 0, 0, W, H }];
+	
+	[image unlockFocus];
+	
+	return [self computeSampleBufferUsingBitmapImageRep:bitmap];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
++ (float *) computeSampleBufferUsingBitmapImageRep:(NSBitmapImageRep *)bitmap
+{
+	UInt32 W = bitmap.pixelsWide;
+	UInt32 H = bitmap.pixelsHigh;
+
+	W += W&0x01;
+	
+	UInt32 N = (H+1) * (W/2);
+	float *ptr = calloc(N, sizeof(float));
+	
+	
+	return nil;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
