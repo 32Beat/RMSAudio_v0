@@ -20,82 +20,76 @@
  
 	Strategy for removing objects from the rendertree:
 	1. remove the object from the RMSSource connection, 
-	2. add it to the trash array
-	3. increase thrashCount
+	2. insert it in the trash (linked list)
 	
-	4. renderCallback checks thrashCount prior to rendering,
-	5. if not 0, communicate current trashcount to main
-	6. on main, remove count items and update thrashCount
+	3. renderCallback checks mTrash prior to rendering,
+	4. if not nil, communicate mTrash as void* to main (mTrashSeen)
+	5. on main, remove mTrashSeen from linked list
 */
 @interface RMSSource ()
 {
-	NSMutableArray *mTrashItems;
-	NSUInteger mTrashCount;
-	NSUInteger mTrashSeen;
+	RMSSource *mTrash;
 	NSTimer *mTrashTimer;
+	void *mTrashSeen;
 }
 @end
 
 ////////////////////////////////////////////////////////////////////////////////
 @implementation RMSSource
 ////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Trash Management
+////////////////////////////////////////////////////////////////////////////////
 
 - (void) trashObject:(id)object
 {
 	if (object != nil)
-	{
-		if (mTrashItems == nil)
-		{ mTrashItems = [NSMutableArray new]; }
-		[mTrashItems insertObject:object atIndex:0];
-		
-		[self updateTrash:nil];
-	}
+	{ [self insertTrash:object]; }
+	[self updateTrash:nil];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/*
-	updateTrash
-	-----------
-	Update trasharray and counters
-	
-	updateTrash is called both when a new object is added to the trash, 
-	or when an optional timer fires from a previous call. 
-	
-	mTrashCount is a flag to indicate to the audiothread the number of objects 
-	in the trashArray, so the audiothread won't have to call obj-c methods.
- 
-	mTrashSeen is a flag to subsequently indicate to the mainthread the number 
-	of objects that are safe to be deleted.
-	
-	note 1: 
-	mTrashCount needs to be updated to [mTrashItems count]
-	mTrashSeen may only be reset if it was not zero previously
-	in order to keep the code confined, it is updated as per
-	the sequence seen below
-*/
+
+- (void) insertTrash:(id)object
+{
+	if (mTrash != nil)
+	{ [object insertTrash:mTrash]; }
+	mTrash = object;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) removeTrash:(id)object
+{
+	if (mTrash == object)
+	{ mTrash = nil; }
+	else
+	{ [mTrash removeTrash:object]; }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (void) updateTrash:(id)sender
 {
 	// Reset timer if necessary
 	if (mTrashTimer == sender)
 	{ mTrashTimer = nil; }
 	
-	// As long as mTrashSeen != 0, we can safely manipulate trash
-	if (mTrashSeen != 0)
+	if (mTrashSeen != nil)
 	{
-		// Remove number of objects seen by audio thread
-		for (NSUInteger n=mTrashSeen; n!=0; n--)
-		{ [mTrashItems removeLastObject]; }
-
-		// Reset counters ** See note 1 **
-		mTrashCount = 0;
-		mTrashSeen = 0;
+		[self removeTrash:(__bridge id)mTrashSeen];
+		mTrashSeen = nil;
 	}
 	
 	// Try emptying more trash later if necessary
-	mTrashCount = [mTrashItems count];
-	if (mTrashCount != 0)
+	if (mTrash != nil)
 	{
-		if (mTrashTimer != nil)
+		/*
+			caller is either a previous timer, 
+			or the trashObject method. In the latter case 
+			there may already be an active timer.
+		*/
+		if (mTrashTimer == nil)
 		{
 			mTrashTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
 			target:self selector:@selector(updateTrash:) userInfo:nil repeats:NO];
@@ -103,30 +97,6 @@
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Handled on main
-/*
-static void TrashCallback(void *rmsObject, NSUInteger count)
-{ [(__bridge RMSSource *)rmsObject emptyTrash:count]; }
-
-////////////////////////////////////////////////////////////////////////////////
-// Handled on audio thread
-
-static void HandleTrash(void *rmsObject)
-{
-	__unsafe_unretained RMSSource *rmsSource =
-	(__bridge __unsafe_unretained RMSSource *)rmsObject;
-
-	if (rmsSource->mTrashBusy == NO)
-	{
-		rmsSource->mTrashBusy = YES;
-		
-		NSUInteger trashCount = rmsSource->mTrashCount;
-		dispatch_async(dispatch_get_main_queue(),
-		^{ TrashCallback(rmsObject, trashCount); });
-	}
-}
-*/
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,15 +113,14 @@ OSStatus RunRMSSource(
 	(__bridge __unsafe_unretained RMSSource *)rmsObject;
 
 
-	// Communicate prerender trash count to main
-	if (rmsSource->mTrashCount != 0)
+	// Communicate prerender trash to main
+	if (rmsSource->mTrash != nil)
 	{
-		if (rmsSource->mTrashSeen == 0)
+		if (rmsSource->mTrashSeen == nil)
 		{
-			rmsSource->mTrashSeen = rmsSource->mTrashCount;
+			rmsSource->mTrashSeen = (__bridge void *)rmsSource->mTrash;
 		}
 	}
-
 
 	OSStatus result = noErr;
 

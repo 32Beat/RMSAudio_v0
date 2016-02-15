@@ -179,17 +179,24 @@ static OSStatus renderCallback(
 - (void) normalizeR
 {
 	float min = FLT_MAX;
+	float avg = 0.0;
 	float max = FLT_MIN;
 	
 	for (UInt32 x=0; x!=mCount; x++)
 	{
 		if (max < mR[x]) max = mR[x];
 		if (min > mR[x]) min = mR[x];
+		avg += mR[x];
 	}
+	
+	avg /= mCount;
+	max -= avg;
+	min -= avg;
+	float R = (fabsf(max) > fabsf(min)) ? fabsf(max) : fabsf(min);
 	
 	for (UInt32 x=0; x!=mCount; x++)
 	{
-		mR[x] = -1.0 + 2.0 * (mR[x] - min) / (max - min);
+		mR[x] = (mR[x] - avg) / R;
 	}
 }
 

@@ -333,6 +333,13 @@ NSBitmapImageRep *NSBitmapImageRepWithSize(size_t W, size_t H)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+
+static void _Copy32f(float *srcPtr, float *dstPtr, UInt32 n)
+{
+	memcpy(dstPtr, srcPtr, n*sizeof(float));
+}
 
 + (RMSClip *) computeSampleBufferUsingImage:(NSImage *)image
 {
@@ -412,7 +419,7 @@ NSBitmapImageRep *NSBitmapImageRepWithSize(size_t W, size_t H)
 					dstPtr -= W;
 				}
 			
-				memcpy(clip.mutablePtrR, clip.mutablePtrL, 4*clip.sampleCount);
+				_Copy32f(clip.mutablePtrL, clip.mutablePtrR, clip.sampleCount);
 	
 				[clip normalize];
 			}
