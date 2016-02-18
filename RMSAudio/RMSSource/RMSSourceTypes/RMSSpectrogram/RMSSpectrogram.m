@@ -41,7 +41,7 @@
 @implementation RMSSpectrogram
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void DCTWindowFunctionPrepareSin2(float *W, size_t size)
+static inline void PrepareDCTWindow(float *W, size_t size)
 {
 	// initialize window function
 	for (UInt32 n=0; n!=size; n++)
@@ -54,23 +54,28 @@ static inline void DCTWindowFunctionPrepareSin2(float *W, size_t size)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void DCT_ValueToColor(float V, Byte *dstPtr)
+static inline UInt32 RGBAColorMake(UInt32 R, UInt32 G, UInt32 B)
+{ return (255<<24)+(B<<16)+(G<<8)+(R<<0); }
+
+static inline void DCT_ValueToColor(float A, float V, UInt32 *dstPtr)
 {
+#define CMX 255.0
+
 	static const float colorSpectrum[][4] = {
-	{ 0.0, 0.0, 0.0, 1.0 }, // black
-	{ 0.0, 0.0, 1.0, 1.0 }, // blue
-	{ 0.0, 1.0, 1.0, 1.0 }, // cyan
-	{ 0.0, 1.0, 0.0, 1.0 }, // green
-	{ 1.0, 1.0, 0.0, 1.0 }, // yellow
-	{ 1.0, 0.0, 0.0, 1.0 }, // red
-	{ 1.0, 0.0, 1.0, 1.0 }, // magenta
-	{ 1.0, 1.0, 1.0, 1.0 }}; // white
+	{ 0.0, 0.0, 0.0, CMX }, // black
+	{ 0.0, 0.0, CMX, CMX }, // blue
+	{ 0.0, CMX, CMX, CMX }, // cyan
+	{ 0.0, CMX, 0.0, CMX }, // green
+	{ CMX, CMX, 0.0, CMX }, // yellow
+	{ CMX, 0.0, 0.0, CMX }, // red
+	{ CMX, 0.0, CMX, CMX }, // magenta
+	{ CMX, CMX, CMX, CMX }}; // white
 	
 	// compute spectrum power
 	V = V*V;
 	
 	// limit to 1.0
-	V /= (.5 + V);
+	V /= (A + V);
 	
 	// index up to red
 	V *= 5.0;
@@ -88,25 +93,22 @@ static inline void DCT_ValueToColor(float V, Byte *dstPtr)
 		B += r * (colorSpectrum[n+1][2] - B);
 	}
 	
-	dstPtr[0] = 255*R + 0.5;
-	dstPtr[1] = 255*G + 0.5;
-	dstPtr[2] = 255*B + 0.5;
-	dstPtr[3] = 255;
+	dstPtr[0] = RGBAColorMake(R+0.5, G+0.5, B+0.5);
 }
 
 
-static inline void _DCT_to_Image(float *srcPtr, Byte *dstPtr, long n)
+static inline void _DCT_to_Image(float A, float *srcPtr, UInt32 *dstPtr, long n)
 {
 	float *srcPtrL = srcPtr-1;
 	float *srcPtrR = srcPtr+n;
 	// Move to center of image
-	dstPtr += n<<2;
+	dstPtr += n;
 	
 	while (n != 0)
 	{
-		DCT_ValueToColor(srcPtrL[n], &dstPtr[-n<<2]);
+		DCT_ValueToColor(A, srcPtrL[n], &dstPtr[-n]);
 		n -= 1;
-		DCT_ValueToColor(srcPtrR[n], &dstPtr[+n<<2]);
+		DCT_ValueToColor(A, srcPtrR[n], &dstPtr[+n]);
 	}
 }
 
@@ -206,7 +208,7 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (instancetype) init
-{ return [self initWithLength:512]; }
+{ return [self initWithLength:256]; }
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -240,7 +242,7 @@ static OSStatus renderCallback(
 		
 		
 		// populate window table
-		DCTWindowFunctionPrepareSin2(mW, mDCTCount);
+		PrepareDCTWindow(mW, mDCTCount);
 	}
 	
 	return self;
@@ -313,6 +315,9 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index
+{ return [self imageRepWithIndex:index sensitivity:0]; }
+
+- (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index sensitivity:(UInt32)s
 {
 	// Keep reasonable margin 
 	if (index < (mSpectrumIndex - 128))
@@ -321,14 +326,18 @@ static OSStatus renderCallback(
 	if (index < mSpectrumIndex)
 	{
 		NSRange R = { index&255, mSpectrumIndex-index };
-		return [self imageRepWithRange:R];
+		return [self imageRepWithRange:R sensitivity:s];
 	}
 
 	return nil;
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 - (NSBitmapImageRep *) imageRepWithRange:(NSRange)range
+{ return [self imageRepWithRange:range sensitivity:0]; }
+
+- (NSBitmapImageRep *) imageRepWithRange:(NSRange)range sensitivity:(UInt32)s
 {
 	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
 		initWithBitmapDataPlanes:nil
@@ -344,19 +353,20 @@ static OSStatus renderCallback(
 		bitsPerPixel:8 * 4 * sizeof(Byte)];
 
 	float *srcPtr = mSpectrumData;
-	Byte *dstPtr = bitmap.bitmapData;
+	UInt32 *dstPtr = (UInt32 *)bitmap.bitmapData;
 	
 	// spectrum data is appended downward
 	srcPtr += 2 * mDCTCount * (range.location&=255);
 	// image data needs to be copied bottom to top
-	dstPtr += 8 * mDCTCount * (range.length-1);
+	dstPtr += 2 * mDCTCount * (range.length-1);
 	
+	float A = pow(10.0, -(long)s);
 	
 	for (UInt32 n=0; n!=range.length; n++)
 	{
-		_DCT_to_Image(srcPtr, dstPtr, mDCTCount);
+		_DCT_to_Image(A, srcPtr, dstPtr, mDCTCount);
 		srcPtr += 2*mDCTCount;
-		dstPtr -= 2*mDCTCount*4;
+		dstPtr -= 2*mDCTCount;
 		
 		range.location += 1;
 		if (range.location == 256)
@@ -369,6 +379,8 @@ static OSStatus renderCallback(
 	return bitmap;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 
 CGContextRef CGBitmapContextCreateRGBA8WithSize(size_t W, size_t H)
@@ -417,8 +429,8 @@ static void _Copy32f(float *srcPtr, float *dstPtr, UInt32 n)
 	UInt32 W = round(image.size.width);
 	UInt32 H = round(image.size.height);
 
-	H = 256 * H / W;
-	W = 256;
+	H = 512 * H / W;
+	W = 512;
 //	H += H;
 	
 	NSBitmapImageRep *bitmap = NSBitmapImageRepWithSize(W, H);

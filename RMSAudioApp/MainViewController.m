@@ -39,6 +39,7 @@
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
 
 @property (nonatomic) RMSSpectrogram *spectrogram;
+@property (nonatomic) UInt32 spectrumSensitivity;
 @property (nonatomic) UInt64 spectrumIndex;
 @property (nonatomic, weak) IBOutlet NSBitmapImageRepView *spectrumView;
 
@@ -100,7 +101,8 @@
 	
 	if (self.spectrogram != nil)
 	{
-		NSImageRep *imageRep = [self.spectrogram imageRepWithIndex:self.spectrumIndex];
+		NSImageRep *imageRep = [self.spectrogram
+		imageRepWithIndex:self.spectrumIndex sensitivity:self.spectrumSensitivity];
 		if (imageRep != nil)
 		{
 			self.spectrumIndex += imageRep.size.height;
@@ -249,6 +251,33 @@
 - (IBAction) didAjdustDelayMix:(NSSlider *)sender
 {
 	self.delayFilter.mix = sender.floatValue;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark Spectrogram
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustSpectrogramLength:(NSControl *)sender
+{
+	int N = sender.intValue;
+	N = 256 << N;
+	
+	if (self.spectrogram != nil)
+	{ [self.audioOutput removeMonitor:self.spectrogram]; }
+	self.spectrogram = [[RMSSpectrogram alloc] initWithLength:N];
+	self.spectrumIndex = 0;
+	[self.audioOutput addMonitor:self.spectrogram];
+	
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didAdjustSpectrogramSensitivity:(NSControl *)sender
+{
+	int N = sender.intValue;
+	if (N < 0) N = 0;
+	self.spectrumSensitivity = N;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
