@@ -308,8 +308,8 @@
 
 - (IBAction) didSelectFileButton:(NSButton *)button
 {
-//	[self didSelectAudioFileButton:button];
-	[self didSelectImageFileButton:button];
+	[self didSelectAudioFileButton:button];
+//	[self didSelectImageFileButton:button];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

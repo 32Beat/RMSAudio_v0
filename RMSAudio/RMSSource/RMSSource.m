@@ -59,7 +59,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-- (void) removeTrash:(id)object
+- (void) removeTrash:(void *)object
 {
 	if (mTrash == object)
 	{ mTrash = nil; }
@@ -77,7 +77,7 @@
 	
 	if (mTrashSeen != nil)
 	{
-		[self removeTrash:(__bridge id)mTrashSeen];
+		[self removeTrash:mTrashSeen];
 		mTrashSeen = nil;
 	}
 	
