@@ -74,12 +74,16 @@ static inline void DCT_ValueToColor(float A, float V, UInt32 *dstPtr)
 	// compute spectrum power
 	V = V*V;
 	
-	// limit to 1.0
-	V /= (A + V);
+	// amplify result
+	V *= A;
 	
-	// index up to red
+	// limit to 1.0
+	V /= (1.0 + V);
+	
+	// scale for index up to red
 	V *= 5.0;
 	
+	// limit function guarantees n < 5
 	long n = V;
 	float R = colorSpectrum[n][0];
 	float G = colorSpectrum[n][1];
@@ -315,9 +319,9 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index
-{ return [self imageRepWithIndex:index sensitivity:0]; }
+{ return [self imageRepWithIndex:index gain:0]; }
 
-- (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index sensitivity:(UInt32)s
+- (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index gain:(UInt32)a
 {
 	// Keep reasonable margin 
 	if (index < (mSpectrumIndex - 128))
@@ -326,7 +330,7 @@ static OSStatus renderCallback(
 	if (index < mSpectrumIndex)
 	{
 		NSRange R = { index&255, mSpectrumIndex-index };
-		return [self imageRepWithRange:R sensitivity:s];
+		return [self imageRepWithRange:R gain:a];
 	}
 
 	return nil;
@@ -335,9 +339,9 @@ static OSStatus renderCallback(
 ////////////////////////////////////////////////////////////////////////////////
 
 - (NSBitmapImageRep *) imageRepWithRange:(NSRange)range
-{ return [self imageRepWithRange:range sensitivity:0]; }
+{ return [self imageRepWithRange:range gain:0]; }
 
-- (NSBitmapImageRep *) imageRepWithRange:(NSRange)range sensitivity:(UInt32)s
+- (NSBitmapImageRep *) imageRepWithRange:(NSRange)range gain:(UInt32)a
 {
 	NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc]
 		initWithBitmapDataPlanes:nil
@@ -360,7 +364,7 @@ static OSStatus renderCallback(
 	// image data needs to be copied bottom to top
 	dstPtr += 2 * mDCTCount * (range.length-1);
 	
-	float A = pow(10.0, -(long)s);
+	float A = pow(10.0, a);
 	
 	for (UInt32 n=0; n!=range.length; n++)
 	{

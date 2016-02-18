@@ -17,9 +17,9 @@
 
 - (NSBitmapImageRep *) imageRep;
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index;
-- (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index sensitivity:(UInt32)s;
+- (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index gain:(UInt32)a;
 - (NSBitmapImageRep *) imageRepWithRange:(NSRange)range;
-- (NSBitmapImageRep *) imageRepWithRange:(NSRange)range sensitivity:(UInt32)s;
+- (NSBitmapImageRep *) imageRepWithRange:(NSRange)range gain:(UInt32)a;
 
 + (RMSClip *) computeSampleBufferUsingImage:(NSImage *)image;
 

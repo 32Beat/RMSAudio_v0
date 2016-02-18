@@ -18,6 +18,8 @@
                 <outlet property="delayTimeLabel" destination="azI-5l-fQA" id="4Lf-bK-2Va"/>
                 <outlet property="gainControl" destination="8co-XE-7Ix" id="mhO-Ll-lmu"/>
                 <outlet property="resonanceControl" destination="PbG-nu-370" id="Ak3-z9-b6z"/>
+                <outlet property="spectrumGainControl" destination="FvJ-yU-zOg" id="I9B-EP-LKz"/>
+                <outlet property="spectrumSizeControl" destination="Abb-id-K2k" id="by5-Qr-dA6"/>
                 <outlet property="spectrumView" destination="TGV-d5-Wn6" id="iah-zO-iMx"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
@@ -253,23 +255,32 @@
                         <action selector="didAdjustSpectrogramSensitivity:" target="-2" id="b7u-gP-AsP"/>
                     </connections>
                 </slider>
-                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DN0-IF-Ofm">
-                    <rect key="frame" x="854" y="23" width="84" height="17"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
-                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Amplification" id="9gi-tH-eUy">
-                        <font key="font" metaFont="system"/>
-                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                    </textFieldCell>
-                </textField>
                 <slider verticalHuggingPriority="750" id="Abb-id-K2k">
-                    <rect key="frame" x="640" y="702" width="65" height="20"/>
+                    <rect key="frame" x="619" y="19" width="65" height="20"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                     <sliderCell key="cell" controlSize="small" state="on" alignment="left" maxValue="2" tickMarkPosition="below" numberOfTickMarks="3" allowsTickMarkValuesOnly="YES" sliderType="linear" id="jTv-ka-lVk"/>
                     <connections>
                         <action selector="didAdjustSpectrogramLength:" target="-2" id="Beh-Vp-sSC"/>
                     </connections>
                 </slider>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DcY-Rv-QPB">
+                    <rect key="frame" x="536" y="23" width="77" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Windowsize" id="e4J-5n-4u9">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
+                <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="DN0-IF-Ofm">
+                    <rect key="frame" x="906" y="23" width="32" height="17"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Gain" id="9gi-tH-eUy">
+                        <font key="font" metaFont="system"/>
+                        <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                    </textFieldCell>
+                </textField>
             </subviews>
             <point key="canvasLocation" x="-433.5" y="141.5"/>
         </customView>

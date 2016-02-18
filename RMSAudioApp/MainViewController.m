@@ -39,9 +39,11 @@
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
 
 @property (nonatomic) RMSSpectrogram *spectrogram;
-@property (nonatomic) UInt32 spectrumSensitivity;
-@property (nonatomic) UInt64 spectrumIndex;
+@property (nonatomic, weak) IBOutlet NSSlider *spectrumSizeControl;
+@property (nonatomic, weak) IBOutlet NSSlider *spectrumGainControl;
+
 @property (nonatomic, weak) IBOutlet NSBitmapImageRepView *spectrumView;
+@property (nonatomic) UInt64 spectrumIndex;
 
 @end
 
@@ -101,8 +103,10 @@
 	
 	if (self.spectrogram != nil)
 	{
+		UInt32 A = self.spectrumGainControl.intValue;
+		
 		NSImageRep *imageRep = [self.spectrogram
-		imageRepWithIndex:self.spectrumIndex sensitivity:self.spectrumSensitivity];
+		imageRepWithIndex:self.spectrumIndex gain:A];
 		if (imageRep != nil)
 		{
 			self.spectrumIndex += imageRep.size.height;
@@ -275,9 +279,6 @@
 
 - (IBAction) didAdjustSpectrogramSensitivity:(NSControl *)sender
 {
-	int N = sender.intValue;
-	if (N < 0) N = 0;
-	self.spectrumSensitivity = N;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
