@@ -93,14 +93,17 @@
 
 - (void) globalRMSTimerDidFire
 {
+	// update power meters
 	rmsresult_t resultL = self.levelsMonitor.resultLevelsL;
 	rmsresult_t resultR = self.levelsMonitor.resultLevelsR;
 	self.stereoView.resultL = resultL;
 	self.stereoView.resultR = resultR;
 	
+	// update balance control if necessary
 	if (self.autoPan != nil)
 	{ self.balanceControl.floatValue = self.autoPan.correctionBalance; }
 	
+	// update spectrogram 
 	if (self.spectrogram != nil)
 	{
 		UInt32 A = self.spectrumGainControl.intValue;
@@ -299,10 +302,11 @@
 	
 	// Start testsignal
 	self.audioOutput.source =
-		[RMSClip sineWaveWithLength:100];
+//		[RMSClip sineWaveWithLength:100];
+//		[RMSClip blockWaveWithLength:100];
 //		[RMSTestSignal sineWaveWithFrequency:441.0];
 //		[RMSTestSignal blockWaveWithFrequency:441.0];
-//		[RMSTestSignal triangleWaveWithFrequency:441.0];
+		[RMSTestSignal triangleWaveWithFrequency:441.0];
 //		[RMSTestSignal sawToothWaveWithFrequency:441.0];
 }
 

@@ -88,6 +88,8 @@
 		7FB8E0C81C42FA3900B7848A /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C61C42FA3900B7848A /* MainMenu.xib */; };
 		7FB8E1251C42FC5700B7848A /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E1231C42FC5700B7848A /* MainViewController.m */; };
 		7FB8E1261C42FC5700B7848A /* MainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E1241C42FC5700B7848A /* MainViewController.xib */; };
+		7FF5E6271C790C0500E0C16D /* RMSLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FF5E6261C790C0500E0C16D /* RMSLink.m */; };
+		7FF5E6281C790C0500E0C16D /* RMSLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FF5E6261C790C0500E0C16D /* RMSLink.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -181,6 +183,8 @@
 		7FB8E1221C42FC5700B7848A /* MainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainViewController.h; sourceTree = "<group>"; };
 		7FB8E1231C42FC5700B7848A /* MainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainViewController.m; sourceTree = "<group>"; };
 		7FB8E1241C42FC5700B7848A /* MainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainViewController.xib; sourceTree = "<group>"; };
+		7FF5E6251C790C0500E0C16D /* RMSLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSLink.h; sourceTree = "<group>"; };
+		7FF5E6261C790C0500E0C16D /* RMSLink.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSLink.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,6 +281,8 @@
 		7FA044881C58F30600CAC51D /* RMSSource */ = {
 			isa = PBXGroup;
 			children = (
+				7FF5E6251C790C0500E0C16D /* RMSLink.h */,
+				7FF5E6261C790C0500E0C16D /* RMSLink.m */,
 				7FA044891C58F30600CAC51D /* RMSCallback.h */,
 				7FA0448A1C58F30600CAC51D /* RMSCallback.m */,
 				7FA0448B1C58F30600CAC51D /* RMSSource.h */,
@@ -581,6 +587,7 @@
 				7FA044E01C58F30600CAC51D /* RMSOutput.m in Sources */,
 				7F9A334C1C6D862A007BE445 /* RMSClip.m in Sources */,
 				7FA045041C58F30600CAC51D /* RMSStereoView.m in Sources */,
+				7FF5E6281C790C0500E0C16D /* RMSLink.m in Sources */,
 				7FA044C61C58F30600CAC51D /* rmsbuffer_t.c in Sources */,
 				7FA044D41C58F30600CAC51D /* RMSSource.m in Sources */,
 				7FA044D81C58F30600CAC51D /* RMSAudioUnitFilePlayer.m in Sources */,
@@ -630,6 +637,7 @@
 				7FA045011C58F30600CAC51D /* RMSResultView.m in Sources */,
 				7FA044EB1C58F30600CAC51D /* RMSMixer.m in Sources */,
 				7FA044C51C58F30600CAC51D /* rmsbuffer_t.c in Sources */,
+				7FF5E6271C790C0500E0C16D /* RMSLink.m in Sources */,
 				7FA044F71C58F30600CAC51D /* RMSTestSignal.m in Sources */,
 				7FA044D31C58F30600CAC51D /* RMSSource.m in Sources */,
 				7FA044DB1C58F30600CAC51D /* RMSAudioUnitVarispeed.m in Sources */,

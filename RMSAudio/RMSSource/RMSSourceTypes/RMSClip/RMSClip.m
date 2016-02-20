@@ -97,6 +97,27 @@ static OSStatus renderCallback(
 
 ////////////////////////////////////////////////////////////////////////////////
 
++ (instancetype) blockWaveWithLength:(UInt64)N
+{
+	RMSClip *clip = [[self alloc] initWithLength:N];
+	
+	for (UInt64 n=0; n!=N/2; n++)
+	{
+		clip->mL[n] = +1.0;
+		clip->mR[n] = +1.0;
+	}
+
+	for (UInt64 n=N/2; n!=N; n++)
+	{
+		clip->mL[n] = -1.0;
+		clip->mR[n] = -1.0;
+	}
+	
+	return clip;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 - (instancetype) initWithLength:(UInt64)size
 {
 	self = [super init];

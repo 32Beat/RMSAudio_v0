@@ -12,6 +12,7 @@
 @interface RMSClip : RMSSource
 
 + (instancetype) sineWaveWithLength:(UInt64)N;
++ (instancetype) blockWaveWithLength:(UInt64)N;
 - (instancetype) initWithLength:(UInt64)size;
 
 - (UInt32) sampleCount;
