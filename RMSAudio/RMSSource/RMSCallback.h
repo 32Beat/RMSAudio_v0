@@ -11,6 +11,8 @@
 #import <AudioUnit/AudioUnit.h>
 #import <Foundation/Foundation.h>
 
+#import "RMSLink.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef struct PCMSampleRange
@@ -122,7 +124,7 @@ typedef	OSStatus (^RMSCallbackBlock)
 		Calling interface under construction!
 		
 */
-@interface RMSCallback : NSObject
+@interface RMSCallback : RMSLink
 {
 	RMSCallbackInfo mCallbackInfo;
 	RMSCallbackBlock mCallbackBlock;

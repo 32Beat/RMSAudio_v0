@@ -9,6 +9,7 @@
 
 
 #include "rmsdelay_t.h"
+#include <math.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +18,12 @@
 
 rmsdelay_t RMSDelayBegin(void)
 { return RMSBufferBegin(1024*1024); }
+
+rmsdelay_t RMSDelayBeginWithSize(size_t size)
+{
+	long L = ceil(log2(size));
+	return RMSBufferBegin(1<<L);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -116,9 +123,9 @@ float RMSDelayProcessSampleMTF(rmsdelay_t *delay, float offset, float feedBack, 
 	for (size_t n=steps; n!=0; n--)
 	{
 		R += RMSBufferGetValueWithDelay(delay, T2);
-		T2 = (T1+T2)*0.5;
-		R -= RMSBufferGetValueWithDelay(delay, T2);
 		T1 = (T1+T2)*0.5;
+		R -= RMSBufferGetValueWithDelay(delay, T1);
+		T2 = (T1+T2)*0.5;
 	}
 	
 	R *= (1.0/(steps));

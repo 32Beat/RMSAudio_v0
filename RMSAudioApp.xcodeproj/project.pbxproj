@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F0E51B81C7B226000DFA8F0 /* RMSPhaser.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0E51B71C7B226000DFA8F0 /* RMSPhaser.m */; };
+		7F0E51B91C7B226000DFA8F0 /* RMSPhaser.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0E51B71C7B226000DFA8F0 /* RMSPhaser.m */; };
 		7F727CAC1C69315600416DB0 /* NSBitmapImageRepView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */; };
 		7F9673BE1C6D3BF200D04F6C /* RMSSpectrogram.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9673BD1C6D3BF200D04F6C /* RMSSpectrogram.m */; };
 		7F9673BF1C6D3C0400D04F6C /* RMSSpectrogram.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F9673BD1C6D3BF200D04F6C /* RMSSpectrogram.m */; };
@@ -82,6 +84,7 @@
 		7FA045041C58F30600CAC51D /* RMSStereoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA044C41C58F30600CAC51D /* RMSStereoView.m */; };
 		7FA045081C58F35400CAC51D /* RMSKaraokeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA045061C58F35400CAC51D /* RMSKaraokeViewController.m */; };
 		7FA045091C58F35400CAC51D /* RMSKaraokeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7FA045071C58F35400CAC51D /* RMSKaraokeViewController.xib */; };
+		7FA6310C1C7B6E1200D5741D /* RMSFlanger.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */; };
 		7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */; };
 		7FB8E0C31C42FA3800B7848A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C21C42FA3800B7848A /* main.m */; };
 		7FB8E0C51C42FA3800B7848A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C41C42FA3800B7848A /* Assets.xcassets */; };
@@ -93,6 +96,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F0E51B61C7B226000DFA8F0 /* RMSPhaser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSPhaser.h; sourceTree = "<group>"; };
+		7F0E51B71C7B226000DFA8F0 /* RMSPhaser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSPhaser.m; sourceTree = "<group>"; };
 		7F727CAA1C69315600416DB0 /* NSBitmapImageRepView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSBitmapImageRepView.h; sourceTree = "<group>"; };
 		7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSBitmapImageRepView.m; sourceTree = "<group>"; };
 		7F9673BC1C6D3BF200D04F6C /* RMSSpectrogram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSpectrogram.h; sourceTree = "<group>"; };
@@ -173,6 +178,8 @@
 		7FA045051C58F35400CAC51D /* RMSKaraokeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSKaraokeViewController.h; sourceTree = "<group>"; };
 		7FA045061C58F35400CAC51D /* RMSKaraokeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSKaraokeViewController.m; sourceTree = "<group>"; };
 		7FA045071C58F35400CAC51D /* RMSKaraokeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RMSKaraokeViewController.xib; sourceTree = "<group>"; };
+		7FA6310A1C7B6E1200D5741D /* RMSFlanger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSFlanger.h; sourceTree = "<group>"; };
+		7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSFlanger.m; sourceTree = "<group>"; };
 		7FB8E0BB1C42FA3800B7848A /* RMSAudioApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSAudioApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8E0BE1C42FA3800B7848A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -205,6 +212,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7F0E51B51C7B226000DFA8F0 /* RMSPhaser */ = {
+			isa = PBXGroup;
+			children = (
+				7F0E51B61C7B226000DFA8F0 /* RMSPhaser.h */,
+				7F0E51B71C7B226000DFA8F0 /* RMSPhaser.m */,
+			);
+			path = RMSPhaser;
+			sourceTree = "<group>";
+		};
 		7F9673BB1C6D3BF200D04F6C /* RMSSpectrogram */ = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +352,8 @@
 		7FA0449C1C58F30600CAC51D /* RMSFilterTypes */ = {
 			isa = PBXGroup;
 			children = (
+				7FA631091C7B6E1200D5741D /* RMSFlanger */,
+				7F0E51B51C7B226000DFA8F0 /* RMSPhaser */,
 				7FA0449D1C58F30600CAC51D /* RMSAutoPan.h */,
 				7FA0449E1C58F30600CAC51D /* RMSAutoPan.m */,
 				7FA0449F1C58F30600CAC51D /* RMSDelay.h */,
@@ -410,12 +428,29 @@
 			path = RMSViews;
 			sourceTree = "<group>";
 		};
+		7FA631091C7B6E1200D5741D /* RMSFlanger */ = {
+			isa = PBXGroup;
+			children = (
+				7FA6310A1C7B6E1200D5741D /* RMSFlanger.h */,
+				7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */,
+			);
+			path = RMSFlanger;
+			sourceTree = "<group>";
+		};
+		7FB641731C79D61D00EE52A6 /* artwork */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = artwork;
+			sourceTree = "<group>";
+		};
 		7FB8E0B21C42FA3800B7848A = {
 			isa = PBXGroup;
 			children = (
 				7FA044791C58F30600CAC51D /* RMSAudio */,
 				7FB8E0BD1C42FA3800B7848A /* RMSAudioApp */,
 				7FA043911C58F15500CAC51D /* RMSKaraokeApp */,
+				7FB641731C79D61D00EE52A6 /* artwork */,
 				7FB8E0BC1C42FA3800B7848A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -586,6 +621,7 @@
 				7FA045021C58F30600CAC51D /* RMSResultView.m in Sources */,
 				7FA044E01C58F30600CAC51D /* RMSOutput.m in Sources */,
 				7F9A334C1C6D862A007BE445 /* RMSClip.m in Sources */,
+				7F0E51B91C7B226000DFA8F0 /* RMSPhaser.m in Sources */,
 				7FA045041C58F30600CAC51D /* RMSStereoView.m in Sources */,
 				7FF5E6281C790C0500E0C16D /* RMSLink.m in Sources */,
 				7FA044C61C58F30600CAC51D /* rmsbuffer_t.c in Sources */,
@@ -627,12 +663,14 @@
 				7FA044DD1C58F30600CAC51D /* RMSInput.m in Sources */,
 				7FA044EF1C58F30600CAC51D /* RMSMixerSourceController.m in Sources */,
 				7FA044C91C58F30600CAC51D /* rmslevels.c in Sources */,
+				7FA6310C1C7B6E1200D5741D /* RMSFlanger.m in Sources */,
 				7FB8E1251C42FC5700B7848A /* MainViewController.m in Sources */,
 				7FA044C71C58F30600CAC51D /* rmsdelay_t.c in Sources */,
 				7FA044FD1C58F30600CAC51D /* RMSBalanceView.m in Sources */,
 				7FA044CB1C58F30600CAC51D /* rmsoscillator_t.c in Sources */,
 				7FA044CF1C58F30600CAC51D /* RMSTimer.m in Sources */,
 				7FA044FF1C58F30600CAC51D /* RMSIndexView.m in Sources */,
+				7F0E51B81C7B226000DFA8F0 /* RMSPhaser.m in Sources */,
 				7FA044CD1C58F30600CAC51D /* RMSRingBuffer.m in Sources */,
 				7FA045011C58F30600CAC51D /* RMSResultView.m in Sources */,
 				7FA044EB1C58F30600CAC51D /* RMSMixer.m in Sources */,

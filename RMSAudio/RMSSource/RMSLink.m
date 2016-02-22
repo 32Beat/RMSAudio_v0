@@ -13,28 +13,20 @@
 @implementation RMSLink
 ////////////////////////////////////////////////////////////////////////////////
 
-- (RMSLink *) nextLink
-{ return mNextLink; }
-
-- (void) setNextLink:(RMSLink *)link
-{ mNextLink = link; }
-
-////////////////////////////////////////////////////////////////////////////////
-
 - (void) addLink:(RMSLink *)link
 {
-	if (mNextLink == nil)
+	if (_nextLink == nil)
 	{ [self setNextLink:link]; }
 	else
-	{ [mNextLink addLink:link]; }
+	{ [_nextLink addLink:link]; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 - (void) insertLink:(RMSLink *)link
 {
-	if (mNextLink != nil)
-	{ [link addLink:mNextLink]; }
+	if (_nextLink != nil)
+	{ [link addLink:_nextLink]; }
 	[self setNextLink:link];
 }
 
@@ -42,18 +34,18 @@
 
 - (void) removeLink:(RMSLink *)link
 {
-	if (mNextLink == link)
+	if (_nextLink == link)
 	{ [self removeLink]; }
 	else
-	{ [mNextLink removeLink:link]; }
+	{ [_nextLink removeLink:link]; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 - (void) removeLink
 {
-	if (mNextLink != nil)
-	{ [self setNextLink:[mNextLink nextLink]]; }
+	if (_nextLink != nil)
+	{ [self setNextLink:[_nextLink nextLink]]; }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

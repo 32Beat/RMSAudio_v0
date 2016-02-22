@@ -24,7 +24,7 @@
 	// write index for sliding buffer
 	size_t mDstIndex;
 
-	// working buffers
+	// working buffer
 	float *mW; // tabulated window function
 
 	// invariants for dct conversion
@@ -118,6 +118,46 @@ static inline void _DCT_to_Image(float A, float *srcPtr, UInt32 *dstPtr, long n)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static inline void _DCT_ReverseRow(float *ptr, size_t N)
+{
+	float *ptr1 = ptr;
+	float *ptr2 = ptr + N - 1;
+	
+	long n = N/2;
+	while (n != 0)
+	{
+		n -= 1;
+		float S1 = ptr1[+n];
+		float S2 = ptr2[-n];
+		ptr1[+n] = S2;
+		ptr2[-n] = S1;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _DCT_Mix1(float *srcPtr0, float *srcPtr1, size_t n)
+{
+	while (n != 0)
+	{
+		n -= 1;
+		srcPtr1[n] = srcPtr0[n] + 0.0001*((srcPtr1[n]) - srcPtr0[n]);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void _DCT_Mix2(float *srcPtr0, float *srcPtr1, size_t n)
+{
+	while (n != 0)
+	{
+		n -= 1;
+		srcPtr1[n] = srcPtr0[n] + 0.0001*(fabsf(srcPtr1[n]) - srcPtr0[n]);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 // Copy for sliding buffer
 static inline void _CopySamples(
 	float *srcL, float *dstL,
@@ -177,13 +217,33 @@ static OSStatus renderCallback(
 			// Convert left signal into left side of spectrumdata
 			vDSP_vmul(rmsObject->mL, 1, rmsObject->mW, 1, spectrumData, 1, dctCount);
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, spectrumData, spectrumData);
-
+			
 			// Move to center of row
 			spectrumData += dctCount;
 			
 			// Convert right signal into right side of spectrumdata
 			vDSP_vmul(rmsObject->mR, 1, rmsObject->mW, 1, spectrumData, 1, dctCount);
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, spectrumData, spectrumData);
+/*
+			// move back to start of row
+			spectrumData -= dctCount;
+			
+			// normalize entire row
+			const float m = sqrt(2.0 / dctCount);
+			vDSP_vsmul(spectrumData, 1, &m, spectrumData, 1, 2*dctCount);
+//*/
+/*
+			// move back to start of row
+			spectrumData -= dctCount;
+
+			long previousRow = -2*dctCount;
+			if (spectrumData == rmsObject->mSpectrumData)
+			{ previousRow += 256*2*dctCount; }
+			
+			_DCT_Mix1(&spectrumData[previousRow], spectrumData, dctCount);
+			spectrumData += dctCount;
+			_DCT_Mix2(&spectrumData[previousRow], spectrumData, dctCount);
+//*/
 
 			// Update index
 			rmsObject->mSpectrumIndex += 1;
@@ -291,14 +351,15 @@ static OSStatus renderCallback(
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 /*
+	imageRep
+	--------
 	This creates a bitmap imagerep of the internal spectrum buffer
-	The internal buffer is obviously being used by the audiothread 
-	which may become visible when drawing the image
+	The internal buffer is continuously being used by the audiothread
+	which may become visible when drawing the full image
 	
-	We therefore implement an imageRepWithIndex method, which requests 
-	an imageRep from a particular sliding step index. 
-	mImgIndex is the current row index being computed, so every row
-	from index to mImgIndex (ex) are copied to the image
+	Useful for testing purposes
+	
+	For normal display purposes use imageRepWithIndex instead
 */
 - (NSBitmapImageRep *) imageRep
 {
@@ -317,6 +378,13 @@ static OSStatus renderCallback(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/*
+	imageRepWithIndex
+	-----------------
+	creates an imageRep from a particular sliding step index.
+	mSpectrumIndex is the index of the row being computed by the audiothread, 
+	so the bitmap will be based on the rows from index to mSpectrumIndex (ex)
+*/
 
 - (NSBitmapImageRep *) imageRepWithIndex:(UInt64)index
 { return [self imageRepWithIndex:index gain:0]; }
@@ -502,7 +570,7 @@ void MDCT_Fold(float *srcPtr, float *dstPtr, size_t dstSize)
 				{
 					float x = (1.0*n + 0.5)/W;
 					float y = sin(x*M_PI);
-					F[n] = 1-1*y*y;
+					F[n] = 1-y*y;
 				}
 
 				
@@ -527,7 +595,8 @@ void MDCT_Fold(float *srcPtr, float *dstPtr, size_t dstSize)
 						}
 
 						vDSP_DCT_Execute(dctSetup, tmpPtr, tmpPtr);
-						vDSP_vma(F, 1, tmpPtr, 1, dstPtr, 1, dstPtr, 1, W);
+						vDSP_vmul(F, 1, tmpPtr, 1, tmpPtr, 1, W);
+						vDSP_vadd(tmpPtr, 1, dstPtr, 1, dstPtr, 1, W);
 						
 						srcPtr += bitmap.bytesPerRow - 4*W;
 						dstPtr -= W/2;

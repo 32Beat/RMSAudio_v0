@@ -10,8 +10,10 @@
 #ifndef RMSAudio_h
 #define RMSAudio_h
 
+#import "RMSLink.h"
 #import "RMSCallback.h"
 #import "RMSSource.h"
+
 #import "RMSAudioUnit.h"
 #import "RMSAudioUnitFilePlayer.h"
 #import "RMSAudioUnitVarispeed.h"
@@ -24,15 +26,16 @@
 #import "RMSLowPassFilter.h"
 #import "RMSMoogFilter.h"
 #import "RMSDelay.h"
-#import "RMSSpectrogram.h"
+#import "RMSPhaser.h"
+#import "RMSFlanger.h"
 
 #import "RMSMonitor.h"
+#import "RMSSpectrogram.h"
 
 #import "RMSMixer.h"
 #import "RMSMixerSource.h"
 
 #import "RMSTestSignal.h"
-#import "RMSSineWave.h"
 #import "RMSClip.h"
 
 #import "RMSTimer.h"

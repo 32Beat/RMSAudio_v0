@@ -63,6 +63,8 @@
 	self.volumeFilter = [RMSVolume new];
 	self.audioOutput.filter = self.volumeFilter;
 	
+	[self.audioOutput insertFilter:[RMSFlanger new]];
+	
 	self.levelsMonitor = [RMSMonitor new];
 	self.audioOutput.monitor = self.levelsMonitor;
 
@@ -108,7 +110,7 @@
 	{
 		UInt32 A = self.spectrumGainControl.intValue;
 		
-		NSImageRep *imageRep = [self.spectrogram
+		NSImageRep *imageRep = [self.spectrogram //imageRep];
 		imageRepWithIndex:self.spectrumIndex gain:A];
 		if (imageRep != nil)
 		{
@@ -342,8 +344,11 @@
 
 - (IBAction) didSelectFileButton:(NSButton *)button
 {
+//*
 	[self didSelectAudioFileButton:button];
-//	[self didSelectImageFileButton:button];
+/*/
+	[self didSelectImageFileButton:button];
+/*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////

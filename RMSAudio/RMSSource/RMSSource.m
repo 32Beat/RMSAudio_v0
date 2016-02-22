@@ -122,10 +122,9 @@ OSStatus RunRMSSource(
 		}
 	}
 
-	OSStatus result = noErr;
 
 	// Run the callback for self
-	result = RunRMSCallback(&rmsSource->mCallbackInfo,
+	OSStatus result = RunRMSCallback(&rmsSource->mCallbackInfo,
 	actionFlags, timeStamp, busNumber, frameCount, bufferList);
 	if (result != noErr) return result;
 	
