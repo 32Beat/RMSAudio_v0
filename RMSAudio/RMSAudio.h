@@ -31,6 +31,8 @@
 
 #import "RMSMonitor.h"
 #import "RMSSpectrogram.h"
+#import "RMSSplineMonitor.h"
+#import "RMSSplineMonitorView.h"
 
 #import "RMSMixer.h"
 #import "RMSMixerSource.h"

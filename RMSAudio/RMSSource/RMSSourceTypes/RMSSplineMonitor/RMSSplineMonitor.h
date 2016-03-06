@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 /*
-	RMSFlanger
+	RMSSplineMonitor
 	
 	Created by 32BT on 15/11/15.
 	Copyright © 2015 32BT. All rights reserved.
@@ -9,9 +9,12 @@
 
 #import "RMSSource.h"
 
-@interface RMSFlanger : RMSSource
-@property (nonatomic, assign) float delay;
-@property (nonatomic, assign) float delayModulation;
-@property (nonatomic, assign) float depth;
+#define kRMSSplineMonitorCount 	64
+
+
+@interface RMSSplineMonitor : RMSSource
+- (void) getErrorData:(double *)resultPtr minValue:(double *)minValuePtr;
+
+//- (NSBitmapImageRep *) imageRepWithGain:(UInt32)a;
 
 @end

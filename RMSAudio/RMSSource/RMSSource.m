@@ -247,7 +247,7 @@ void *RMSSourceGetMonitor(void *source)
 {
 	if (mFilter != nil)
 	{ [filter addFilter:mFilter]; }
-	mFilter = filter;
+	[self setFilter:filter];
 }
 
 ////////////////////////////////////////////////////////////////////////////////

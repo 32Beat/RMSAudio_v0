@@ -9,6 +9,7 @@
 
 #include "rmsoscillator_t.h"
 #include <math.h>
+#include <stdlib.h>
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -24,60 +25,91 @@ static double pseudoSineWave(double x)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-rmsoscillator_t RMSOscillatorBegin(double hertz, double sampleRate, double (*functionPtr)(double))
+rmsoscillator_t RMSOscillatorBegin(double (*functionPtr)(double), double Hz, double phase)
 {
-	double step = hertz / sampleRate;
+	// X = [-1.0, ..., +1.0], stepcycle = 2.0
+	double step = 2.0 * Hz / 44100.0;
 	
-	return (rmsoscillator_t){
-		.Hz = hertz,
-		.X = -.5*step,
-		.Xstep = step,
-		.functionPtr = functionPtr };
+	return (rmsoscillator_t)
+	{
+		.Hz = Hz,
+		.Fs = 44100,
+		.X = (phase-1.0)-step,
+		.dX = step,
+		.functionPtr = functionPtr
+	};
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-rmsoscillator_t RMSOscillatorBeginSineWave(double hertz, double sampleRate)
-{ return RMSOscillatorBegin(hertz, sampleRate, sineWave); }
+rmsoscillator_t RMSOscillatorBeginSineWave(double hertz, double phase)
+{ return RMSOscillatorBegin(sineWave, hertz, phase); }
 
-rmsoscillator_t RMSOscillatorBeginPseudoSineWave(double hertz, double sampleRate)
-{ return RMSOscillatorBegin(hertz, sampleRate, pseudoSineWave); }
+rmsoscillator_t RMSOscillatorBeginPseudoSineWave(double hertz, double phase)
+{ return RMSOscillatorBegin(pseudoSineWave, hertz, phase); }
 
-rmsoscillator_t RMSOscillatorBeginTriangleWave(double hertz, double sampleRate)
-{ return RMSOscillatorBegin(hertz, sampleRate, triangleWave); }
+rmsoscillator_t RMSOscillatorBeginTriangleWave(double hertz, double phase)
+{ return RMSOscillatorBegin(triangleWave, hertz, phase); }
+
+////////////////////////////////////////////////////////////////////////////////
+/*
+	X runs from -1.0 to +1.0, so dX needs to be twice the cycle step
+*/
+void RMSOscillatorUpdateStep(rmsoscillator_t *oscPtr)
+{
+	double Hz = oscPtr->Hz;
+	double Fs = oscPtr->Fs;
+
+	oscPtr->dX = 2.0 * Hz / (Fs != 0.0 ? Fs : 44100.0);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void RMSOscillatorSetStep(rmsoscillator_t *oscPtr, double step)
-{ if (oscPtr != NULL) oscPtr->Xstep = step; }
-
 void RMSOscillatorSetFrequency(rmsoscillator_t *oscPtr, double Hz)
 {
-	double step =
-	oscPtr->Fs != 0.0 ? Hz / oscPtr->Fs :
-	oscPtr->Hz != 0.0 ? oscPtr->Xstep * Hz / oscPtr->Hz : 0.0;
-	
 	oscPtr->Hz = Hz;
-	RMSOscillatorSetStep(oscPtr, step);
+	RMSOscillatorUpdateStep(oscPtr);
 }
 
 void RMSOscillatorSetSampleRate(rmsoscillator_t *oscPtr, double Fs)
 {
 	oscPtr->Fs = Fs;
-	if (Fs != 0.0) RMSOscillatorSetStep(oscPtr, oscPtr->Hz / Fs);
+	RMSOscillatorUpdateStep(oscPtr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 double RMSOscillatorFetchSample(rmsoscillator_t *oscPtr)
 {
-	oscPtr->X += oscPtr->Xstep;
+	oscPtr->X += oscPtr->dX;
 	if (oscPtr->X >= 1.0)
 	{ oscPtr->X -= 2.0; }
 	return oscPtr->functionPtr ? oscPtr->functionPtr(oscPtr->X) : oscPtr->X;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+double RMSOscillatorFetchSampleRA(rmsoscillator_t *oscPtr)
+{
+	oscPtr->X += oscPtr->dX;
+	if (oscPtr->X > +oscPtr->A)
+	{
+		oscPtr->X = +oscPtr->A;
+		oscPtr->dX = -oscPtr->dX;
+	}
+	else
+	if (oscPtr->X < -oscPtr->A)
+	{
+		oscPtr->X = -oscPtr->A;
+		oscPtr->dX = -oscPtr->dX;
+		oscPtr->A = 0.1 + 0.9 * random() / RAND_MAX;
+	}
+	
+	return oscPtr->X;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 
 

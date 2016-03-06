@@ -76,11 +76,13 @@ void RMSBufferSetSampleAtOffset(rmsbuffer_t *buffer, int64_t offset, float S);
 
 // Get sample at offset = -sampleDelay
 float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint32_t sampleDelay);
-float RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, float sampleDelay);
+double RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, double sampleDelay);
+double RMSBufferGetValueWithDelayCR(rmsbuffer_t *buffer, double sampleDelay);
 
-// Set sample at current index modulo buffersize, then update index
+// Update index, then set sample at index modulo buffersize
 void RMSBufferWriteSample(rmsbuffer_t *buffer, float S);
 
+void RMSBufferWriteSuperSample(rmsbuffer_t *buffer, float y);
 ////////////////////////////////////////////////////////////////////////////////
 #endif // rmsbuffer_t_h
 ////////////////////////////////////////////////////////////////////////////////

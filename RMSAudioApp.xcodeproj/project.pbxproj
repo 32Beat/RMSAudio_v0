@@ -85,6 +85,9 @@
 		7FA045081C58F35400CAC51D /* RMSKaraokeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA045061C58F35400CAC51D /* RMSKaraokeViewController.m */; };
 		7FA045091C58F35400CAC51D /* RMSKaraokeViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7FA045071C58F35400CAC51D /* RMSKaraokeViewController.xib */; };
 		7FA6310C1C7B6E1200D5741D /* RMSFlanger.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */; };
+		7FB2F3681C8B2F3B00E90894 /* RMSSplineMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB2F3671C8B2F3B00E90894 /* RMSSplineMonitor.m */; };
+		7FB2F36B1C8B3A3800E90894 /* RMSSplineMonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB2F36A1C8B3A3800E90894 /* RMSSplineMonitorView.m */; };
+		7FB2F36C1C8B3A3800E90894 /* RMSSplineMonitorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB2F36A1C8B3A3800E90894 /* RMSSplineMonitorView.m */; };
 		7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */; };
 		7FB8E0C31C42FA3800B7848A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C21C42FA3800B7848A /* main.m */; };
 		7FB8E0C51C42FA3800B7848A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7FB8E0C41C42FA3800B7848A /* Assets.xcassets */; };
@@ -180,6 +183,10 @@
 		7FA045071C58F35400CAC51D /* RMSKaraokeViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = RMSKaraokeViewController.xib; sourceTree = "<group>"; };
 		7FA6310A1C7B6E1200D5741D /* RMSFlanger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSFlanger.h; sourceTree = "<group>"; };
 		7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSFlanger.m; sourceTree = "<group>"; };
+		7FB2F3661C8B2F3B00E90894 /* RMSSplineMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSplineMonitor.h; sourceTree = "<group>"; };
+		7FB2F3671C8B2F3B00E90894 /* RMSSplineMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSplineMonitor.m; sourceTree = "<group>"; };
+		7FB2F3691C8B3A3800E90894 /* RMSSplineMonitorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSplineMonitorView.h; sourceTree = "<group>"; };
+		7FB2F36A1C8B3A3800E90894 /* RMSSplineMonitorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSplineMonitorView.m; sourceTree = "<group>"; };
 		7FB8E0BB1C42FA3800B7848A /* RMSAudioApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSAudioApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7FB8E0BE1C42FA3800B7848A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -311,6 +318,7 @@
 		7FA0448D1C58F30600CAC51D /* RMSSourceTypes */ = {
 			isa = PBXGroup;
 			children = (
+				7FB2F3651C8B2F3B00E90894 /* RMSSplineMonitor */,
 				7FA0448E1C58F30600CAC51D /* RMSAudioUnit */,
 				7FA0449C1C58F30600CAC51D /* RMSFilterTypes */,
 				7F9A33481C6D862A007BE445 /* RMSClip */,
@@ -424,6 +432,8 @@
 				7FA044C21C58F30600CAC51D /* RMSResultView.m */,
 				7FA044C31C58F30600CAC51D /* RMSStereoView.h */,
 				7FA044C41C58F30600CAC51D /* RMSStereoView.m */,
+				7FB2F3691C8B3A3800E90894 /* RMSSplineMonitorView.h */,
+				7FB2F36A1C8B3A3800E90894 /* RMSSplineMonitorView.m */,
 			);
 			path = RMSViews;
 			sourceTree = "<group>";
@@ -435,6 +445,15 @@
 				7FA6310B1C7B6E1200D5741D /* RMSFlanger.m */,
 			);
 			path = RMSFlanger;
+			sourceTree = "<group>";
+		};
+		7FB2F3651C8B2F3B00E90894 /* RMSSplineMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				7FB2F3661C8B2F3B00E90894 /* RMSSplineMonitor.h */,
+				7FB2F3671C8B2F3B00E90894 /* RMSSplineMonitor.m */,
+			);
+			path = RMSSplineMonitor;
 			sourceTree = "<group>";
 		};
 		7FB641731C79D61D00EE52A6 /* artwork */ = {
@@ -631,6 +650,7 @@
 				7FA044EA1C58F30600CAC51D /* RMSVolume.m in Sources */,
 				7FA044E21C58F30600CAC51D /* RMSAutoPan.m in Sources */,
 				7FA044D61C58F30600CAC51D /* RMSAudioUnit.m in Sources */,
+				7FB2F36C1C8B3A3800E90894 /* RMSSplineMonitorView.m in Sources */,
 				7FA044D21C58F30600CAC51D /* RMSCallback.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -643,6 +663,7 @@
 				7FA045031C58F30600CAC51D /* RMSStereoView.m in Sources */,
 				7FA044E31C58F30600CAC51D /* RMSDelay.m in Sources */,
 				7FA044D51C58F30600CAC51D /* RMSAudioUnit.m in Sources */,
+				7FB2F3681C8B2F3B00E90894 /* RMSSplineMonitor.m in Sources */,
 				7F9673BE1C6D3BF200D04F6C /* RMSSpectrogram.m in Sources */,
 				7F727CAC1C69315600416DB0 /* NSBitmapImageRepView.m in Sources */,
 				7FA044E11C58F30600CAC51D /* RMSAutoPan.m in Sources */,
@@ -675,6 +696,7 @@
 				7FA045011C58F30600CAC51D /* RMSResultView.m in Sources */,
 				7FA044EB1C58F30600CAC51D /* RMSMixer.m in Sources */,
 				7FA044C51C58F30600CAC51D /* rmsbuffer_t.c in Sources */,
+				7FB2F36B1C8B3A3800E90894 /* RMSSplineMonitorView.m in Sources */,
 				7FF5E6271C790C0500E0C16D /* RMSLink.m in Sources */,
 				7FA044F71C58F30600CAC51D /* RMSTestSignal.m in Sources */,
 				7FA044D31C58F30600CAC51D /* RMSSource.m in Sources */,

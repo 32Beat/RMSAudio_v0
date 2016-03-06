@@ -119,7 +119,7 @@ void RMSBufferSetSample(rmsbuffer_t *buffer, float S)
 { RMSBufferSetSampleAtIndex(buffer, buffer->index, S); }
 
 void RMSBufferWriteSample(rmsbuffer_t *buffer, float S)
-{ RMSBufferSetSampleAtIndex(buffer, buffer->index, S); buffer->index++; }
+{ RMSBufferSetSampleAtIndex(buffer, (buffer->index += 1), S); }
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -132,18 +132,79 @@ float RMSBufferGetSampleWithDelay(rmsbuffer_t *buffer, uint32_t sampleDelay)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-float RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, float sampleDelay)
+double RMSBufferGetValueWithDelay(rmsbuffer_t *buffer, double sampleDelay)
 {
 	uint64_t index = buffer->index;
 	uint64_t indexMask = buffer->indexMask;
 	
 	index -= (int64_t)sampleDelay;
-	float R0 = buffer->sampleData[(index-0)&indexMask];
-	float R1 = buffer->sampleData[(index-1)&indexMask];
+	float *sampleData = (float *)buffer->sampleData;
+	double R0 = sampleData[(index-0)&indexMask];
+	double R1 = sampleData[(index-1)&indexMask];
 	
-	float M = sampleDelay - truncf(sampleDelay);
+	double M = sampleDelay - trunc(sampleDelay);
 	
 	return R0 + M * (R1 - R0);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static double Bezier
+(double x, double P1, double C1, double C2, double P2)
+{
+	P1 += x * (C1 - P1);
+	C1 += x * (C2 - C1);
+	C2 += x * (P2 - C2);
+	
+	P1 += x * (C1 - P1);
+	C1 += x * (C2 - C1);
+
+	P1 += x * (C1 - P1);
+
+	return P1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static double CRCompute
+(double x, double Y0, double Y1, double Y2, double Y3)
+{
+	static const double a = (1.0/4.0);
+	double d1 = a * (Y2 - Y0);
+	double d2 = a * (Y3 - Y1);
+	return Bezier(x, Y1, Y1+d1, Y2-d2, Y2);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+double RMSBufferGetValueWithDelayCR(rmsbuffer_t *buffer, double sampleDelay)
+{
+	uint64_t index = buffer->index;
+	uint64_t indexMask = buffer->indexMask;
+	
+	float *sampleData = (float *)buffer->sampleData;
+	double M = sampleDelay - trunc(sampleDelay);
+	
+	int64_t D = sampleDelay;
+	if (D != 0)
+	{
+		index -= D-1;
+
+		double R0 = sampleData[(index-0)&indexMask];
+		double R1 = sampleData[(index-1)&indexMask];
+		double R2 = sampleData[(index-2)&indexMask];
+		double R3 = sampleData[(index-3)&indexMask];
+	
+		return CRCompute(M, R0, R1, R2, R3);
+	}
+
+	// Edge case, use 3 samples only
+	double R0 = sampleData[(index-0)&indexMask];
+	double R1 = sampleData[(index-1)&indexMask];
+	double R2 = sampleData[(index-2)&indexMask];
+	double C1 = R1-(1.0/6.0)*(R2-R0);
+	double C0 = R0+(1.0/2.0)*(C1-R0);
+	return Bezier(M, R0, C0, C1, R1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -165,6 +226,40 @@ float RMSBufferValueAtOffset(rmsbuffer_t *buffer, double offset)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+/*
+	UNDER CONSTRUCTION
+	------------------
+	
+	An oversampled buffer, using int32 types so we can use 
+	Turkowski/Gabriel decimators.
+*/
+void RMSBufferWriteSuperSample(rmsbuffer_t *buffer, float y)
+{
+	uint64_t index = buffer->index;
+	uint64_t indexMask = buffer->indexMask;
+
+	int32_t *sampleData = (int32_t *)buffer->sampleData;
+	int32_t Y0 = sampleData[(index - 4)&indexMask];
+	int32_t Y1 = sampleData[(index - 2)&indexMask];
+	int32_t Y2 = sampleData[(index - 0)&indexMask];
+	int32_t Y3 = round(0x10000000 * y);
+
+	index += 2;
+	sampleData[(index - 0)&indexMask] = Y3;
+	sampleData[(index - 1)&indexMask] = (Y2+Y3)>>1;
+
+	int32_t A1 = Y1+Y2;
+	int32_t A2 = Y0+Y3;
+	sampleData[(index - 3)&indexMask] = ((A1<<3) + A1 - A2)>>4;
+	
+	buffer->index = index;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+
+
 
 
 

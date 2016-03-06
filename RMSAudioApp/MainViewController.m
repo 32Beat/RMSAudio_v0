@@ -23,6 +23,9 @@
 @property (nonatomic) RMSAutoPan *autoPan;
 @property (nonatomic, weak) IBOutlet NSButton *autoPanButton;
 
+@property (nonatomic) RMSFlanger *test;
+
+
 @property (nonatomic) RMSLowPassFilter *lowPassFilter;
 @property (nonatomic, weak) IBOutlet NSTextField *cutOffLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *cutOffControl;
@@ -37,6 +40,14 @@
 
 @property (nonatomic) RMSMonitor *levelsMonitor;
 @property (nonatomic, weak) IBOutlet RMSStereoView *stereoView;
+
+
+@property (nonatomic) RMSSplineMonitor *splineMonitor;
+@property (nonatomic, weak) IBOutlet NSTextField *splineLabel;
+@property (nonatomic, weak) IBOutlet RMSSplineMonitorView *splineView;
+
+//@property (nonatomic, weak) IBOutlet RMSSplineMonitorView *splineView;
+
 
 @property (nonatomic) RMSSpectrogram *spectrogram;
 @property (nonatomic, weak) IBOutlet NSSlider *spectrumSizeControl;
@@ -62,9 +73,7 @@
 	
 	self.volumeFilter = [RMSVolume new];
 	self.audioOutput.filter = self.volumeFilter;
-	
-	[self.audioOutput insertFilter:[RMSFlanger new]];
-	
+		
 	self.levelsMonitor = [RMSMonitor new];
 	self.audioOutput.monitor = self.levelsMonitor;
 
@@ -117,6 +126,20 @@
 			self.spectrumIndex += imageRep.size.height;
 			[self.spectrumView appendImageRep:imageRep];
 		}
+	}
+	
+	if (self.splineMonitor != nil)
+	{
+//*
+		double E[kRMSSplineMonitorCount];
+		double minValue = 0.0;
+		[self.splineMonitor getErrorData:E minValue:&minValue];
+		self.splineLabel.stringValue = [NSString stringWithFormat:@"min: %.3f", minValue];
+		
+		[self.splineView setErrorData:E minValue:minValue];
+/*/
+		self.splineView.imageRep = [self.splineMonitor imageRepWithGain:3.0];
+//*/
 	}
 }
 
@@ -175,6 +198,25 @@
 		self.balanceControl.enabled = YES;
 		
 		self.balanceControl.floatValue = self.volumeFilter.balance;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark RMSSplineMonitor
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectSplineMonitor:(NSButton *)button
+{
+	if (self.splineMonitor == nil)
+	{
+		self.splineMonitor = [RMSSplineMonitor new];
+		[self.audioOutput addMonitor:self.splineMonitor];
+	}
+	else
+	{
+		[self.audioOutput removeMonitor:self.splineMonitor];
+		self.splineMonitor = nil;
 	}
 }
 
@@ -244,6 +286,9 @@
 
 - (IBAction) didAdjustDelayTime:(NSSlider *)sender
 {
+	self.test.delay = sender.floatValue;
+	
+	
 	self.delayFilter.delay = sender.floatValue;
 	
 	float T = self.delayFilter.delayTime;
@@ -254,11 +299,15 @@
 
 - (IBAction) didAdjustDelayFeedBack:(NSSlider *)sender
 {
-	self.delayFilter.feedBack = sender.floatValue;	
+	self.test.delayModulation = sender.floatValue;
+
+	self.delayFilter.feedBack = sender.floatValue;
 }
 
 - (IBAction) didAjdustDelayMix:(NSSlider *)sender
 {
+	self.test.depth = sender.floatValue;
+
 	self.delayFilter.mix = sender.floatValue;
 }
 

@@ -10,17 +10,12 @@
             <connections>
                 <outlet property="autoPanButton" destination="wek-HA-HLG" id="FYV-As-XcP"/>
                 <outlet property="balanceControl" destination="PTc-sf-7Tp" id="UkC-M4-Med"/>
-                <outlet property="cutOffControl" destination="kvJ-jh-7iT" id="jUC-kc-Eeb"/>
-                <outlet property="cutOffLabel" destination="0Hj-Gr-uHz" id="yzR-6L-nvr"/>
-                <outlet property="delayFeedBackControl" destination="e7l-Bv-eHc" id="iyq-Qj-bQd"/>
-                <outlet property="delayMixControl" destination="c1w-T7-yqo" id="R6X-vE-HIz"/>
-                <outlet property="delayTimeControl" destination="qr4-u0-W8c" id="pMU-mQ-8sJ"/>
-                <outlet property="delayTimeLabel" destination="azI-5l-fQA" id="4Lf-bK-2Va"/>
                 <outlet property="gainControl" destination="8co-XE-7Ix" id="mhO-Ll-lmu"/>
-                <outlet property="resonanceControl" destination="PbG-nu-370" id="Ak3-z9-b6z"/>
                 <outlet property="spectrumGainControl" destination="FvJ-yU-zOg" id="I9B-EP-LKz"/>
                 <outlet property="spectrumSizeControl" destination="Abb-id-K2k" id="by5-Qr-dA6"/>
                 <outlet property="spectrumView" destination="TGV-d5-Wn6" id="iah-zO-iMx"/>
+                <outlet property="splineLabel" destination="woN-Xu-FAe" id="jSc-wf-sEn"/>
+                <outlet property="splineView" destination="qkf-JH-QF3" id="dDl-C5-6g7"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
                 <outlet property="volumeControl" destination="SE4-C7-Agl" id="lYx-5u-YcD"/>
@@ -106,110 +101,6 @@
                         <action selector="didSelectAutoPan:" target="-2" id="NwN-B4-v17"/>
                     </connections>
                 </button>
-                <box autoresizesSubviews="NO" title="Low Pass Filter" borderType="line" id="XqX-SV-EhV">
-                    <rect key="frame" x="17" y="304" width="446" height="151"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="H2S-xK-Afe">
-                        <rect key="frame" x="1" y="1" width="444" height="135"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <slider verticalHuggingPriority="750" id="kvJ-jh-7iT">
-                                <rect key="frame" x="18" y="91" width="408" height="21"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="below" sliderType="linear" id="gbL-e2-NyS"/>
-                                <connections>
-                                    <action selector="didAdjustCutOff:" target="-2" id="me5-Pj-NuB"/>
-                                </connections>
-                            </slider>
-                            <slider verticalHuggingPriority="750" id="PbG-nu-370">
-                                <rect key="frame" x="18" y="58" width="408" height="21"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="below" sliderType="linear" id="qNr-wD-wtp"/>
-                                <connections>
-                                    <action selector="didAdjustResonance:" target="-2" id="z2x-GW-0hC"/>
-                                </connections>
-                            </slider>
-                            <button id="m0p-D9-8P2">
-                                <rect key="frame" x="29" y="25" width="60" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="jea-zz-G2r">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="didSelectLowPass:" target="-2" id="N0G-q9-qwx"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="0Hj-Gr-uHz">
-                                <rect key="frame" x="18" y="111" width="172" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Cut off: " id="csC-Qs-y2r">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                        </subviews>
-                    </view>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </box>
-                <box autoresizesSubviews="NO" title="Delay" borderType="line" id="I64-hX-5k1">
-                    <rect key="frame" x="17" y="92" width="446" height="208"/>
-                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    <view key="contentView" id="abJ-ra-2VT">
-                        <rect key="frame" x="1" y="1" width="444" height="192"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <slider verticalHuggingPriority="750" id="qr4-u0-W8c">
-                                <rect key="frame" x="18" y="148" width="408" height="21"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="below" sliderType="linear" id="qS0-h8-fmC"/>
-                                <connections>
-                                    <action selector="didAdjustDelayTime:" target="-2" id="0A0-xd-7oS"/>
-                                </connections>
-                            </slider>
-                            <slider verticalHuggingPriority="750" id="e7l-Bv-eHc">
-                                <rect key="frame" x="18" y="109" width="408" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" minValue="-1" maxValue="1" tickMarkPosition="below" numberOfTickMarks="9" sliderType="linear" id="Muf-Fr-Tf1"/>
-                                <connections>
-                                    <action selector="didAdjustDelayFeedBack:" target="-2" id="1aH-M6-xp5"/>
-                                </connections>
-                            </slider>
-                            <button id="qPQ-3t-Lfz">
-                                <rect key="frame" x="30" y="18" width="60" height="18"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="ROo-5w-Fo9">
-                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="didSelectDelay:" target="-2" id="bHG-iI-fan"/>
-                                </connections>
-                            </button>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="azI-5l-fQA">
-                                <rect key="frame" x="18" y="168" width="172" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Time:" id="4jz-ra-geJ">
-                                    <font key="font" metaFont="system"/>
-                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
-                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                </textFieldCell>
-                            </textField>
-                            <slider verticalHuggingPriority="750" id="c1w-T7-yqo">
-                                <rect key="frame" x="18" y="77" width="408" height="27"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" numberOfTickMarks="3" sliderType="linear" id="tjQ-x2-fmO"/>
-                                <connections>
-                                    <action selector="didAjdustDelayMix:" target="-2" id="pYd-r2-wF3"/>
-                                </connections>
-                            </slider>
-                        </subviews>
-                    </view>
-                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
-                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                </box>
                 <button verticalHuggingPriority="750" id="LrF-dh-Ar7">
                     <rect key="frame" x="197" y="13" width="90" height="32"/>
                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -308,8 +199,44 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
+                <box autoresizesSubviews="NO" title="RMSSplineMonitor" borderType="line" id="FCi-Do-EiU">
+                    <rect key="frame" x="17" y="57" width="446" height="383"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
+                    <view key="contentView" id="mzd-22-aWx">
+                        <rect key="frame" x="1" y="1" width="444" height="367"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <customView id="qkf-JH-QF3" customClass="RMSSplineMonitorView">
+                                <rect key="frame" x="20" y="44" width="403" height="303"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                            </customView>
+                            <button id="1Jh-Hv-iM8">
+                                <rect key="frame" x="25" y="18" width="60" height="18"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MCk-bT-abB">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="didSelectSplineMonitor:" target="-2" id="ENx-vl-c4t"/>
+                                </connections>
+                            </button>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="woN-Xu-FAe">
+                                <rect key="frame" x="184" y="17" width="77" height="17"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="xLD-Cn-L41">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
+                        </subviews>
+                    </view>
+                    <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                    <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                </box>
             </subviews>
-            <point key="canvasLocation" x="-433.5" y="141.5"/>
+            <point key="canvasLocation" x="-545.5" y="135.5"/>
         </customView>
     </objects>
 </document>

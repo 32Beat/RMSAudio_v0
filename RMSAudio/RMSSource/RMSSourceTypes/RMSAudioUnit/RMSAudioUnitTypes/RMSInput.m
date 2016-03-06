@@ -305,6 +305,7 @@ static OSStatus outputCallback(
 
 - (void) dealloc
 {
+	[self stopRunning];
 	RMSRingBufferRelease(&mRingBuffer);
 }
 

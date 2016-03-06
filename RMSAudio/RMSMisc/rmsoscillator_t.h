@@ -25,7 +25,9 @@ typedef struct rmsoscillator_t
 	double Hz;
 	double Fs;
 	double X;
-	double Xstep;
+	double dX;
+	double A;
+
 	double (*functionPtr)(double);
 }
 rmsoscillator_t;
@@ -35,13 +37,13 @@ rmsoscillator_t;
 rmsoscillator_t RMSOscillatorBeginSineWave(double hertz, double sampleRate);
 rmsoscillator_t RMSOscillatorBeginPseudoSineWave(double hertz, double sampleRate);
 rmsoscillator_t RMSOscillatorBeginTriangleWave(double hertz, double sampleRate);
-rmsoscillator_t RMSOscillatorBegin(double hertz, double sampleRate, double (*functionPtr)(double));
+rmsoscillator_t RMSOscillatorBegin(double (*functionPtr)(double), double Hz, double phase);
 
-void RMSOscillatorSetStep(rmsoscillator_t *oscPtr, double step);
 void RMSOscillatorSetSampleRate(rmsoscillator_t *oscPtr, double Fs);
 void RMSOscillatorSetFrequency(rmsoscillator_t *oscPtr, double Hz);
 
 double RMSOscillatorFetchSample(rmsoscillator_t *oscPtr);
+double RMSOscillatorFetchSampleRA(rmsoscillator_t *oscPtr);
 
 ////////////////////////////////////////////////////////////////////////////////
 #endif // rmsoscillator_t_h

@@ -41,123 +41,6 @@
 @implementation RMSSpectrogram
 ////////////////////////////////////////////////////////////////////////////////
 
-static inline void PrepareDCTWindow(float *W, size_t size)
-{
-	// initialize window function
-	for (UInt32 n=0; n!=size; n++)
-	{
-		float x = (1.0*n + 0.5)/size;
-		float y = sin(x*M_PI);
-		W[n] = y*y;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline UInt32 RGBAColorMake(UInt32 R, UInt32 G, UInt32 B)
-{ return (255<<24)+(B<<16)+(G<<8)+(R<<0); }
-
-static inline void DCT_ValueToColor(float A, float V, UInt32 *dstPtr)
-{
-#define CMX 255.0
-
-	static const float colorSpectrum[][4] = {
-	{ 0.0, 0.0, 0.0, CMX }, // black
-	{ 0.0, 0.0, CMX, CMX }, // blue
-	{ 0.0, CMX, CMX, CMX }, // cyan
-	{ 0.0, CMX, 0.0, CMX }, // green
-	{ CMX, CMX, 0.0, CMX }, // yellow
-	{ CMX, 0.0, 0.0, CMX }, // red
-	{ CMX, 0.0, CMX, CMX }, // magenta
-	{ CMX, CMX, CMX, CMX }}; // white
-	
-	// compute spectrum power
-	V = V*V;
-	
-	// amplify result
-	V *= A;
-	
-	// limit to 1.0
-	V /= (1.0 + V);
-	
-	// scale for index up to red
-	V *= 5.0;
-	
-	// limit function guarantees n < 5
-	long n = V;
-	float R = colorSpectrum[n][0];
-	float G = colorSpectrum[n][1];
-	float B = colorSpectrum[n][2];
-
-	float r = V - floor(V);
-	if (r != 0)
-	{
-		R += r * (colorSpectrum[n+1][0] - R);
-		G += r * (colorSpectrum[n+1][1] - G);
-		B += r * (colorSpectrum[n+1][2] - B);
-	}
-	
-	dstPtr[0] = RGBAColorMake(R+0.5, G+0.5, B+0.5);
-}
-
-
-static inline void _DCT_to_Image(float A, float *srcPtr, UInt32 *dstPtr, long n)
-{
-	float *srcPtrL = srcPtr-1;
-	float *srcPtrR = srcPtr+n;
-	// Move to center of image
-	dstPtr += n;
-	
-	while (n != 0)
-	{
-		DCT_ValueToColor(A, srcPtrL[n], &dstPtr[-n]);
-		n -= 1;
-		DCT_ValueToColor(A, srcPtrR[n], &dstPtr[+n]);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline void _DCT_ReverseRow(float *ptr, size_t N)
-{
-	float *ptr1 = ptr;
-	float *ptr2 = ptr + N - 1;
-	
-	long n = N/2;
-	while (n != 0)
-	{
-		n -= 1;
-		float S1 = ptr1[+n];
-		float S2 = ptr2[-n];
-		ptr1[+n] = S2;
-		ptr2[-n] = S1;
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline void _DCT_Mix1(float *srcPtr0, float *srcPtr1, size_t n)
-{
-	while (n != 0)
-	{
-		n -= 1;
-		srcPtr1[n] = srcPtr0[n] + 0.0001*((srcPtr1[n]) - srcPtr0[n]);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-static inline void _DCT_Mix2(float *srcPtr0, float *srcPtr1, size_t n)
-{
-	while (n != 0)
-	{
-		n -= 1;
-		srcPtr1[n] = srcPtr0[n] + 0.0001*(fabsf(srcPtr1[n]) - srcPtr0[n]);
-	}
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 // Copy for sliding buffer
 static inline void _CopySamples(
 	float *srcL, float *dstL,
@@ -217,6 +100,7 @@ static OSStatus renderCallback(
 			// Convert left signal into left side of spectrumdata
 			vDSP_vmul(rmsObject->mL, 1, rmsObject->mW, 1, spectrumData, 1, dctCount);
 			vDSP_DCT_Execute(rmsObject->mDCTSetup, spectrumData, spectrumData);
+			//vDSP_vrvrs(spectrumData, 1, dctCount);
 			
 			// Move to center of row
 			spectrumData += dctCount;
@@ -268,6 +152,21 @@ static OSStatus renderCallback(
 
 + (const RMSCallbackProcPtr) callbackPtr
 { return renderCallback; }
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+
+static inline void PrepareDCTWindow(float *W, size_t size)
+{
+	// initialize window function
+	for (UInt32 n=0; n!=size; n++)
+	{
+		float x = (1.0*n + 0.5)/size;
+		float y = sin(x*M_PI);
+		W[n] = y*y;
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -344,6 +243,72 @@ static OSStatus renderCallback(
 	{
 		free(mR);
 		mR = nil;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+////////////////////////////////////////////////////////////////////////////////
+
+static inline UInt32 RGBAColorMake(UInt32 R, UInt32 G, UInt32 B)
+{ return (255<<24)+(B<<16)+(G<<8)+(R<<0); }
+
+static inline void DCT_ValueToColor(float A, float V, UInt32 *dstPtr)
+{
+#define CMX 255.0
+
+	static const float colorSpectrum[][4] = {
+	{ 0.0, 0.0, 0.0, CMX }, // black
+	{ 0.0, 0.0, CMX, CMX }, // blue
+	{ 0.0, CMX, CMX, CMX }, // cyan
+	{ 0.0, CMX, 0.0, CMX }, // green
+	{ CMX, CMX, 0.0, CMX }, // yellow
+	{ CMX, 0.0, 0.0, CMX }, // red
+	{ CMX, 0.0, CMX, CMX }, // magenta
+	{ CMX, CMX, CMX, CMX }}; // white
+	
+	// compute spectrum power
+	V = V*V;
+	
+	// amplify result
+	V *= A;
+	
+	// limit to 1.0
+	V /= (1.0 + V);
+	
+	// scale for index up to red
+	V *= 5.0;
+	
+	// limit function guarantees n < 5
+	long n = V;
+	float R = colorSpectrum[n][0];
+	float G = colorSpectrum[n][1];
+	float B = colorSpectrum[n][2];
+
+	float r = V - floor(V);
+	if (r != 0)
+	{
+		R += r * (colorSpectrum[n+1][0] - R);
+		G += r * (colorSpectrum[n+1][1] - G);
+		B += r * (colorSpectrum[n+1][2] - B);
+	}
+	
+	dstPtr[0] = RGBAColorMake(R+0.5, G+0.5, B+0.5);
+}
+
+
+static inline void _DCT_to_Image(float A, float *srcPtr, UInt32 *dstPtr, long n)
+{
+	float *srcPtrL = srcPtr-1;
+	float *srcPtrR = srcPtr+n;
+	// Move to center of image
+	dstPtr += n;
+	
+	while (n != 0)
+	{
+		DCT_ValueToColor(A, srcPtrL[n], &dstPtr[-n]);
+		n -= 1;
+		DCT_ValueToColor(A, srcPtrR[n], &dstPtr[+n]);
 	}
 }
 
