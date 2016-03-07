@@ -11,14 +11,42 @@
 
 @interface RMSLissajousView ()
 {
+	size_t mCount;
 	float mL[kRMSLissajousCount];
 	float mR[kRMSLissajousCount];
+	
+	double mFilterL;
+	double mFilterR;
 }
 @end
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 @implementation RMSLissajousView
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) setDuration:(float)value
+{
+	if (value > 1.0) value = 1.0;
+	[self setCount:value * kRMSLissajousCount];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+- (void) setCount:(size_t)count
+{
+	if (count == 0)
+	{ count = 1; }
+	
+	if (mCount != count)
+	{
+		mCount = count;
+		[self triggerUpdate];
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 - (void) triggerUpdate
 {
@@ -31,32 +59,59 @@
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 - (void)drawRect:(NSRect)dirtyRect
 {
     [super drawRect:dirtyRect];
 	
 	[self adjustOrigin];
-	
+
     // Drawing code here.
-	[[NSColor blackColor] set];
+	[[NSColor darkGrayColor] set];
 	NSRectFill(self.bounds);
 	
-	[[NSColor whiteColor] set];
+	[[NSColor blackColor] set];
 	NSBezierPath *path = [NSBezierPath new];
+	[path moveToPoint:(NSPoint){ 0.0, NSMinY(self.bounds) }];
+	[path lineToPoint:(NSPoint){ 0.0, NSMaxY(self.bounds) }];
+	[path moveToPoint:(NSPoint){ NSMinX(self.bounds), 0.0 }];
+	[path lineToPoint:(NSPoint){ NSMaxX(self.bounds), 0.0 }];
+	[self drawPath:path];
 	
 	
+	[[NSColor whiteColor] set];
+	path = [NSBezierPath new];
 	
-	[path moveToPoint:(NSPoint){ mR[0], mL[0] }];
-	for (int n=1; n!=kRMSLissajousCount; n++)
+	if (mCount == 0)
+	{ mCount = 1; }
+	
+	
+	for (int n=0; n!=mCount; n++)
 	{
-		[path lineToPoint:(NSPoint){ mR[n], mL[n] }];
+		mFilterL += 0.01 * (mL[n] - mFilterL);
+		mFilterR += 0.01 * (mR[n] - mFilterR);
+		
+		double L = mFilterL;
+		double R = mFilterR;
+		double D = pow(R*R+L*L, 0.5);
+		
+		D = D != 0.0 ? sqrt(D) / D : 1.0;
+		
+		D *= (const double)(sqrt(2.0)/2.0);
+		
+		[path moveToPoint:CGPointZero];
+		[path lineToPoint:(NSPoint){ D*(R-L), D*(R+L) }];
 	}
 	
 	[self drawPath:path];
 	
+	
+	[[NSColor blackColor] set];
+	NSFrameRect(self.bounds);
 }
 
+////////////////////////////////////////////////////////////////////////////////
 
 - (void) adjustOrigin
 {
@@ -73,16 +128,19 @@
 - (void) drawPath:(NSBezierPath *)path
 {
 	NSRect B = self.bounds;
+	CGFloat S = 0.5 * MIN(B.size.width, B.size.height);
 	
 	NSAffineTransform *T = [NSAffineTransform transform];
-	[T scaleXBy:B.size.width/2.0 yBy:B.size.height/2.0];
+//	[T translateXBy:B.size.width/2.0 yBy:B.size.height/2.0];
+	[T scaleBy:S];
+//	[T rotateByDegrees:45.0];
 	
 	[[T transformBezierPath:path] stroke];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
 @end
+////////////////////////////////////////////////////////////////////////////////
 
 
 

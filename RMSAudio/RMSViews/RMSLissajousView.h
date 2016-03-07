@@ -17,6 +17,7 @@
 
 @property (nonatomic, weak) RMSSampleMonitor *sampleMonitor;
 
+- (void) setDuration:(float)value;
 - (void) triggerUpdate;
 
 @end

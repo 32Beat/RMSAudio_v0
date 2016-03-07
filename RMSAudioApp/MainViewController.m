@@ -247,6 +247,11 @@
 	}
 }
 
+- (IBAction) didAdjustLissajousDuration:(NSSlider *)slider
+{
+	[self.phaseView setDuration:slider.floatValue];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 #pragma mark Low Pass
