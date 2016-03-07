@@ -46,6 +46,10 @@
 @property (nonatomic, weak) IBOutlet NSTextField *splineLabel;
 @property (nonatomic, weak) IBOutlet RMSSplineMonitorView *splineView;
 
+@property (nonatomic) RMSSampleMonitor *sampleMonitor;
+@property (nonatomic, weak) IBOutlet RMSLissajousView *phaseView;
+
+
 //@property (nonatomic, weak) IBOutlet RMSSplineMonitorView *splineView;
 
 
@@ -141,6 +145,8 @@
 		self.splineView.imageRep = [self.splineMonitor imageRepWithGain:3.0];
 //*/
 	}
+	
+	[self.phaseView triggerUpdate];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +223,27 @@
 	{
 		[self.audioOutput removeMonitor:self.splineMonitor];
 		self.splineMonitor = nil;
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+#pragma mark
+#pragma mark RMSSampleMonitor
+////////////////////////////////////////////////////////////////////////////////
+
+- (IBAction) didSelectSampleMonitor:(NSButton *)button
+{
+	if (self.sampleMonitor == nil)
+	{
+		self.sampleMonitor = [RMSSampleMonitor instanceWithCount:1024];
+		[self.audioOutput addMonitor:self.sampleMonitor];
+		[self.phaseView setSampleMonitor:self.sampleMonitor];
+	}
+	else
+	{
+		[self.phaseView setSampleMonitor:nil];
+		[self.audioOutput removeMonitor:self.sampleMonitor];
+		self.sampleMonitor = nil;
 	}
 }
 

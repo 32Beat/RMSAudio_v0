@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F0051171C8D767C00C1D2DF /* RMSLissajousView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0051161C8D767C00C1D2DF /* RMSLissajousView.m */; };
+		7F0051181C8D767C00C1D2DF /* RMSLissajousView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0051161C8D767C00C1D2DF /* RMSLissajousView.m */; };
 		7F56D4251C8D6A8A00A0C0CC /* rmsbuffer_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F56D3C01C8D6A8A00A0C0CC /* rmsbuffer_t.c */; };
 		7F56D4261C8D6A8A00A0C0CC /* rmsbuffer_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F56D3C01C8D6A8A00A0C0CC /* rmsbuffer_t.c */; };
 		7F56D4271C8D6A8A00A0C0CC /* rmsdelay_t.c in Sources */ = {isa = PBXBuildFile; fileRef = 7F56D3C21C8D6A8A00A0C0CC /* rmsdelay_t.c */; };
@@ -103,6 +105,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F0051151C8D767C00C1D2DF /* RMSLissajousView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSLissajousView.h; sourceTree = "<group>"; };
+		7F0051161C8D767C00C1D2DF /* RMSLissajousView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSLissajousView.m; sourceTree = "<group>"; };
 		7F56D3BE1C8D6A8A00A0C0CC /* RMSAudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSAudio.h; sourceTree = "<group>"; };
 		7F56D3C01C8D6A8A00A0C0CC /* rmsbuffer_t.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rmsbuffer_t.c; sourceTree = "<group>"; };
 		7F56D3C11C8D6A8A00A0C0CC /* rmsbuffer_t.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rmsbuffer_t.h; sourceTree = "<group>"; };
@@ -484,6 +488,8 @@
 				7F56D4221C8D6A8A00A0C0CC /* RMSSplineMonitorView.m */,
 				7F56D4231C8D6A8A00A0C0CC /* RMSStereoView.h */,
 				7F56D4241C8D6A8A00A0C0CC /* RMSStereoView.m */,
+				7F0051151C8D767C00C1D2DF /* RMSLissajousView.h */,
+				7F0051161C8D767C00C1D2DF /* RMSLissajousView.m */,
 			);
 			path = RMSViews;
 			sourceTree = "<group>";
@@ -678,6 +684,7 @@
 				7FA043971C58F15500CAC51D /* main.m in Sources */,
 				7F56D4261C8D6A8A00A0C0CC /* rmsbuffer_t.c in Sources */,
 				7FA045081C58F35400CAC51D /* RMSKaraokeViewController.m in Sources */,
+				7F0051181C8D767C00C1D2DF /* RMSLissajousView.m in Sources */,
 				7F56D4281C8D6A8A00A0C0CC /* rmsdelay_t.c in Sources */,
 				7F56D4581C8D6A8A00A0C0CC /* RMSMixerSourceController.m in Sources */,
 				7FA043941C58F15500CAC51D /* AppDelegate.m in Sources */,
@@ -729,6 +736,7 @@
 				7F56D4491C8D6A8A00A0C0CC /* RMSFlanger.m in Sources */,
 				7F56D4251C8D6A8A00A0C0CC /* rmsbuffer_t.c in Sources */,
 				7F56D43B1C8D6A8A00A0C0CC /* RMSAudioUnitPlatformIO.m in Sources */,
+				7F0051171C8D767C00C1D2DF /* RMSLissajousView.m in Sources */,
 				7F56D4731C8D6A8A00A0C0CC /* RMSStereoView.m in Sources */,
 				7F56D4631C8D6A8A00A0C0CC /* RMSSineWave.m in Sources */,
 				7F56D46B1C8D6A8A00A0C0CC /* RMSBalanceView.m in Sources */,

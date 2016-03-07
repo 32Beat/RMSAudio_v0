@@ -60,6 +60,11 @@ void RMSBufferEnd(rmsbuffer_t *buffer);
 
 ////////////////////////////////////////////////////////////////////////////////
 
+void RMSBufferWriteSamples(rmsbuffer_t *bufferPtr, float *srcPtr, size_t N);
+void RMSBufferReadSamplesFromIndex(rmsbuffer_t *bufferPtr, uint64_t index, float *dstPtr, size_t N);
+
+////////////////////////////////////////////////////////////////////////////////
+
 // Get & Set sample at current index modulo buffersize
 float RMSBufferGetSample(rmsbuffer_t *buffer);
 void RMSBufferSetSample(rmsbuffer_t *buffer, float S);

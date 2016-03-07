@@ -95,6 +95,40 @@ void RMSBufferClearSamples(rmsbuffer_t *bufferPtr)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+
+void RMSBufferWriteSamples(rmsbuffer_t *bufferPtr, float *srcPtr, size_t N)
+{
+	if (bufferPtr && bufferPtr->sampleData)
+	{
+		float *dstPtr = bufferPtr->sampleData;
+		uint64_t indexMask = bufferPtr->indexMask;
+		
+		for (size_t n=0; n!=N; n++)
+		{
+			dstPtr[bufferPtr->index&indexMask] = srcPtr[n];
+			bufferPtr->index++;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+void RMSBufferReadSamplesFromIndex(rmsbuffer_t *bufferPtr, uint64_t index, float *dstPtr, size_t N)
+{
+	if (bufferPtr && bufferPtr->sampleData)
+	{
+		float *srcPtr = bufferPtr->sampleData;
+		uint64_t indexMask = bufferPtr->indexMask;
+		
+		for (size_t n=0; n!=N; n++)
+		{
+			dstPtr[n] = srcPtr[index&indexMask];
+			index++;
+		}
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
 #pragma mark
 ////////////////////////////////////////////////////////////////////////////////
 

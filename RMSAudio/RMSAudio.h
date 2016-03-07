@@ -33,6 +33,8 @@
 #import "RMSSpectrogram.h"
 #import "RMSSplineMonitor.h"
 #import "RMSSplineMonitorView.h"
+#import "RMSSampleMonitor.h"
+#import "RMSLissajousView.h"
 
 #import "RMSMixer.h"
 #import "RMSMixerSource.h"
