@@ -30,11 +30,6 @@
 @implementation RMSSplineMonitor
 ////////////////////////////////////////////////////////////////////////////////
 
-static double FetchSample(float *srcPtr)
-{ return srcPtr[0]+srcPtr[1]+srcPtr[1]+srcPtr[2]; }
-static double FetchSample1(float *srcPtr)
-{ return srcPtr[0]; }
-
 static double Bezier
 (double x, double P1, double C1, double C2, double P2)
 {
@@ -62,6 +57,17 @@ static double Interpolate
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static double FetchSample(float *srcPtr)
+{ return srcPtr[0]; }
+
+static double FetchSample1(float *srcPtr)
+{ return srcPtr[0]+srcPtr[1]+srcPtr[1]+srcPtr[2]; }
+
+static double FetchSample4(float *srcPtr)
+{ return srcPtr[-1]+srcPtr[0]+srcPtr[0]+srcPtr[1]; }
+
+////////////////////////////////////////////////////////////////////////////////
+
 static double ComputeError(double a, float *srcPtr)
 {
 	double S1 = FetchSample(&srcPtr[0]);
@@ -69,13 +75,64 @@ static double ComputeError(double a, float *srcPtr)
 	double S3 = FetchSample(&srcPtr[4]);
 	double S4 = FetchSample(&srcPtr[6]);
 	
-	double S = FetchSample(&srcPtr[3]);
-	double L = Interpolate(a, 0.5, S1, S2, S3, S4);
+	double E, S = 0;
 	
-	L -= S;
-	L *= 0.25;
+	E = FetchSample(&srcPtr[3]) -
+	Interpolate(a, 0.5, S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
 	
-	return L*L;
+	return S;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static double ComputeError3(double a, float *srcPtr)
+{
+	double S1 = FetchSample(&srcPtr[0]);
+	double S2 = FetchSample(&srcPtr[3]);
+	double S3 = FetchSample(&srcPtr[6]);
+	double S4 = FetchSample(&srcPtr[9]);
+	
+	double E, S = 0;
+	
+	E = FetchSample(&srcPtr[4]) -
+	Interpolate(a, (1.0/3.0), S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
+	E = FetchSample(&srcPtr[5]) -
+	Interpolate(a, (2.0/3.0), S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
+	
+	return S;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static double ComputeError4(double a, float *srcPtr)
+{
+	double S1 = FetchSample(&srcPtr[0]);
+	double S2 = FetchSample(&srcPtr[4]);
+	double S3 = FetchSample(&srcPtr[8]);
+	double S4 = FetchSample(&srcPtr[12]);
+	
+	double E, S = 0;
+	
+	E = FetchSample(&srcPtr[5]) -
+	Interpolate(a, 0.25, S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
+	E = FetchSample(&srcPtr[6]) -
+	Interpolate(a, 0.50, S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
+	E = FetchSample(&srcPtr[7]) -
+	Interpolate(a, 0.75, S1, S2, S3, S4);
+	E *= 0.25;
+	S += E*E;
+	
+	return S;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -96,19 +153,8 @@ static OSStatus renderCallback(
 	
 	UInt64 N = rmsObject->mN;
 	
-	for (UInt32 n=0; n!=frameCount-8; n++)
+	for (UInt32 n=0; n!=frameCount-25; n++)
 	{
-/*
-		long X = 50 + 50 * srcPtrR[n];
-		long Y = 50 + 50 * srcPtrL[n];
-		if (X < 0) X = 0;
-		if (X > 100) X = 100;
-		if (Y < 0) Y = 0;
-		if (Y > 100) Y = 100;
-
-		rmsObject->mE[Y][X] += 1;
-//*/
-
 		double a = 1.0 * N / (kRMSSplineMonitorCount-1);
 		
 		rmsObject->mE[N] += ComputeError(a, &srcPtrL[n]);
@@ -116,9 +162,6 @@ static OSStatus renderCallback(
 
 		N += 37;
 		N &= (kRMSSplineMonitorCount-1);
-//		if (N == kRMSSplineMonitorCount)
-//		{ N = 0; }
-
 	}
 	
 	rmsObject->mN = N;
