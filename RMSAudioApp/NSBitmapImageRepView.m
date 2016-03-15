@@ -16,17 +16,35 @@
 
 @implementation NSBitmapImageRepView
 
-
-
 - (void) appendImageRep:(NSImageRep *)imageRep
 {
 	if (mImageArray == nil)
 	{ mImageArray = [NSMutableArray new]; }
 	
 	if (imageRep != nil)
-	[mImageArray insertObject:imageRep atIndex:0];
+	{
+		[mImageArray insertObject:imageRep atIndex:0];
+		[self updateArrayForSize:self.bounds.size];
+	}
 	
 	[self setNeedsDisplay:YES];
+}
+
+
+- (void) updateArrayForSize:(NSSize)size
+{
+	NSInteger n = 0;
+	CGFloat H = 0.0;
+	
+	while ((n < mImageArray.count) && (H < size.height))
+	{
+		NSImageRep *imageRep = [mImageArray objectAtIndex:n];
+		H += imageRep.size.height;
+		n += 1;
+	}
+
+	while (mImageArray.count > n)
+	{ [mImageArray removeLastObject]; }
 }
 
 
@@ -35,14 +53,17 @@
 {
     [super drawRect:dirtyRect];
 	
+	[[NSColor blackColor] set];
+	NSRectFill(self.bounds);
+	
 	NSRect dstR = self.bounds;
-//	dstR.origin.x = -1024;\
-	dstR.size.width = 2048;
-	dstR.origin.y += dstR.size.height;
+	CGFloat maxY = NSMaxY(dstR);
+	CGFloat minY = NSMinY(dstR);
+	dstR.origin.y = maxY;
 	
 	UInt32 n = 0;
 
-	while ((dstR.origin.y > 0)&&(n < mImageArray.count))
+	while ((n < mImageArray.count)&&(dstR.origin.y > minY))
 	{
 		NSImageRep *imageRep = [mImageArray objectAtIndex:n];
 		
@@ -53,10 +74,6 @@
 
 		n += 1;
 	}
-	
-	while (mImageArray.count > n)
-	{ [mImageArray removeLastObject]; }
-	
 }
 
 @end

@@ -15,6 +15,8 @@
                 <outlet property="spectrumGainControl" destination="FvJ-yU-zOg" id="I9B-EP-LKz"/>
                 <outlet property="spectrumSizeControl" destination="Abb-id-K2k" id="by5-Qr-dA6"/>
                 <outlet property="spectrumView" destination="TGV-d5-Wn6" id="iah-zO-iMx"/>
+                <outlet property="splineLabel" destination="woN-Xu-FAe" id="odc-jq-gwU"/>
+                <outlet property="splineView" destination="qkf-JH-QF3" id="vje-sF-Mdm"/>
                 <outlet property="stereoView" destination="4L8-Lw-eXY" id="lnw-4y-mdI"/>
                 <outlet property="view" destination="Hz6-mo-xeY" id="0bl-1N-x8E"/>
                 <outlet property="volumeControl" destination="SE4-C7-Agl" id="lYx-5u-YcD"/>
@@ -198,40 +200,32 @@
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <box autoresizesSubviews="NO" title="RMSSampleMonitor" borderType="line" id="byg-ja-wse">
-                    <rect key="frame" x="17" y="73" width="446" height="367"/>
+                <box autoresizesSubviews="NO" title="RMSSplineMonitor" borderType="line" id="FCi-Do-EiU">
+                    <rect key="frame" x="17" y="72" width="446" height="383"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
-                    <view key="contentView" id="w2R-Z3-RoC">
-                        <rect key="frame" x="1" y="1" width="444" height="351"/>
+                    <view key="contentView" id="mzd-22-aWx">
+                        <rect key="frame" x="1" y="1" width="444" height="367"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <customView id="iym-vK-cSC" customClass="RMSLissajousView">
-                                <rect key="frame" x="20" y="105" width="403" height="226"/>
+                            <customView id="qkf-JH-QF3" customClass="RMSSplineMonitorView">
+                                <rect key="frame" x="20" y="44" width="403" height="303"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
                             </customView>
-                            <button id="ELa-eC-uBN">
-                                <rect key="frame" x="29" y="32" width="60" height="18"/>
+                            <button id="1Jh-Hv-iM8">
+                                <rect key="frame" x="25" y="18" width="60" height="18"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="zPW-9I-bz0">
+                                <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MCk-bT-abB">
                                     <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                                     <font key="font" metaFont="system"/>
                                 </buttonCell>
                                 <connections>
-                                    <action selector="didSelectSampleMonitor:" target="-2" id="g91-ib-Enw"/>
+                                    <action selector="didSelectSplineMonitor:" target="-2" id="ENx-vl-c4t"/>
                                 </connections>
                             </button>
-                            <slider verticalHuggingPriority="750" id="7H2-OC-WbX">
-                                <rect key="frame" x="68" y="61" width="307" height="27"/>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="woN-Xu-FAe">
+                                <rect key="frame" x="184" y="17" width="77" height="17"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" numberOfTickMarks="21" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88v-0W-kt2"/>
-                                <connections>
-                                    <action selector="didAdjustLissajousDuration:" target="-2" id="3MJ-xN-AOO"/>
-                                </connections>
-                            </slider>
-                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="NU0-tn-GMO">
-                                <rect key="frame" x="184" y="31" width="77" height="17"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="TxG-SY-YS4">
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="xLD-Cn-L41">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
@@ -243,39 +237,55 @@
                     <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                 </box>
             </subviews>
-            <point key="canvasLocation" x="-545.5" y="135.5"/>
+            <point key="canvasLocation" x="-719.5" y="255.5"/>
         </customView>
-        <box autoresizesSubviews="NO" title="RMSSplineMonitor" borderType="line" id="FCi-Do-EiU">
-            <rect key="frame" x="0.0" y="0.0" width="446" height="383"/>
+        <box autoresizesSubviews="NO" title="RMSSampleMonitor" borderType="line" id="byg-ja-wse">
+            <rect key="frame" x="0.0" y="0.0" width="446" height="367"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
-            <view key="contentView" id="mzd-22-aWx">
-                <rect key="frame" x="1" y="1" width="444" height="367"/>
+            <view key="contentView" id="w2R-Z3-RoC">
+                <rect key="frame" x="1" y="1" width="444" height="351"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <customView id="qkf-JH-QF3" customClass="RMSSplineMonitorView">
-                        <rect key="frame" x="20" y="44" width="403" height="303"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
-                    </customView>
-                    <button id="1Jh-Hv-iM8">
-                        <rect key="frame" x="25" y="18" width="60" height="18"/>
+                    <button id="ELa-eC-uBN">
+                        <rect key="frame" x="29" y="32" width="60" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="MCk-bT-abB">
+                        <buttonCell key="cell" type="check" title="Active" bezelStyle="regularSquare" imagePosition="left" inset="2" id="zPW-9I-bz0">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                         <connections>
-                            <action selector="didSelectSplineMonitor:" target="-2" id="ENx-vl-c4t"/>
+                            <action selector="didSelectSampleMonitor:" target="-2" id="g91-ib-Enw"/>
                         </connections>
                     </button>
-                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="woN-Xu-FAe">
-                        <rect key="frame" x="184" y="17" width="77" height="17"/>
+                    <slider verticalHuggingPriority="750" id="7H2-OC-WbX">
+                        <rect key="frame" x="68" y="61" width="307" height="27"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" numberOfTickMarks="21" allowsTickMarkValuesOnly="YES" sliderType="linear" id="88v-0W-kt2"/>
+                        <connections>
+                            <action selector="didAdjustLissajousDuration:" target="-2" id="3MJ-xN-AOO"/>
+                        </connections>
+                    </slider>
+                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" id="NU0-tn-GMO">
+                        <rect key="frame" x="184" y="31" width="77" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="xLD-Cn-L41">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="center" title="Label" id="TxG-SY-YS4">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
+                    <slider verticalHuggingPriority="750" id="A3x-cM-gtA">
+                        <rect key="frame" x="68" y="96" width="307" height="27"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="below" numberOfTickMarks="21" allowsTickMarkValuesOnly="YES" sliderType="linear" id="FNp-dP-1Qm"/>
+                        <connections>
+                            <action selector="didAdjustLissajousFilter:" target="-2" id="nPK-Nv-Adx"/>
+                        </connections>
+                    </slider>
+                    <customView id="iym-vK-cSC" customClass="RMSLissajousView">
+                        <rect key="frame" x="20" y="129" width="404" height="202"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES" heightSizable="YES"/>
+                    </customView>
                 </subviews>
             </view>
             <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>

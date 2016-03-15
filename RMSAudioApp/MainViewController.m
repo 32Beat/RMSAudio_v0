@@ -8,7 +8,7 @@
 
 #import "MainViewController.h"
 
-#import "RMSAudio.h"
+#import <RMSAudio/RMSAudio.h>
 #import "NSBitmapImageRepView.h"
 
 @interface MainViewController () <RMSTimerProtocol>
@@ -134,16 +134,10 @@
 	
 	if (self.splineMonitor != nil)
 	{
-//*
-		double E[kRMSSplineMonitorCount];
-		double minValue = 0.0;
-		[self.splineMonitor getErrorData:E minValue:&minValue];
-		self.splineLabel.stringValue = [NSString stringWithFormat:@"min: %.3f", minValue];
+		double minValue = [self.splineView triggerUpdate];
+		[self.splineLabel setStringValue:[NSString stringWithFormat:@"%.3f", minValue]];
 		
-		[self.splineView setErrorData:E minValue:minValue];
-/*/
-		self.splineView.imageRep = [self.splineMonitor imageRepWithGain:3.0];
-//*/
+//		self.splineView.imageRep = [self.splineMonitor imageRepWithGain:3.0];
 	}
 	
 	[self.phaseView triggerUpdate];
@@ -218,9 +212,11 @@
 	{
 		self.splineMonitor = [RMSSplineMonitor new];
 		[self.audioOutput addMonitor:self.splineMonitor];
+		[self.splineView setSplineMonitor:self.splineMonitor];
 	}
 	else
 	{
+		[self.splineView setSplineMonitor:nil];
 		[self.audioOutput removeMonitor:self.splineMonitor];
 		self.splineMonitor = nil;
 	}
@@ -235,7 +231,7 @@
 {
 	if (self.sampleMonitor == nil)
 	{
-		self.sampleMonitor = [RMSSampleMonitor instanceWithCount:1024];
+		self.sampleMonitor = [RMSSampleMonitor instanceWithCount:kRMSLissajousCount*2];
 		[self.audioOutput addMonitor:self.sampleMonitor];
 		[self.phaseView setSampleMonitor:self.sampleMonitor];
 	}
@@ -245,6 +241,11 @@
 		[self.audioOutput removeMonitor:self.sampleMonitor];
 		self.sampleMonitor = nil;
 	}
+}
+
+- (IBAction) didAdjustLissajousFilter:(NSSlider *)slider
+{
+	[self.phaseView setFilter:slider.floatValue];
 }
 
 - (IBAction) didAdjustLissajousDuration:(NSSlider *)slider
@@ -385,11 +386,12 @@
 	
 	// Start testsignal
 	self.audioOutput.source =
+		[RMSTestSignal whiteNoise];
 //		[RMSClip sineWaveWithLength:100];
 //		[RMSClip blockWaveWithLength:100];
 //		[RMSTestSignal sineWaveWithFrequency:441.0];
 //		[RMSTestSignal blockWaveWithFrequency:441.0];
-		[RMSTestSignal triangleWaveWithFrequency:441.0];
+//		[RMSTestSignal triangleWaveWithFrequency:441.0];
 //		[RMSTestSignal sawToothWaveWithFrequency:441.0];
 }
 
