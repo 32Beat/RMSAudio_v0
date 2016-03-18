@@ -81,8 +81,11 @@
 	self.levelsMonitor = [RMSMonitor new];
 	self.audioOutput.monitor = self.levelsMonitor;
 
+	self.sampleMonitor = [RMSSampleMonitor instanceWithCount:256*1024];
+	[self.audioOutput addMonitor:self.sampleMonitor];
+	
 	self.spectrogram = [RMSSpectrogram new];
-	[self.audioOutput addMonitor:self.spectrogram];
+	self.spectrogram.sampleMonitor = self.sampleMonitor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -123,11 +126,9 @@
 	{
 		UInt32 A = self.spectrumGainControl.intValue;
 		
-		NSImageRep *imageRep = [self.spectrogram //imageRep];
-		imageRepWithIndex:self.spectrumIndex gain:A];
+		NSImageRep *imageRep = [self.spectrogram spectrumImageWithGain:A];
 		if (imageRep != nil)
 		{
-			self.spectrumIndex += imageRep.size.height;
 			[self.spectrumView appendImageRep:imageRep];
 		}
 	}
@@ -354,12 +355,14 @@
 	int N = sender.intValue;
 	N = 256 << N;
 	
-	if (self.spectrogram != nil)
-	{ [self.audioOutput removeMonitor:self.spectrogram]; }
-	self.spectrogram = [[RMSSpectrogram alloc] initWithLength:N];
+	[self.spectrogram setLength:N];
+/*
+	self.spectrogram = nil;
 	self.spectrumIndex = 0;
-	[self.audioOutput addMonitor:self.spectrogram];
 	
+	self.spectrogram = [[RMSSpectrogram alloc] initWithLength:N];
+	self.spectrogram.sampleMonitor = self.sampleMonitor;
+*/
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7F0E33061C992B220001BBF2 /* RMSSampleMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F0E33051C992B220001BBF2 /* RMSSampleMap.m */; };
 		7F727CAC1C69315600416DB0 /* NSBitmapImageRepView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */; };
 		7FA043941C58F15500CAC51D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA043931C58F15500CAC51D /* AppDelegate.m */; };
 		7FA043971C58F15500CAC51D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7FA043961C58F15500CAC51D /* main.m */; };
@@ -24,6 +25,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7F0E33041C992B220001BBF2 /* RMSSampleMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RMSSampleMap.h; sourceTree = "<group>"; };
+		7F0E33051C992B220001BBF2 /* RMSSampleMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RMSSampleMap.m; sourceTree = "<group>"; };
 		7F727CAA1C69315600416DB0 /* NSBitmapImageRepView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSBitmapImageRepView.h; sourceTree = "<group>"; };
 		7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSBitmapImageRepView.m; sourceTree = "<group>"; };
 		7FA043901C58F15500CAC51D /* RMSKaraokeApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RMSKaraokeApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,6 +128,8 @@
 				7FB8E0BF1C42FA3800B7848A /* AppDelegate.m */,
 				7FB8E1221C42FC5700B7848A /* MainViewController.h */,
 				7FB8E1231C42FC5700B7848A /* MainViewController.m */,
+				7F0E33041C992B220001BBF2 /* RMSSampleMap.h */,
+				7F0E33051C992B220001BBF2 /* RMSSampleMap.m */,
 				7F727CAA1C69315600416DB0 /* NSBitmapImageRepView.h */,
 				7F727CAB1C69315600416DB0 /* NSBitmapImageRepView.m */,
 				7FB8E1241C42FC5700B7848A /* MainViewController.xib */,
@@ -257,6 +262,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7F0E33061C992B220001BBF2 /* RMSSampleMap.m in Sources */,
 				7FB8E0C31C42FA3800B7848A /* main.m in Sources */,
 				7F727CAC1C69315600416DB0 /* NSBitmapImageRepView.m in Sources */,
 				7FB8E0C01C42FA3800B7848A /* AppDelegate.m in Sources */,
