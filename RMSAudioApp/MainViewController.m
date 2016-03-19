@@ -56,9 +56,7 @@
 @property (nonatomic) RMSSpectrogram *spectrogram;
 @property (nonatomic, weak) IBOutlet NSSlider *spectrumSizeControl;
 @property (nonatomic, weak) IBOutlet NSSlider *spectrumGainControl;
-
 @property (nonatomic, weak) IBOutlet NSBitmapImageRepView *spectrumView;
-@property (nonatomic) UInt64 spectrumIndex;
 
 @end
 
@@ -128,9 +126,7 @@
 		
 		NSImageRep *imageRep = [self.spectrogram spectrumImageWithGain:A];
 		if (imageRep != nil)
-		{
-			[self.spectrumView appendImageRep:imageRep];
-		}
+		{ [self.spectrumView appendImageRep:imageRep]; }
 	}
 	
 	if (self.splineMonitor != nil)
