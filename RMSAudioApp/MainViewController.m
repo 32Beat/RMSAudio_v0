@@ -47,6 +47,7 @@
 @property (nonatomic, weak) IBOutlet RMSSplineMonitorView *splineView;
 
 @property (nonatomic) RMSSampleMonitor *sampleMonitor;
+@property (nonatomic, weak) IBOutlet NSTextField *phaseLabel;
 @property (nonatomic, weak) IBOutlet RMSLissajousView *phaseView;
 
 
@@ -138,6 +139,8 @@
 	}
 	
 	[self.phaseView triggerUpdate];
+	float phaseValue = [self.phaseView correlationValue];
+	[self.phaseLabel setStringValue:[NSString stringWithFormat:@"%.1f", phaseValue]];
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -226,17 +229,14 @@
 
 - (IBAction) didSelectSampleMonitor:(NSButton *)button
 {
-	if (self.sampleMonitor == nil)
+	if (self.phaseView.sampleMonitor == nil)
 	{
-		self.sampleMonitor = [RMSSampleMonitor instanceWithCount:kRMSLissajousCount*2];
-		[self.audioOutput addMonitor:self.sampleMonitor];
 		[self.phaseView setSampleMonitor:self.sampleMonitor];
+		[self.phaseView setDuration:0.5];
 	}
 	else
 	{
 		[self.phaseView setSampleMonitor:nil];
-		[self.audioOutput removeMonitor:self.sampleMonitor];
-		self.sampleMonitor = nil;
 	}
 }
 
