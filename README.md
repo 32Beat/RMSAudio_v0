@@ -1,7 +1,11 @@
 # RMSAudio
 ## Objective-C AudioEngine for OSX and iOS
 
-RMSAudio is an experiment in designing a simple and comprehensive audio management structure in Objective-C for the Mac OS family. The design principles are based on the following logic: 
+RMSAudio is an experiment in designing a simple and comprehensive audio management structure in Objective-C for the Mac OS family. 
+
+![](../Develop2/MainWindow.png)
+
+The design principles are based on the following logic: 
 
 1. Connecting objects should be simple and intuitive, in other words, no AUGraph, no separate render trees etc. Connecting objects automatically is the tree. Nodes and leaves are exponents of a single parent. It is as easy to connect a single object, as it is to connect an entire tree.
   * object management is done in Objective-C, 
